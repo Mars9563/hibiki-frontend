@@ -16,7 +16,7 @@ interface MessageBubbleProps {
 export function MessageBubble({ id, text, avatar, mine }: MessageBubbleProps) {
   return (
     <div
-      className={`flex flex-row items-end font-chat ${
+      className={`flex flex-row items-end font-chat w-full min-w-0 ${
         mine ? 'justify-end' : 'justify-start'
       }`}
     >
@@ -27,11 +27,15 @@ export function MessageBubble({ id, text, avatar, mine }: MessageBubbleProps) {
         </Avatar>
       )}
 
-      <Card className="max-w-[70%]">
-        <CardContent className="font-chat leading-relaxed text-sm break-words">
-          {text}
-        </CardContent>
-      </Card>
+      <div className="max-w-[49%] min-w-0 flex">
+        <Card
+          className={`border-4 border-[#1a314d] ${mine ? 'bg-[#ffaa5e] text-[#0d2645]' : 'bg-[#ffecd6] text-[#0d2645]'} shadow-[2px_2px_0_#544e68]`}
+        >
+          <CardContent className="font-chat leading-relaxed text-sm break-all whitespace-pre-wrap px-3 py-2">
+            {text}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
