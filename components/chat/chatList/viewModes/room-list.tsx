@@ -12,7 +12,7 @@ import {
 } from '@/server/actions/chat/get-user-chat-list';
 import { useEffect, useState } from 'react';
 import { socket } from '@/socket';
-import { useRoom } from '../room-context';
+import { useRoom } from '../../room-context';
 
 export function RoomsList() {
   const [rooms, setRooms] = useState<DirectChatRoom[]>([]);

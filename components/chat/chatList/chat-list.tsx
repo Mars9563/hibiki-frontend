@@ -1,7 +1,7 @@
 'use client';
-import { RoomsList } from './chatListViewModes/room-list';
-import { PendingList } from './chatListViewModes/pending-list';
-import { useViewMode } from './view-context';
+import { RoomsList } from './viewModes/room-list';
+import { PendingList } from './viewModes/pending-list';
+import { useViewMode } from '../view-context';
 
 export function ChatListPanel() {
   const { viewMode } = useViewMode();

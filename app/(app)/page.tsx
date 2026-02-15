@@ -1,8 +1,8 @@
-import { ChatListPanel } from '@/components/chat/chat-list';
-import { Chat } from '@/components/chat/main-chat-area';
+import { ChatListPanel } from '@/components/chat/chatList/chat-list';
+import { Chat } from '@/components/chat/chatArea/main-chat-area';
 import { RoomProvider } from '@/components/chat/room-context';
 import { ViewProvider } from '@/components/chat/view-context';
-import { Sidebar } from '@/components/sidebar/sidebar';
+import { Sidebar } from '@/components/chat/sidebar/sidebar';
 
 export default function Home() {
   return (

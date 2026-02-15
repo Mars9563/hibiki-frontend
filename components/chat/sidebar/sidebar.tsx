@@ -1,21 +1,23 @@
 'use client';
 
 import { LogOut, MessageSquare, Settings2, UserPlus2 } from 'lucide-react';
-import { Button } from '../ui/pixelact-ui/button';
 import { createClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
+import { useViewMode } from '@/components/chat/view-context';
+import { MdOutlineGroups2 } from 'react-icons/md';
+import { Avatar, AvatarImage } from '@/components/ui/pixelact-ui/avatar';
+import {
+  DialogClose,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogTitle,
   DialogTrigger,
-} from '../ui/pixelact-ui/dialog';
-import { DialogClose } from '../ui/dialog';
-import { useRouter } from 'next/navigation';
-import { useViewMode } from '@/components/chat/view-context';
-import { Avatar, AvatarImage } from '../ui/pixelact-ui/avatar';
-import { MdOutlineGroups2 } from 'react-icons/md';
+} from '@/components/ui/pixelact-ui/dialog';
+import { Button } from '@/components/ui/pixelact-ui/button';
 
 export function Sidebar() {
   const router = useRouter();
@@ -46,7 +48,9 @@ export function Sidebar() {
           <Button type="button" onClick={() => setViewMode('pending')}>
             <UserPlus2 />
           </Button>
-          <Button><MdOutlineGroups2/> </Button>
+          <Button>
+            <MdOutlineGroups2 />{' '}
+          </Button>
         </div>
         <div className="flex flex-col justify-center items-center gap-2">
           <Dialog>
@@ -71,7 +75,7 @@ export function Sidebar() {
             </DialogContent>
           </Dialog>
 
-          <Avatar size="medium" variant="round" >
+          <Avatar size="medium" variant="round">
             <AvatarImage src={'https://picsum.photos/200'} />
           </Avatar>
         </div>
