@@ -22,7 +22,7 @@ export default function RegisterPage() {
           Let your words resonate again.
         </p>
       </div>
-      <Card className="relative min-w-[500px] bg-[#ffecd6] border-4 border-[#0d2b45] shadow-[6px_6px_0_#0d2b45]">
+      <Card className="relative min-w-125 bg-[#ffecd6] border-4 border-[#0d2b45] shadow-[6px_6px_0_#0d2b45]">
         <CardHeader>
           <CardTitle className="font-ui text-[#0d2b45]">Sign In</CardTitle>
           <CardDescription className="text-[#203c56] font-ui text-xs">

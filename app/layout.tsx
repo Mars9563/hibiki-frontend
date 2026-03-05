@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { Press_Start_2P, Inter } from 'next/font/google';
+import { VT323, Inter } from 'next/font/google';
 import './globals.css';
-import ToastProvider from '@/components/providers/toast-provider';
+import ToastProvider from '@/providers/toast-provider';
 
-const pressStart = Press_Start_2P({
+const pressStart = VT323({
   variable: '--font-ui',
   weight: '400',
   subsets: ['latin'],

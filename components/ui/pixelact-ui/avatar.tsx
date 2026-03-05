@@ -5,27 +5,28 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import "@/components/ui/pixelact-ui/styles/styles.css";
 
-const avatarVariants = cva("", {
+const avatarVariants = cva('', {
   variants: {
     font: {
-      normal: "",
-      pixel: "pixel-font",
+      normal: '',
+      pixel: 'pixel-font',
     },
     variant: {
-      default: "",
-      square: "shadow-(--pixel-box-shadow) box-shadow-margin",
-      round: "rounded-full",
+      default: '',
+      square: 'shadow-(--pixel-box-shadow) box-shadow-margin',
+      round: 'rounded-full',
     },
     size: {
-      small: "h-8 w-8",
-      medium: "h-12 w-12",
-      large: "h-16 w-16",
+      small: 'h-8 w-8',
+      medium: 'h-12 w-12',
+      large: 'h-16 w-16',
+      extralarge: 'h-48 w-48',
     },
   },
   defaultVariants: {
-    font: "pixel",
-    variant: "square",
-    size: "medium",
+    font: 'pixel',
+    variant: 'square',
+    size: 'medium',
   },
 });
 
@@ -34,24 +35,46 @@ const Avatar = forwardRef<
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & {
     font?: "normal" | "pixel";
     variant?: "default" | "round" | "square";
-    size?: "small" | "medium" | "large";
+    size?: "small" | "medium" | "large" | "extralarge";
   }
 >(({ className = "", font, variant, size = "medium", ...props }, ref) => {
   const isRound = variant === "round";
 
   return (
-    <div className={cn("relative size-max", className)}>
+    <div className={cn('relative size-max', className)}>
       <div
         className="absolute inset-0 w-full h-full pointer-events-none"
         style={{ zIndex: 10 }}
       >
         {isRound && (
           <>
-            {size === "large" && (
+            {size === 'extralarge' && (
+              <>
+                <div className="absolute top-[-3px] left-[57px] right-[57px] h-[15px] bg-foreground dark:bg-ring"></div>
+
+                <div className="absolute top-[9px] left-[27px] h-[15px] bg-foreground dark:bg-ring w-[30px]"></div>
+                <div className="absolute top-[9px] right-[27px] h-[15px] bg-foreground dark:bg-ring w-[30px]"></div>
+
+                <div className="absolute top-[24px] left-[15px] h-[15px] bg-foreground dark:bg-ring w-[15px]"></div>
+                <div className="absolute top-[24px] right-[15px] h-[15px] bg-foreground dark:bg-ring w-[15px]"></div>
+
+                <div className="absolute top-[39px] left-0 h-[114px] bg-foreground dark:bg-ring w-[15px]"></div>
+                <div className="absolute top-[39px] right-0 h-[114px] bg-foreground dark:bg-ring w-[15px]"></div>
+
+                <div className="absolute bottom-[24px] left-[15px] h-[15px] bg-foreground dark:bg-ring w-[15px]"></div>
+                <div className="absolute bottom-[24px] right-[15px] h-[15px] bg-foreground dark:bg-ring w-[15px]"></div>
+
+                <div className="absolute bottom-[9px] left-[27px] h-[15px] bg-foreground dark:bg-ring w-[30px]"></div>
+                <div className="absolute bottom-[9px] right-[27px] h-[15px] bg-foreground dark:bg-ring w-[30px]"></div>
+
+                <div className="absolute bottom-[-3px] left-[57px] right-[57px] h-[15px] bg-foreground dark:bg-ring"></div>
+              </>
+            )}
+            {size === 'large' && (
               <>
                 <div
                   className={
-                    "absolute top-[-1px] left-[19px] right-[19px] h-[5px] bg-foreground dark:bg-ring"
+                    'absolute top-[-1px] left-[19px] right-[19px] h-[5px] bg-foreground dark:bg-ring'
                   }
                 ></div>
                 <div className="absolute top-[3px] left-[9px] h-[5px] bg-foreground dark:bg-ring w-[10px]"></div>
@@ -70,16 +93,16 @@ const Avatar = forwardRef<
                 <div className="absolute bottom-[3px] right-[9px] h-[5px] bg-foreground dark:bg-ring w-[10px]"></div>
                 <div
                   className={
-                    "absolute bottom-[-1px] left-[19px] right-[19px] h-[5px] bg-foreground dark:bg-ring"
+                    'absolute bottom-[-1px] left-[19px] right-[19px] h-[5px] bg-foreground dark:bg-ring'
                   }
                 ></div>
               </>
             )}
-            {size === "medium" && (
+            {size === 'medium' && (
               <>
                 <div
                   className={
-                    "absolute top-0 left-[10px] right-[10px] h-[5px] bg-foreground dark:bg-ring"
+                    'absolute top-0 left-[10px] right-[10px] h-[5px] bg-foreground dark:bg-ring'
                   }
                 ></div>
 
@@ -94,16 +117,16 @@ const Avatar = forwardRef<
 
                 <div
                   className={
-                    "absolute bottom-0 left-[10px] right-[10px] h-[5px] bg-foreground dark:bg-ring"
+                    'absolute bottom-0 left-[10px] right-[10px] h-[5px] bg-foreground dark:bg-ring'
                   }
                 ></div>
               </>
             )}
-            {size === "small" && (
+            {size === 'small' && (
               <>
                 <div
                   className={
-                    "absolute top-0 left-[7px] right-[7px] h-[3px] bg-foreground dark:bg-ring"
+                    'absolute top-0 left-[7px] right-[7px] h-[3px] bg-foreground dark:bg-ring'
                   }
                 ></div>
 
@@ -124,7 +147,7 @@ const Avatar = forwardRef<
 
                 <div
                   className={
-                    "absolute bottom-0 left-[7px] right-[7px] h-[3px] bg-foreground dark:bg-ring"
+                    'absolute bottom-0 left-[7px] right-[7px] h-[3px] bg-foreground dark:bg-ring'
                   }
                 ></div>
               </>
@@ -137,7 +160,7 @@ const Avatar = forwardRef<
         ref={ref}
         data-slot="avatar"
         className={cn(
-          "relative  flex size-10 shrink-0 overflow-hidden text-xs",
+          'relative  flex size-10 shrink-0 overflow-hidden text-xs',
           avatarVariants({ font, variant, size })
         )}
         {...props}

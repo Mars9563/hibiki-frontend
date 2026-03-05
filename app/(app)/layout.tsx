@@ -1,12 +1,13 @@
-import { SocketProvider } from '@/components/providers/socket-provider';
+import { ReactNode } from 'react';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { ReactNode } from 'react';
+import { UserProvider } from '@/providers/user-provider';
 
 interface ChatLayoutProps {
   children: ReactNode;
 }
-export default async function ChatLayout({ children }: ChatLayoutProps) {
+
+export default async function AppLayout({ children }: ChatLayoutProps) {
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.getUser();
@@ -14,20 +15,27 @@ export default async function ChatLayout({ children }: ChatLayoutProps) {
   if (error || !data.user) {
     redirect('/login');
   }
-  if (!data.user.email_confirmed_at) {
-    return (
-      <>
-        {' '}
-        <div className="h-full w-full flex flex-col justify-center items-center text-3xl">
-          Please confirm your email first!
-        </div>
-      </>
+  let userData = null;
+  try {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+
+    const response = await fetch(
+      process.env.BACKEND_BASE_URL + '/api/personal/me',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
+    userData = (await response.json())[0];
+  } catch (error) {
+    console.log(error);
   }
 
   return (
     <>
-      <SocketProvider>{children}</SocketProvider>
+      <UserProvider data={userData}>{children}</UserProvider>
     </>
   );
 }

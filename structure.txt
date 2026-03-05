@@ -1,0 +1,80 @@
+.
+├── app
+│   ├── (auth)
+│   │   ├── login/page.tsx
+│   │   └── register/page.tsx
+│   ├── (app)
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── layout.tsx
+│   └── globals.css
+│
+├── providers
+│   ├── query-provider.tsx
+│   ├── socket-provider.tsx
+│   └── toast-provider.tsx
+│
+├── features
+│   └── chat
+│       ├── layout
+│       │   └── ChatLayout.tsx
+│       │
+│       ├── ui
+│       │   ├── ChatArea.tsx
+│       │   ├── ChatInput.tsx
+│       │   ├── MessageArea.tsx
+│       │   ├── MessageBubble.tsx
+│       │   └── TopBar.tsx
+│       │
+│       ├── sidebar
+│       │   └── Sidebar.tsx
+│       │
+│       ├── rooms
+│       │   ├── RoomsList.tsx
+│       │   ├── RoomItem.tsx
+│       │   └── useRooms.ts
+│       │
+│       ├── pending
+│       │   ├── PendingList.tsx
+│       │   ├── PendingRequests.tsx
+│       │   ├── SearchBar.tsx
+│       │   ├── SearchResults.tsx
+│       │   └── usePending.ts
+│       │
+│       ├── messages
+│       │   ├── useMessages.ts
+│       │   └── useSendMessage.ts
+│       │
+│       ├── friendships
+│       │   ├── useAcceptRequest.ts
+│       │   ├── useRejectRequest.ts
+│       │   └── useSendRequest.ts
+│       │
+│       ├── context
+│       │   └── chat-ui-context.tsx
+│       │
+│       └── socket
+│           └── useChatSocketSync.ts
+│
+├── components
+│   ├── auth
+│   │   ├── LoginForm.tsx
+│   │   └── RegisterForm.tsx
+│   └── ui
+│       └── (all shadcn/pixelact stuff untouched)
+│
+├── lib
+│   ├── query-client.ts
+│   ├── socket.ts
+│   ├── supabase
+│   │   ├── client.ts
+│   │   └── server.ts
+│   └── utils.ts
+│
+├── server
+│   └── actions
+│       ├── auth
+│       ├── chat
+│       └── friendships
+│
+└── middleware.ts

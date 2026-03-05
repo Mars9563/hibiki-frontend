@@ -23,7 +23,6 @@ export async function getUserChats(): Promise<
   }>
 > {
   try {
-    console.log('hello i was hit.');
     const supabase = await createClient();
     const { data, error } = await supabase.auth.getUser();
 
@@ -43,7 +42,6 @@ export async function getUserChats(): Promise<
         error: 'Unauthorized',
       };
     }
-    console.log(process.env.BACKEND_BASE_URL);
     const response = await axios.get(
       process.env.BACKEND_BASE_URL + '/api/rooms',
       {
@@ -52,7 +50,6 @@ export async function getUserChats(): Promise<
         },
       }
     );
-    console.log(response);
 
     if (response.data && !response.data.success) {
       return {
@@ -60,7 +57,6 @@ export async function getUserChats(): Promise<
         error: 'Internal Server error.',
       };
     }
-    console.log(response.data.directRooms);
     return {
       success: true,
       data: {
