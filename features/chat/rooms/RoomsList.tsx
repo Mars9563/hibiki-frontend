@@ -1,22 +1,14 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DirectRooms } from './useRooms';
 import { RoomItem } from './RoomItem';
+import { socket } from '@/lib/socket';
+import { DirectChatRoom } from '@/lib/types';
 
-export type DirectChatRoom = {
-  roomId: string;
-  roomType: string;
-  currentUserId: string;
-  otherUserId: string;
-  otherUser: {
-    id: string;
-    fullName: string | null;
-    username: string;
-    avatarUrl: string | null;
-  };
-};
+
 
 export function RoomsList() {
   const { data: rooms, isLoading, error } = DirectRooms();
+    
 
   if (isLoading)
     return <div className="p-4 text-[#C4B5FD]">Loading...chats</div>;

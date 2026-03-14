@@ -5,7 +5,13 @@ import { socket } from '@/lib/socket';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { selectedRoomContextNullSafe } from '../context/chat-ui-context';
+import { messageStructure } from '@/lib/types';
+import { useMessageStore } from '../ui/useMessages';
 
+type messageDataBySocket = {
+  message: messageStructure;
+  clientTempId: string;
+}
 export function useChatSocketSync() {
   const queryClient = useQueryClient();
   const { selectedRoom } = selectedRoomContextNullSafe();
@@ -55,11 +61,9 @@ export function useChatSocketSync() {
   ===================================================== */
 
   useEffect(() => {
-    function onMessageReceived(data: any) {
-      // Invalidate messages for that room
-      queryClient.invalidateQueries({
-        queryKey: ['messages', data.roomId],
-      });
+    function onMessageReceived(data: messageDataBySocket) {
+      console.log(data);
+      useMessageStore.getState().addMessageFromSocket(data.message, data.clientTempId);
     }
 
     socket.on('message:new', onMessageReceived);

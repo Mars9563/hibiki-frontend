@@ -7,7 +7,10 @@ import { SendIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import z from 'zod';
-
+import { selectedRoomContextNullSafe } from '../context/chat-ui-context';
+import { socket } from '@/lib/socket';
+import { nanoid } from 'nanoid';
+import { useMessageStore } from './useMessages';
 const formSchema = z.object({
   message: z.string().trim().nonempty(),
 });
@@ -15,7 +18,8 @@ const formSchema = z.object({
 export function ChatInput() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-
+  const { selectedRoom } = selectedRoomContextNullSafe();
+  const messageStore = useMessageStore();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { message: '' },
@@ -23,6 +27,18 @@ export function ChatInput() {
 
   function onMessageSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true);
+
+    const clientTempId = 'temp-' + nanoid(8);
+    const message = {
+      room_id: selectedRoom?.roomId,
+      content: data.message,
+      clientTempId: clientTempId,
+    };
+
+    messageStore.addOptimisticMessage(data.message, clientTempId, selectedRoom!);
+
+    socket.emit('message:send', message);
+
     form.reset();
 
     if (textareaRef.current) {

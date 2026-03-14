@@ -1,4 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
+import { socket } from '@/lib/socket';
+import { useEffect } from 'react';
+import { DirectChatRoom } from '@/lib/types';
+import { useMessageStore } from '../ui/useMessages';
 
 async function getRooms() {
   const res = await fetch('/api/rooms', {
@@ -20,9 +24,20 @@ async function getRooms() {
 }
 
 export function DirectRooms() {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['directRooms'],
     queryFn: getRooms,
-    staleTime: 1000 * 60 * 60,
+    staleTime: 1000 * 6,
   });
+
+  useEffect(() => {
+    if (!query.data || query.data.length === 0) return;
+
+    const roomIds = query.data.map((room: DirectChatRoom) => room.roomId);
+    useMessageStore.getState().getInitialMessages(query.data);
+
+    socket.emit('rooms:joinMany', { roomIds });
+  }, [query.data]);
+
+  return query;
 }

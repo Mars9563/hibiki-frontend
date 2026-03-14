@@ -1,6 +1,6 @@
 'use client';
+import { DirectChatRoom } from '@/lib/types';
 import { createContext, useContext, useState } from 'react';
-import { DirectChatRoom } from '../rooms/RoomsList';
 
 type ViewMode = 'rooms' | 'requests' | 'userpanel';
 type viewModeContextType = {
