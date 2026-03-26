@@ -24,16 +24,10 @@ export function TopBar() {
   }
 
   return (
-    <div
-      className="flex flex-row justify-between items-center p-2 border-b-4"
-      style={{
-        backgroundColor: '#140A2E',
-        borderColor: '#241259',
-      }}
-    >
+    <div className="flex flex-row justify-between items-center p-2 border-b-4 border-[#26262B]">
       <div className="flex flex-row items-center gap-3 min-w-0">
         <Avatar
-          variant="round"
+          variant="square"
           size="large"
           style={{
             backgroundColor: '#1C1333',

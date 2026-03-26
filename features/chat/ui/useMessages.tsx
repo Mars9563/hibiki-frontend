@@ -1,5 +1,9 @@
 import { DirectChatRoom, messageStructure } from '@/lib/types';
 import { create } from 'zustand';
+type response = {
+  success: boolean;
+  error?: string;
+};
 
 type MessageStore = {
   Messages: Map<
@@ -13,7 +17,7 @@ type MessageStore = {
       }
     >
   >;
-  getInitialMessages: (rooms: DirectChatRoom[]) => Promise<void>;
+  getInitialMessages: (rooms: DirectChatRoom[]) => Promise<response>;
   addOptimisticMessage: (
     message: string,
     clientTempId: string,
@@ -28,8 +32,13 @@ type MessageStore = {
 export const useMessageStore = create<MessageStore>((set, get) => ({
   Messages: new Map(),
 
-  getInitialMessages: async (rooms: DirectChatRoom[]): Promise<void> => {
-    if (!rooms) return;
+  getInitialMessages: async (rooms: DirectChatRoom[]): Promise<response> => {
+    if (!rooms)
+      return {
+        success: false,
+        error: 'Failed to load chats.(got no rooms).',
+      };
+
     const roomIds = rooms.map((room: DirectChatRoom) => room.roomId);
     const query = new URLSearchParams({
       roomIds: JSON.stringify(roomIds),
@@ -40,7 +49,11 @@ export const useMessageStore = create<MessageStore>((set, get) => ({
       credentials: 'include',
     });
     const data = await response.json();
-    if (!data.success) return;
+    if (!data.success)
+      return {
+        success: false,
+        error: 'Failed to load chat messages.',
+      };
     const messages: messageStructure[] = data.messages;
 
     const tempMap = new Map<
@@ -70,6 +83,9 @@ export const useMessageStore = create<MessageStore>((set, get) => ({
     });
 
     set(() => ({ Messages: tempMap }));
+    return {
+      success: true,
+    };
   },
 
   addOptimisticMessage: (
@@ -77,7 +93,7 @@ export const useMessageStore = create<MessageStore>((set, get) => ({
     clientTempId: string,
     selectedRoom: DirectChatRoom
   ) => {
-    console.log('hello this was hit i made optimistic message')
+    console.log('hello this was hit i made optimistic message');
     const outerMap = new Map(get().Messages);
     // Clone the inner room map so zustand sees a new reference
     const prevRoomMap = outerMap.get(selectedRoom.roomId) ?? new Map();

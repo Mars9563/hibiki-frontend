@@ -164,7 +164,7 @@ export function UserSettings() {
 
   return (
     <div className="h-full w-full">
-      <div className="flex flex-col justify-center items-start w-full p-4">
+      <div className="flex flex-col justify-center items-start w-full p-4 border-b-4 border-[#1E1E22]">
         <p className="font-ui text-4xl text-[#F3E8FF]">Update Details</p>
       </div>
 
@@ -173,7 +173,7 @@ export function UserSettings() {
         <Dialog open={dialogOpen} onOpenChange={handleDialogOpen}>
           <DialogTrigger asChild>
             <button className="cursor-pointer">
-              <Avatar size="extralarge" variant="round">
+              <Avatar size="extralarge" variant="square">
                 {/* Main view always shows the committed avatar */}
                 <AvatarImage src={committedAvatarUrl || ''} />
                 <AvatarFallback className="bg-[#000000]">

@@ -20,6 +20,7 @@ import { useRouter } from 'next/navigation';
 import { viewModeContextNullSafe } from '../context/chat-ui-context';
 import { useUser } from '@/providers/user-provider';
 
+
 export function Sidebar() {
   const router = useRouter();
   const viewMode = viewModeContextNullSafe();
@@ -60,7 +61,6 @@ export function Sidebar() {
           <UserPlus2 />
         </Button>
 
-        <Button variant="secondary" />
       </div>
 
       {/* Bottom Controls */}
@@ -99,7 +99,7 @@ export function Sidebar() {
         </Dialog>
 
         <Avatar
-          variant="round"
+          variant="square"
           size="medium"
           onClick={() => viewMode.setViewMode('userpanel')}
           style={{

@@ -9,11 +9,16 @@ import { Button } from '@/components/ui/pixelact-ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 
-import { usePendingRequests, useAcceptRequest } from './useRequests';
+import {
+  usePendingRequests,
+  useAcceptRequest,
+  useRejectRequest,
+} from './useRequests';
 
 export function PendingRequests() {
   const { data, isLoading, isError } = usePendingRequests();
   const acceptMutation = useAcceptRequest();
+  const rejectMutation = useRejectRequest();
 
   if (isLoading) {
     return <div className="p-4 text-[#C4B5FD]">Loading requests...</div>;
@@ -24,12 +29,9 @@ export function PendingRequests() {
   }
 
   return (
-    <div className="h-full min-h-0 grid grid-rows-[auto_1fr_auto_1fr] overflow-hidden bg-[#070312]">
+    <div className="h-full min-h-0 grid grid-rows-[auto_1fr_auto_1fr] overflow-hidden bg-[#121214] border-[#1E1E22]">
       {/* SENT HEADER */}
-      <div
-        className="px-4 py-3 border-b-4"
-        style={{ backgroundColor: '#140A2E', borderColor: '#241259' }}
-      >
+      <div className="px-4 py-3 border-b-4">
         <p className="font-ui text-lg text-[#F3E8FF]">Sent by you</p>
       </div>
 
@@ -44,11 +46,7 @@ export function PendingRequests() {
           {data.sentPending.map((req) => (
             <div
               key={req.id}
-              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3"
-              style={{
-                backgroundColor: '#070312',
-                borderBottom: '4px solid #241259',
-              }}
+              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 border-b-4"
             >
               <Avatar variant="round" size="large">
                 <AvatarImage src={req.addressee.avatar_url ?? undefined} />
@@ -73,10 +71,7 @@ export function PendingRequests() {
       </div>
 
       {/* RECEIVED HEADER */}
-      <div
-        className="px-4 py-3 border-y-4"
-        style={{ backgroundColor: '#140A2E', borderColor: '#241259' }}
-      >
+      <div className="px-4 py-3 border-b-4">
         <p className="font-ui text-lg text-[#F3E8FF]">Received by you</p>
       </div>
 
@@ -91,11 +86,7 @@ export function PendingRequests() {
           {data.recievedPending.map((req) => (
             <div
               key={req.id}
-              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3"
-              style={{
-                backgroundColor: '#070312',
-                borderBottom: '4px solid #241259',
-              }}
+              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 border-b-4"
             >
               <Avatar variant="round" size="large">
                 <AvatarImage src={req.requester.avatar_url ?? undefined} />
@@ -114,12 +105,42 @@ export function PendingRequests() {
               </div>
 
               <div className="flex gap-2">
-                <Button size="sm" variant="secondary">
-                  Accept
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  disabled={
+                    acceptMutation.isPending || rejectMutation.isPending
+                  }
+                  onClick={() =>
+                    acceptMutation.mutate(req.requester.id, {
+                      onSuccess: () =>
+                        toast.success(
+                          `Accepted ${req.requester.full_name}'s request`
+                        ),
+                      onError: () => toast.error('Failed to accept request'),
+                    })
+                  }
+                >
+                  {acceptMutation.isPending ? 'Accepting...' : 'Accept'}
                 </Button>
 
-                <Button size="sm" variant="destructive">
-                  Reject
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  disabled={
+                    rejectMutation.isPending || acceptMutation.isPending
+                  }
+                  onClick={() =>
+                    rejectMutation.mutate(req.requester.id, {
+                      onSuccess: () =>
+                        toast.success(
+                          `Rejected ${req.requester.full_name}'s request`
+                        ),
+                      onError: () => toast.error('Failed to reject request'),
+                    })
+                  }
+                >
+                  {rejectMutation.isPending ? 'Rejecting...' : 'Reject'}
                 </Button>
               </div>
             </div>

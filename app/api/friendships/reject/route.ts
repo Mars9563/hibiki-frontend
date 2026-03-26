@@ -1,20 +1,19 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request) {
+export async function DELETE(req: Request) {
   try {
-    const { searchParams } = new URL(req.url);
-    const query = searchParams.get('q');
-    console.log('i was hit');
-    if (!query || query.length < 2) {
-      return NextResponse.json({
-        success: true,
-        results: [],
-      });
+    const body = await req.json();
+    const { targetId } = body;
+
+    if (!targetId) {
+      return NextResponse.json(
+        { success: false, error: 'Missing targetId' },
+        { status: 400 }
+      );
     }
 
     const supabase = await createClient();
-
     const { data: userData, error } = await supabase.auth.getUser();
 
     if (error || !userData.user) {
@@ -35,11 +34,14 @@ export async function GET(req: Request) {
     }
 
     const response = await fetch(
-      `${process.env.BACKEND_BASE_URL}/api/friendships/search?q=${query}`,
+      `${process.env.BACKEND_BASE_URL}/api/friendships/reject`,
       {
+        method: 'DELETE',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({ targetId }),
       }
     );
 
@@ -47,15 +49,12 @@ export async function GET(req: Request) {
 
     if (!response.ok || !data.success) {
       return NextResponse.json(
-        { success: false, error: 'Search failed.' },
+        { success: false, error: data.error || 'Failed to reject request.' },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      results: data.results,
-    });
+    return NextResponse.json({ success: true, userId: targetId });
   } catch {
     return NextResponse.json(
       { success: false, error: 'Internal server error.' },

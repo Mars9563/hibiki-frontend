@@ -27,16 +27,29 @@ export function DirectRooms() {
   const query = useQuery({
     queryKey: ['directRooms'],
     queryFn: getRooms,
-    staleTime: 1000 * 6,
+    staleTime: 1000 * 60,
   });
 
   useEffect(() => {
     if (!query.data || query.data.length === 0) return;
 
-    const roomIds = query.data.map((room: DirectChatRoom) => room.roomId);
-    useMessageStore.getState().getInitialMessages(query.data);
+    async function run() {
+      const response = await useMessageStore
+        .getState()
+        .getInitialMessages(query.data);
 
-    socket.emit('rooms:joinMany', { roomIds });
+      if (!response.success) {
+        
+        throw new Error("Failed to load chats.");
+      }
+      console.log(response.success);
+
+      const roomIds = query.data.map((room: DirectChatRoom) => room.roomId);
+
+      socket.emit('rooms:joinMany', { roomIds });
+    }
+
+    run();
   }, [query.data]);
 
   return query;

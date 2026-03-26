@@ -23,22 +23,12 @@ export function RoomItem({ room }: { room: DirectChatRoom }) {
 
   return (
     <div
-      className="min-w-0 py-3 px-4 grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-center cursor-pointer transition-colors duration-100"
-      style={{
-        backgroundColor: '#1A0F3D',
-        borderBottom: '4px solid #241259',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = '#241259';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = '#1A0F3D';
-      }}
+      className="min-w-0 py-3 px-4 grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-center cursor-pointer transition-colors duration-100 border-b-4 border-[#1E1E22]"
       onClick={() => setSelectedRoom(room)}
     >
       <Avatar
         size="large"
-        variant="round"
+        variant="square"
         style={{
           backgroundColor: '#1C1333',
           color: '#F3E8FF',

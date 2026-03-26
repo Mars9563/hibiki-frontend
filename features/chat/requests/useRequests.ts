@@ -30,15 +30,10 @@ async function searchUsers(username: string): Promise<SearchUser[]> {
     }
   );
 
-  if (!res.ok) {
-    throw new Error('Failed to search users');
-  }
+  if (!res.ok) throw new Error('Failed to search users');
 
   const data = await res.json();
-
-  if (!data.success) {
-    throw new Error(data.error || 'Search failed');
-  }
+  if (!data.success) throw new Error(data.error || 'Search failed');
 
   return data.results;
 }
@@ -60,21 +55,14 @@ async function sendFriendRequest(targetUserId: string): Promise<string> {
   const res = await fetch('/api/friendships/request', {
     method: 'POST',
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ targetUserId }),
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to send request');
-  }
+  if (!res.ok) throw new Error('Failed to send request');
 
   const data = await res.json();
-
-  if (!data.success) {
-    throw new Error(data.error || 'Request failed');
-  }
+  if (!data.success) throw new Error(data.error || 'Request failed');
 
   return targetUserId;
 }
@@ -84,9 +72,7 @@ export function useSendFriendRequest(currentQuery: string) {
 
   return useMutation({
     mutationFn: sendFriendRequest,
-
     onSuccess: (targetUserId) => {
-      // Remove user from current search results cache
       queryClient.setQueryData<SearchUser[]>(
         ['searchUsers', currentQuery],
         (old) => (old ? old.filter((u) => u.id !== targetUserId) : [])
@@ -103,14 +89,14 @@ export type PendingUser = {
   id: string;
   status: string;
   created_at: string;
-
+  requester_id: string;
+  addressee_id: string;
   requester: {
     id: string;
     username: string;
     full_name: string;
     avatar_url: string | null;
   };
-
   addressee: {
     id: string;
     username: string;
@@ -133,15 +119,10 @@ async function getPendingRequests(): Promise<PendingResponse> {
     credentials: 'include',
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to fetch pending requests');
-  }
+  if (!res.ok) throw new Error('Failed to fetch pending requests');
 
   const data = await res.json();
-
-  if (!data.success) {
-    throw new Error(data.error || 'Pending fetch failed');
-  }
+  if (!data.success) throw new Error(data.error || 'Pending fetch failed');
 
   return {
     sentPending: data.sentPending,
@@ -165,21 +146,14 @@ async function acceptFriendRequest(targetId: string) {
   const res = await fetch('/api/friendships/accept', {
     method: 'POST',
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ targetId }),
   });
 
-  if (!res.ok) {
-    throw new Error('Failed to accept request');
-  }
+  if (!res.ok) throw new Error('Failed to accept request');
 
   const data = await res.json();
-
-  if (!data.success) {
-    throw new Error(data.error || 'Accept failed');
-  }
+  if (!data.success) throw new Error(data.error || 'Accept failed');
 
   return targetId;
 }
@@ -189,25 +163,56 @@ export function useAcceptRequest() {
 
   return useMutation({
     mutationFn: acceptFriendRequest,
-
     onSuccess: (targetId) => {
-      // Remove accepted request from received list
-      queryClient.setQueryData<PendingResponse>(
-        ['pendingRequests'],
-        (old) => {
-          if (!old) return old;
-
-          return {
-            sentPending: old.sentPending,
-            recievedPending: old.recievedPending.filter(
-              (r) => r.requester.id !== targetId
-            ),
-          };
-        }
-      );
-
-      // Invalidate rooms (since accept creates chat room)
+      queryClient.setQueryData<PendingResponse>(['pendingRequests'], (old) => {
+        if (!old) return old;
+        return {
+          sentPending: old.sentPending,
+          recievedPending: old.recievedPending.filter(
+            (r) => r.requester.id !== targetId
+          ),
+        };
+      });
       queryClient.invalidateQueries({ queryKey: ['directRooms'] });
+    },
+  });
+}
+
+/* =========================
+   Reject Request
+========================= */
+
+async function rejectFriendRequest(targetId: string) {
+  const res = await fetch('/api/friendships/reject', {
+    method: 'DELETE',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ targetId }),
+  });
+
+  if (!res.ok) throw new Error('Failed to reject request');
+
+  const data = await res.json();
+  if (!data.success) throw new Error(data.error || 'Reject failed');
+
+  return targetId;
+}
+
+export function useRejectRequest() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: rejectFriendRequest,
+    onSuccess: (targetId) => {
+      queryClient.setQueryData<PendingResponse>(['pendingRequests'], (old) => {
+        if (!old) return old;
+        return {
+          sentPending: old.sentPending,
+          recievedPending: old.recievedPending.filter(
+            (r) => r.requester.id !== targetId
+          ),
+        };
+      });
     },
   });
 }

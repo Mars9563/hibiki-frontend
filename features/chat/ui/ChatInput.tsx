@@ -50,11 +50,7 @@ export function ChatInput() {
 
   return (
     <div
-      className="grid grid-cols-[1fr_5%] gap-4 items-center p-3 border-t-4"
-      style={{
-        backgroundColor: '#140A2E',
-        borderColor: '#241259',
-      }}
+      className="grid grid-cols-[1fr_5%] gap-4 items-center p-3 border-t-4 "
     >
       <form
         onSubmit={form.handleSubmit(onMessageSubmit)}
@@ -80,11 +76,7 @@ export function ChatInput() {
                   placeholder="Enter your message..."
                   autoComplete="off"
                   className="max-h-150"
-                  style={{
-                    backgroundColor: '#1A0F3D',
-                    border: '2px solid #241259',
-                    color: '#F3E8FF',
-                  }}
+                  
                 />
               </Field>
             )}
@@ -97,11 +89,6 @@ export function ChatInput() {
         form="message_submit_form"
         disabled={isLoading}
         variant="secondary"
-        style={{
-          backgroundColor: '#8B2CF5',
-          color: '#FFFFFF',
-          borderColor: '#8B2CF5',
-        }}
       >
         <SendIcon />
       </Button>

@@ -19,13 +19,7 @@ export function ChatArea() {
   }
 
   return (
-    <div
-      className="grid grid-rows-[10%_1fr_auto] w-full h-full min-h-0 min-w-0 border-t-4 border-b-4 border-r-4"
-      style={{
-        backgroundColor: '#070312',
-        borderColor: '#241259',
-      }}
-    >
+    <div className="grid grid-rows-[10%_1fr_auto] w-full h-full min-h-0 min-w-0 border-t-4 border-b-4 border-r-4 bg-[#121214] border-[#1E1E22]">
       <TopBar />
       <MessageArea />
       <ChatInput />

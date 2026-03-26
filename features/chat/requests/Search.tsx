@@ -3,7 +3,7 @@
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 import { Field, FieldGroup } from '@/components/ui/field';
@@ -34,35 +34,25 @@ export function Search() {
   const { data: results, isLoading, isError, error } = useSearchUsers(query);
   const sendMutation = useSendFriendRequest(query);
 
-  async function handleSearch(data: z.infer<typeof formData>) {
-    setQuery(data.search);
-  }
+  // ✅ Only fire the toast once when isError flips, not on every render
+  useEffect(() => {
+    if (isError && error instanceof Error) {
+      toast.error('Search Failed', { description: error.message });
+    }
+  }, [isError, error]);
 
-  if (isError && error instanceof Error) {
-    toast.error('Search Failed', { description: error.message });
+  async function handleSearch(data: z.infer<typeof formData>) {
+    // ✅ Always reset query to '' first so React Query re-fetches
+    //    even if the user submits the same term twice
+    setQuery('');
+    // Small tick to ensure the key change is picked up
+    setTimeout(() => setQuery(data.search.trim()), 0);
   }
 
   return (
-    <div className="h-full min-h-0 w-full min-w-0 grid grid-rows-[auto_1fr] bg-[#070312]">
+    <div className="h-full min-h-0 w-full min-w-0 grid grid-rows-[auto_1fr]">
       {/* Search Input */}
-      <div
-        className="p-4 border-b-4 grid grid-cols-[1fr_auto] gap-4 items-center"
-        style={{
-          backgroundColor: '#1A0F3D',
-          borderColor: '#241259',
-          // 🌌 Pixel system overrides
-          ['--color-secondary' as any]: '#241259',
-          ['--color-secondary-foreground' as any]: '#F3E8FF',
-
-          ['--destructive' as any]: '#8B2CF5',
-          ['--destructive-foreground' as any]: '#FFFFFF',
-
-          ['--ring' as any]: '#241259',
-          ['--foreground' as any]: '#C4B5FD',
-
-          ['--default-inner-border-color' as any]: '#241259',
-        }}
-      >
+      <div className="p-4 border-b-4 border-[#1E1E22] grid grid-cols-[1fr_auto] gap-4 items-center">
         <form
           onSubmit={form.handleSubmit(handleSearch)}
           id="searchForm"
@@ -79,7 +69,7 @@ export function Search() {
                     type="text"
                     placeholder="Enter username"
                     autoComplete="off"
-                    className="bg-[#140A2E] text-[#F3E8FF] border-[#241259]"
+                    className="bg-[#1c1c1e]"
                   />
                 </Field>
               )}
@@ -92,7 +82,6 @@ export function Search() {
           type="submit"
           form="searchForm"
           variant="secondary"
-          className="text-[#F3E8FF]"
         >
           <SearchIcon size={18} />
           {isLoading ? 'Searching...' : 'Search'}
@@ -120,26 +109,10 @@ export function Search() {
               <div
                 key={user.id}
                 className="p-4 grid grid-cols-[auto_minmax(0,1fr)_auto] gap-4 items-center"
-                style={{
-                  backgroundColor: '#070312',
-                  borderBottom: '4px solid #241259',
-                }}
               >
-                <Avatar
-                  size="large"
-                  variant="round"
-                  style={{
-                    backgroundColor: '#1C1333',
-                    color: '#F3E8FF',
-                  }}
-                >
+                <Avatar size="large" variant="round">
                   <AvatarImage src={user.avatar_url ?? undefined} />
-                  <AvatarFallback
-                    style={{
-                      backgroundColor: '#241259',
-                      color: '#F3E8FF',
-                    }}
-                  >
+                  <AvatarFallback>
                     {user.full_name?.slice(0, 2) ?? 'U'}
                   </AvatarFallback>
                 </Avatar>

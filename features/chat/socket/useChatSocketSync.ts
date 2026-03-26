@@ -11,11 +11,20 @@ import { useMessageStore } from '../ui/useMessages';
 type messageDataBySocket = {
   message: messageStructure;
   clientTempId: string;
-}
+};
 export function useChatSocketSync() {
   const queryClient = useQueryClient();
   const { selectedRoom } = selectedRoomContextNullSafe();
-
+  //new message:error field.
+  useEffect(() => {
+    function messageErrorHandler() {
+      toast.error('Failed');
+    }
+    socket.on('message:error', messageErrorHandler);
+    return () => {
+      socket.off('message:error', messageErrorHandler);
+    };
+  }, []);
   /* =====================================================
      1️⃣ JOIN ROOM WHEN SELECTED ROOM CHANGES
   ===================================================== */
@@ -63,7 +72,9 @@ export function useChatSocketSync() {
   useEffect(() => {
     function onMessageReceived(data: messageDataBySocket) {
       console.log(data);
-      useMessageStore.getState().addMessageFromSocket(data.message, data.clientTempId);
+      useMessageStore
+        .getState()
+        .addMessageFromSocket(data.message, data.clientTempId);
     }
 
     socket.on('message:new', onMessageReceived);
