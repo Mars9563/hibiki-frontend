@@ -16,7 +16,7 @@ export async function GET() {
 
     const { data: sessionData } = await supabase.auth.getSession();
     const token = sessionData.session?.access_token;
-
+    console.log('TOKEN:', token);
     if (!token) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },
