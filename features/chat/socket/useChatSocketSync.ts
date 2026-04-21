@@ -15,7 +15,7 @@ type messageDataBySocket = {
 export function useChatSocketSync() {
   const queryClient = useQueryClient();
   const { selectedRoom } = selectedRoomContextNullSafe();
-  //new message:error field.
+
   useEffect(() => {
     function messageErrorHandler() {
       toast.error('Failed');

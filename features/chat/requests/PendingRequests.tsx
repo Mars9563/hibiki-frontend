@@ -31,7 +31,7 @@ export function PendingRequests() {
   return (
     <div className="h-full min-h-0 grid grid-rows-[auto_1fr_auto_1fr] overflow-hidden bg-[#121214] border-[#1E1E22]">
       {/* SENT HEADER */}
-      <div className="px-4 py-3 border-b-4">
+      <div className="px-4 py-3 border-b-4 border-[#1E1E22]">
         <p className="font-ui text-lg text-[#F3E8FF]">Sent by you</p>
       </div>
 
@@ -71,7 +71,7 @@ export function PendingRequests() {
       </div>
 
       {/* RECEIVED HEADER */}
-      <div className="px-4 py-3 border-b-4">
+      <div className="px-4 py-3 border-y-4 border-[#1E1E22]">
         <p className="font-ui text-lg text-[#F3E8FF]">Received by you</p>
       </div>
 

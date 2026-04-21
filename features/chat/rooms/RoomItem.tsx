@@ -17,14 +17,21 @@ interface DirectChatRoom {
     avatarUrl: string | null;
   };
 }
+interface RoomItemProps {
+  room: DirectChatRoom;
+  onClick?: () => void;
+}
 
-export function RoomItem({ room }: { room: DirectChatRoom }) {
+export function RoomItem({room , onClick}: RoomItemProps) {
   const { setSelectedRoom } = selectedRoomContextNullSafe();
 
   return (
     <div
       className="min-w-0 py-3 px-4 grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-center cursor-pointer transition-colors duration-100 border-b-4 border-[#1E1E22]"
-      onClick={() => setSelectedRoom(room)}
+      onClick={() => {
+        setSelectedRoom(room) 
+        onClick?.();
+      }      }
     >
       <Avatar
         size="large"

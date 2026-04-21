@@ -80,7 +80,6 @@ export function RegisterForm() {
       router.push('/');
     } catch (error) {
       console.log(error);
-
       toast.error('Sign Up Failed!', {
         description: 'Please try again later.',
       });
@@ -161,7 +160,7 @@ export function RegisterForm() {
                   {...field}
                   type="password"
                   placeholder="********"
-                  autoComplete=""
+                  autoComplete="new-password"
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
@@ -190,12 +189,7 @@ export function RegisterForm() {
         </FieldGroup>
       </form>
       <div className="flex justify-end items-center">
-        <Button
-          disabled={isLoading}
-          type="submit"
-          form="signUpForm"
-          className="bg-[#ffa55e] text-[#0d2b45] border-2 border-[#0d2b45] shadow-[3px_3px_0_#0d2b45] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#0d2b45]"
-        >
+        <Button disabled={isLoading} type="submit" form="signUpForm">
           Sign Up
         </Button>
       </div>
