@@ -9,12 +9,6 @@ interface ChatLayoutProps {
 
 export default async function AppLayout({ children }: ChatLayoutProps) {
   const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.getUser();
-
-  if (error || !data.user) {
-    redirect('/login');
-  }
   let userData = null;
   try {
     const { data: sessionData } = await supabase.auth.getSession();

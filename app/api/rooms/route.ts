@@ -44,6 +44,7 @@ export async function GET() {
       directRooms: data.directRooms,
     });
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       { success: false, error: 'Failed in fetching chats' },
       { status: 500 }

@@ -19,14 +19,16 @@ import { LogOut, MessageSquare, UserPlus2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { viewModeContextNullSafe } from '../context/chat-ui-context';
 import { useUser } from '@/providers/user-provider';
-
+import { useState } from 'react';
 
 export function Sidebar() {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const viewMode = viewModeContextNullSafe();
   const { user, setUser } = useUser();
 
   async function logOut() {
+    setIsLoading(true);
     try {
       const supabase = createClient();
       const { error } = await supabase.auth.signOut();
@@ -38,6 +40,8 @@ export function Sidebar() {
       router.refresh();
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -60,7 +64,6 @@ export function Sidebar() {
         >
           <UserPlus2 />
         </Button>
-
       </div>
 
       {/* Bottom Controls */}

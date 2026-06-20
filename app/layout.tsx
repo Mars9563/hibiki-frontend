@@ -1,16 +1,16 @@
 import type { Metadata } from 'next';
-import { VT323, Inter } from 'next/font/google';
+import { Press_Start_2P, Fira_Code } from 'next/font/google';
 import './globals.css';
 import ToastProvider from '@/providers/toast-provider';
 import { ThemeProvider } from '@/providers/theme-provider';
 
-const pressStart = VT323({
+const pressStart = Press_Start_2P({
   variable: '--font-ui',
   weight: '400',
   subsets: ['latin'],
 });
 
-const inter = Inter({
+const firaCode = Fira_Code({
   variable: '--font-chat',
   subsets: ['latin'],
 });
@@ -27,7 +27,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${pressStart.variable} ${inter.variable} antialiased`}>
+      <body
+        className={`${pressStart.variable} ${firaCode.variable} antialiased`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
