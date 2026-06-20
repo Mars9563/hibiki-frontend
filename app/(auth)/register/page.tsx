@@ -14,18 +14,16 @@ import {
 export default function RegisterPage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-background">
-      {/* Background accents */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-0 top-0 h-96 w-96 rounded-full bg-[#6367FF]/10 blur-3xl" />
-        <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#FFDBFD]/20 blur-3xl" />
+        <div className="absolute -left-32 bottom-0 h-[30rem] w-[30rem] rounded-full bg-primary/60 blur-[120px] animate-pulse" />
+        <div className="absolute -right-32 top-0 h-[30rem] w-[30rem] rounded-full bg-accent/75 blur-[120px] animate-pulse" />
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center px-6 py-12 lg:px-12">
         <div className="grid w-full gap-12 lg:grid-cols-2 lg:gap-20">
-          {/* Hero */}
           <section className="flex flex-col justify-center text-left">
             <div className="max-w-xl">
-              <span className="mb-4 inline-flex rounded-full border border-border bg-card px-3 py-1 text-sm text-muted-foreground">
+              <span className="mb-4 inline-flex rounded-full border border-border/60 bg-card/80 px-3 py-1 text-sm text-muted-foreground backdrop-blur-sm">
                 Hibiki
               </span>
 
@@ -38,16 +36,22 @@ export default function RegisterPage() {
                 and start connecting with people around the world.
               </p>
 
-              <div className="mt-8 hidden lg:flex gap-8">
+              <div className="mt-8 hidden gap-8 lg:flex">
                 <div>
-                  <h3 className="text-lg font-semibold">Multilingual</h3>
+                  <h3 className="text-lg font-semibold text-foreground">
+                    Multilingual
+                  </h3>
+
                   <p className="mt-1 text-sm text-muted-foreground">
                     Communicate seamlessly across languages.
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold">Realtime</h3>
+                  <h3 className="text-lg font-semibold text-foreground">
+                    Realtime
+                  </h3>
+
                   <p className="mt-1 text-sm text-muted-foreground">
                     Instant conversations and updates.
                   </p>
@@ -56,9 +60,8 @@ export default function RegisterPage() {
             </div>
           </section>
 
-          {/* Register Card */}
           <section className="flex items-center justify-center lg:justify-end">
-            <Card className="w-full max-w-lg border shadow-2xl">
+            <Card className="w-full max-w-lg border-border/60 bg-card/95 shadow-2xl backdrop-blur-sm">
               <CardHeader className="space-y-2 text-left">
                 <CardTitle className="text-2xl font-semibold">
                   Create Account
@@ -77,7 +80,7 @@ export default function RegisterPage() {
                 Already have an account?
                 <Link
                   href="/login"
-                  className="ml-1 font-medium text-[#6367FF] hover:underline"
+                  className="ml-1 font-medium text-primary hover:text-primary/80 hover:underline"
                 >
                   Sign in
                 </Link>

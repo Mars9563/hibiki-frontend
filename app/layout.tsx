@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
-import { Press_Start_2P, Fira_Code } from 'next/font/google';
+import { Press_Start_2P, Fira_Code, Inter } from 'next/font/google';
 import './globals.css';
 import ToastProvider from '@/providers/toast-provider';
 import { ThemeProvider } from '@/providers/theme-provider';
+import { cn } from "@/lib/utils";
+
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const pressStart = Press_Start_2P({
   variable: '--font-ui',
@@ -26,13 +29,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={cn("font-sans", inter.variable)}>
       <body
         className={`${pressStart.variable} ${firaCode.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >

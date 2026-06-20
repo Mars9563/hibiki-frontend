@@ -74,6 +74,7 @@ export function RegisterForm() {
         toast.error('Sign Up Failed', {
           description: response.error || 'User Sign Up Failed',
         });
+
         return;
       }
 
@@ -95,57 +96,71 @@ export function RegisterForm() {
       onSubmit={form.handleSubmit(onSubmit)}
       className="space-y-5"
     >
-      <Controller
-        name="name"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Full Name</label>
+      {' '}
+      <div className="grid gap-5 md:grid-cols-2">
+        <Controller
+          name="name"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <div className="space-y-2">
+              {' '}
+              <label htmlFor="name" className="text-sm font-medium">
+                Full Name{' '}
+              </label>
+              <Input
+                {...field}
+                id="name"
+                placeholder="John Doe"
+                autoComplete="name"
+                className="h-11"
+              />
+              {fieldState.error && (
+                <p className="text-sm text-destructive">
+                  {fieldState.error.message}
+                </p>
+              )}
+            </div>
+          )}
+        />
 
-            <Input
-              {...field}
-              placeholder="John Doe"
-              autoComplete="name"
-              className="h-11"
-            />
+        <Controller
+          name="username"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <div className="space-y-2">
+              <label htmlFor="username" className="text-sm font-medium">
+                Username
+              </label>
 
-            {fieldState.error && (
-              <p className="text-sm text-red-500">{fieldState.error.message}</p>
-            )}
-          </div>
-        )}
-      />
+              <Input
+                {...field}
+                id="username"
+                placeholder="kaze"
+                autoComplete="username"
+                className="h-11"
+              />
 
-      <Controller
-        name="username"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Username</label>
-
-            <Input
-              {...field}
-              placeholder="kaze"
-              autoComplete="username"
-              className="h-11"
-            />
-
-            {fieldState.error && (
-              <p className="text-sm text-red-500">{fieldState.error.message}</p>
-            )}
-          </div>
-        )}
-      />
-
+              {fieldState.error && (
+                <p className="text-sm text-destructive">
+                  {fieldState.error.message}
+                </p>
+              )}
+            </div>
+          )}
+        />
+      </div>
       <Controller
         name="email"
         control={form.control}
         render={({ field, fieldState }) => (
           <div className="space-y-2">
-            <label className="text-sm font-medium">Email</label>
+            <label htmlFor="email" className="text-sm font-medium">
+              Email
+            </label>
 
             <Input
               {...field}
+              id="email"
               type="email"
               placeholder="you@example.com"
               autoComplete="email"
@@ -153,60 +168,72 @@ export function RegisterForm() {
             />
 
             {fieldState.error && (
-              <p className="text-sm text-red-500">{fieldState.error.message}</p>
+              <p className="text-sm text-destructive">
+                {fieldState.error.message}
+              </p>
             )}
           </div>
         )}
       />
+      <div className="grid gap-5 md:grid-cols-2">
+        <Controller
+          name="password"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium">
+                Password
+              </label>
 
-      <Controller
-        name="password"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Password</label>
+              <Input
+                {...field}
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                autoComplete="new-password"
+                className="h-11"
+              />
 
-            <Input
-              {...field}
-              type="password"
-              placeholder="••••••••"
-              autoComplete="new-password"
-              className="h-11"
-            />
+              {fieldState.error && (
+                <p className="text-sm text-destructive">
+                  {fieldState.error.message}
+                </p>
+              )}
+            </div>
+          )}
+        />
 
-            {fieldState.error && (
-              <p className="text-sm text-red-500">{fieldState.error.message}</p>
-            )}
-          </div>
-        )}
-      />
+        <Controller
+          name="confirmPassword"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <div className="space-y-2">
+              <label htmlFor="confirmPassword" className="text-sm font-medium">
+                Confirm Password
+              </label>
 
-      <Controller
-        name="confirmPassword"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Confirm Password</label>
+              <Input
+                {...field}
+                id="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                autoComplete="new-password"
+                className="h-11"
+              />
 
-            <Input
-              {...field}
-              type="password"
-              placeholder="••••••••"
-              autoComplete="new-password"
-              className="h-11"
-            />
-
-            {fieldState.error && (
-              <p className="text-sm text-red-500">{fieldState.error.message}</p>
-            )}
-          </div>
-        )}
-      />
-
+              {fieldState.error && (
+                <p className="text-sm text-destructive">
+                  {fieldState.error.message}
+                </p>
+              )}
+            </div>
+          )}
+        />
+      </div>
       <Button
         type="submit"
         disabled={isLoading}
-        className="h-11 w-full bg-[#6367FF] text-white hover:bg-[#5960f5]"
+        className="h-11 w-full bg-primary text-primary-foreground hover:bg-primary/90"
       >
         {isLoading ? 'Creating Account...' : 'Create Account'}
       </Button>

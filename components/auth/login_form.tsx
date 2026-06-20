@@ -15,12 +15,7 @@ import { Button } from '@/components/ui/button';
 
 const loginSchema = z.object({
   email: z.email().transform((v) => v.toLowerCase()),
-  password: z
-    .string()
-    .regex(
-      /^(?=.*[a-zA-Z])(?=.*\d).{8,}$/,
-      'Password must be at least 8 characters and include at least one letter and one number.'
-    ),
+  password: z.string().min(1, 'Password is required'),
 });
 
 export function LoginForm() {
@@ -47,9 +42,20 @@ export function LoginForm() {
         password: formData.password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.toLowerCase().includes('email not confirmed')) {
+          toast.warning('Email not verified', {
+            description: 'Please verify your email before signing in.',
+          });
+
+          return;
+        }
+
+        throw error;
+      }
 
       router.push('/');
+      router.refresh();
     } catch (error) {
       console.error(error);
 
@@ -72,10 +78,10 @@ export function LoginForm() {
         control={form.control}
         render={({ field, fieldState }) => (
           <div className="space-y-2">
+            {' '}
             <label htmlFor="email" className="text-sm font-medium">
-              Email
+              Email{' '}
             </label>
-
             <Input
               {...field}
               id="email"
@@ -84,9 +90,10 @@ export function LoginForm() {
               placeholder="you@example.com"
               className="h-11"
             />
-
             {fieldState.error && (
-              <p className="text-sm text-red-500">{fieldState.error.message}</p>
+              <p className="text-sm text-destructive">
+                {fieldState.error.message}
+              </p>
             )}
           </div>
         )}
@@ -111,7 +118,9 @@ export function LoginForm() {
             />
 
             {fieldState.error && (
-              <p className="text-sm text-red-500">{fieldState.error.message}</p>
+              <p className="text-sm text-destructive">
+                {fieldState.error.message}
+              </p>
             )}
           </div>
         )}
@@ -121,7 +130,7 @@ export function LoginForm() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="h-11 w-full bg-[#6367FF] text-white hover:bg-[#585df0]"
+          className="h-11 w-full bg-primary text-primary-foreground hover:bg-primary/90"
         >
           {isLoading ? 'Signing In...' : 'Sign In'}
         </Button>
