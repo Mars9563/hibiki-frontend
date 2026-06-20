@@ -10,11 +10,14 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { VerifyEmailToast } from '@/components/auth/verify_email_toast';
+import { Suspense } from 'react';
 
 export default function LoginPage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-background">
-      <VerifyEmailToast />
+      <Suspense fallback={null}>
+        <VerifyEmailToast />
+      </Suspense>
       {/* Background Accent */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-32 right-0 h-96 w-96 rounded-full bg-[#6367FF]/10 blur-3xl" />

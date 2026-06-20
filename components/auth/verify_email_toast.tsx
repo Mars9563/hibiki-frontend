@@ -12,6 +12,7 @@ export function VerifyEmailToast() {
       toast.info('Verify your email', {
         description:
           'Check your inbox and click the verification link before signing in.',
+        duration: 10 * 1000,
       });
     }
   }, [searchParams]);
