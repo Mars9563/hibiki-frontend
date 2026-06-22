@@ -58,6 +58,9 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       message: 'Friend request sent successfully.',
+      // Was previously dropped — the store needs this to push the
+      // new request straight into sentPending without a refetch.
+      friendship: data.friendship,
     });
   } catch {
     return NextResponse.json(

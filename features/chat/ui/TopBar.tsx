@@ -5,11 +5,11 @@ import {
   AvatarImage,
 } from '@/components/ui/pixelact-ui/avatar';
 import { Button } from '@/components/ui/pixelact-ui/button';
+import { useSelectedRoom } from '@/store/selectors';
 import { PiDotsThreeOutlineVerticalDuotone } from 'react-icons/pi';
-import { selectedRoomContextNullSafe } from '../context/chat-ui-context';
 
 export function TopBar() {
-  const { selectedRoom } = selectedRoomContextNullSafe();
+  const selectedRoom = useSelectedRoom();
 
   if (!selectedRoom) {
     return (

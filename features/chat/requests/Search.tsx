@@ -3,7 +3,7 @@
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { toast } from 'sonner';
 
 import { Field, FieldGroup } from '@/components/ui/field';
@@ -17,36 +17,49 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 import { Search as SearchIcon } from 'lucide-react';
-import { useSearchUsers, useSendFriendRequest } from './useRequests';
+import {
+  useSearchUsersState,
+  useSearchUsers,
+  useSendFriendRequest,
+  useIsSendingRequestTo,
+} from '@/store/selectors';
 
 const formData = z.object({
   search: z.string().trim().min(1, 'Search cannot be empty'),
 });
 
 export function Search() {
-  const [query, setQuery] = useState('');
-
   const form = useForm<z.infer<typeof formData>>({
     resolver: zodResolver(formData),
     defaultValues: { search: '' },
   });
 
-  const { data: results, isLoading, isError, error } = useSearchUsers(query);
-  const sendMutation = useSendFriendRequest(query);
+  const { query, results, status, error } = useSearchUsersState();
+  const searchUsers = useSearchUsers();
+  const sendFriendRequest = useSendFriendRequest();
 
-  // ✅ Only fire the toast once when isError flips, not on every render
-  useEffect(() => {
-    if (isError && error instanceof Error) {
-      toast.error('Search Failed', { description: error.message });
-    }
-  }, [isError, error]);
+  const isLoading = status === 'loading';
 
   async function handleSearch(data: z.infer<typeof formData>) {
-    // ✅ Always reset query to '' first so React Query re-fetches
-    //    even if the user submits the same term twice
-    setQuery('');
-    // Small tick to ensure the key change is picked up
-    setTimeout(() => setQuery(data.search.trim()), 0);
+    await searchUsers(data.search.trim());
+  }
+
+  // Fire the toast once when status flips to 'error', not on every
+  // render — same guard the original component had via isError+useEffect.
+  useEffect(() => {
+    if (status === 'error' && error) {
+      toast.error('Search Failed', { description: error });
+    }
+  }, [status, error]);
+
+  async function handleSend(userId: string) {
+    try {
+      await sendFriendRequest(userId);
+    } catch (err: any) {
+      toast.error('Request Failed', {
+        description: err?.message || 'Could not send request',
+      });
+    }
   }
 
   return (
@@ -95,57 +108,67 @@ export function Search() {
             <div className="p-4 text-sm text-[#C4B5FD]">Searching...</div>
           )}
 
-          {!isLoading &&
-            results &&
-            results.length === 0 &&
-            query.length >= 2 && (
-              <div className="p-4 text-sm text-[#C4B5FD]">No users found</div>
-            )}
+          {!isLoading && results.length === 0 && query.length >= 2 && (
+            <div className="p-4 text-sm text-[#C4B5FD]">No users found</div>
+          )}
 
           {!isLoading &&
-            results &&
             results.length > 0 &&
             results.map((user) => (
-              <div
+              <SearchResultRow
                 key={user.id}
-                className="p-4 grid grid-cols-[auto_minmax(0,1fr)_auto] gap-4 items-center"
-              >
-                <Avatar size="large" variant="round">
-                  <AvatarImage src={user.avatar_url ?? undefined} />
-                  <AvatarFallback>
-                    {user.full_name?.slice(0, 2) ?? 'U'}
-                  </AvatarFallback>
-                </Avatar>
-
-                <div className="min-w-0">
-                  <p className="font-ui text-xl truncate text-[#F3E8FF]">
-                    {user.full_name}
-                  </p>
-                  <p className="font-ui text-sm truncate text-[#C4B5FD]">
-                    {'@' + user.username}
-                  </p>
-                </div>
-
-                <Button
-                  onClick={() =>
-                    sendMutation.mutate(user.id, {
-                      onError: (err: any) => {
-                        toast.error('Request Failed', {
-                          description: err?.message || 'Could not send request',
-                        });
-                      },
-                    })
-                  }
-                  disabled={sendMutation.isPending}
-                  variant="secondary"
-                  size="sm"
-                >
-                  {sendMutation.isPending ? 'Sending...' : 'Send'}
-                </Button>
-              </div>
+                userId={user.id}
+                fullName={user.full_name}
+                username={user.username}
+                avatarUrl={user.avatar_url}
+                onSend={() => handleSend(user.id)}
+              />
             ))}
         </ScrollArea>
       </div>
+    </div>
+  );
+}
+
+// Own component so each row's "sending..." state only re-renders that
+// row, not the whole results list.
+function SearchResultRow({
+  userId,
+  fullName,
+  username,
+  avatarUrl,
+  onSend,
+}: {
+  userId: string;
+  fullName: string;
+  username: string;
+  avatarUrl: string | null;
+  onSend: () => void;
+}) {
+  const isSending = useIsSendingRequestTo(userId);
+
+  return (
+    <div className="p-4 grid grid-cols-[auto_minmax(0,1fr)_auto] gap-4 items-center">
+      <Avatar size="large" variant="round">
+        <AvatarImage src={avatarUrl ?? undefined} />
+        <AvatarFallback>{fullName?.slice(0, 2) ?? 'U'}</AvatarFallback>
+      </Avatar>
+
+      <div className="min-w-0">
+        <p className="font-ui text-xl truncate text-[#F3E8FF]">{fullName}</p>
+        <p className="font-ui text-sm truncate text-[#C4B5FD]">
+          {'@' + username}
+        </p>
+      </div>
+
+      <Button
+        onClick={onSend}
+        disabled={isSending}
+        variant="secondary"
+        size="sm"
+      >
+        {isSending ? 'Sending...' : 'Send'}
+      </Button>
     </div>
   );
 }

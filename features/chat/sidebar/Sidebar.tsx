@@ -1,31 +1,29 @@
 'use client';
-import { DialogClose } from '@/components/ui/dialog';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/pixelact-ui/avatar';
-import { Button } from '@/components/ui/pixelact-ui/button';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { LogOut, MessageSquare, UserPlus2 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/pixelact-ui/dialog';
-import { createClient } from '@/lib/supabase/client';
-import { LogOut, MessageSquare, UserPlus2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { viewModeContextNullSafe } from '../context/chat-ui-context';
-import { useUser } from '@/providers/user-provider';
-import { useState } from 'react';
+  DialogClose,
+} from '@/components/ui/dialog';
+import { useViewMode, useSetViewMode, useCurrentUser } from '@/store/selectors';
 
 export function Sidebar() {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const viewMode = viewModeContextNullSafe();
-  const { user, setUser } = useUser();
+
+  const viewMode = useViewMode();
+  const setViewMode = useSetViewMode();
+  const user = useCurrentUser();
 
   async function logOut() {
     setIsLoading(true);
@@ -33,68 +31,68 @@ export function Sidebar() {
       const supabase = createClient();
       const { error } = await supabase.auth.signOut();
       if (error) {
-        console.log(error);
+        console.error(error);
         return;
       }
       router.replace('/login');
       router.refresh();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <div className="flex flex-col justify-between items-center py-4 px-2 border-4 bg-[#121214] border-[#1E1E22]">
+    <aside className="flex h-full w-20 flex-col items-center justify-between border-r bg-sidebar px-3 py-4">
       {/* Top Controls */}
-      <div className="flex flex-col justify-center items-center gap-3">
+      <div className="flex flex-col items-center gap-3">
         <Button
-          variant="secondary"
-          type="button"
-          onClick={() => viewMode.setViewMode('rooms')}
+          size="icon"
+          variant="ghost"
+          onClick={() => setViewMode('rooms')}
         >
-          <MessageSquare />
+          <MessageSquare className="size-5" />
         </Button>
 
         <Button
-          variant="secondary"
-          type="button"
-          onClick={() => viewMode.setViewMode('requests')}
+          size="icon"
+          variant="ghost"
+          onClick={() => setViewMode('requests')}
         >
-          <UserPlus2 />
+          <UserPlus2 className="size-5" />
         </Button>
       </div>
 
       {/* Bottom Controls */}
-      <div className="flex flex-col justify-center items-center gap-3">
+      <div className="flex flex-col items-center gap-3">
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="destructive" type="button">
-              <LogOut />
+            <Button size="icon" variant="destructive" disabled={isLoading}>
+              <LogOut className="size-5" />
             </Button>
           </DialogTrigger>
 
-          <DialogContent
-            className="border-4"
-            style={{
-              backgroundColor: '#1A0F3D',
-              borderColor: '#241259',
-              color: '#F3E8FF',
-            }}
-          >
-            <DialogTitle style={{ color: '#F3E8FF' }}>Log out?</DialogTitle>
-
-            <DialogDescription style={{ color: '#C4B5FD' }}>
-              Are you sure you want to logout?
-            </DialogDescription>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Log out?</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to log out of your account?
+              </DialogDescription>
+            </DialogHeader>
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="secondary">Cancel</Button>
+                <Button variant="outline" disabled={isLoading}>
+                  Cancel
+                </Button>
               </DialogClose>
 
-              <Button variant="destructive" type="button" onClick={logOut}>
+              <Button
+                variant="destructive"
+                onClick={logOut}
+                disabled={isLoading}
+              >
                 Log out
               </Button>
             </DialogFooter>
@@ -102,25 +100,16 @@ export function Sidebar() {
         </Dialog>
 
         <Avatar
-          variant="square"
-          size="medium"
-          onClick={() => viewMode.setViewMode('userpanel')}
-          style={{
-            backgroundColor: '#1C1333',
-            color: '#F3E8FF',
-          }}
+          className="cursor-pointer border"
+          onClick={() => setViewMode('userpanel')}
+          size='lg'
         >
-          <AvatarImage src={user?.avatar_url || ''} alt="Profile Photo" />
-          <AvatarFallback
-            style={{
-              backgroundColor: '#241259',
-              color: '#F3E8FF',
-            }}
-          >
-            U
+          <AvatarImage src={user?.avatar_url ?? ''} alt="Profile Photo" />
+          <AvatarFallback>
+            {user?.username?.[0]?.toUpperCase() ?? 'U'}
           </AvatarFallback>
         </Avatar>
       </div>
-    </div>
+    </aside>
   );
 }

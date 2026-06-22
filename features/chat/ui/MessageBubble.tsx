@@ -26,7 +26,7 @@ interface MessageBubbleProps {
   currentUserId: string;
   avatarUrl?: string | null;
   fallback?: string;
-  status?: 'pending' | 'sent' | 'received';
+  status?: 'pending' | 'sent' | 'received' | 'failed';
   createdAt?: Date | string;
 }
 

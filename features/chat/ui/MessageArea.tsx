@@ -1,11 +1,14 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageBubble } from './MessageBubble';
 import { DateSeparator } from './dateSeperator';
-import { selectedRoomContextNullSafe } from '../context/chat-ui-context';
-import { useMessageStore } from './useMessages';
-import { useShallow } from 'zustand/react/shallow';
 import { useEffect, useRef } from 'react';
 import { isToday, isYesterday, format } from 'date-fns';
+import {
+  useSelectedRoom,
+  useMessagesForRoom,
+  useRoomMessageMeta,
+  useLoadMoreMessages,
+} from '@/store/selectors';
 
 function getDateLabel(date: Date): string {
   if (isToday(date)) return 'Today';
@@ -13,27 +16,14 @@ function getDateLabel(date: Date): string {
   return format(date, 'd/M/yyyy');
 }
 
-type SeparatorItem = { type: 'separator'; label: string; key: string };
-type MessageItem = {
-  type: 'message';
-  entry: ReturnType<
-    typeof useMessageStore extends (s: infer S) => infer R ? never : never
-  >;
-};
-
 export function MessageArea() {
-  const { selectedRoom } = selectedRoomContextNullSafe();
-  const roomId = selectedRoom?.roomId;
+  const selectedRoom = useSelectedRoom();
+  const roomId = selectedRoom?.roomId ?? null;
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const messageEntries = useMessageStore(
-    useShallow((state) => {
-      if (!roomId) return [];
-      const roomMap = state.Messages.get(roomId);
-      if (!roomMap) return [];
-      return Array.from(roomMap.values());
-    })
-  );
+  const messageEntries = useMessagesForRoom(roomId);
+  const { hasMore, isLoadingMore } = useRoomMessageMeta(roomId);
+  const loadMoreMessages = useLoadMoreMessages();
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,6 +32,11 @@ export function MessageArea() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'instant' });
   }, [roomId]);
+
+  function handleLoadMore() {
+    if (!roomId || !hasMore || isLoadingMore) return;
+    loadMoreMessages(roomId);
+  }
 
   const items: (
     | { type: 'separator'; label: string; key: string }
@@ -65,6 +60,18 @@ export function MessageArea() {
   return (
     <div className="relative flex flex-col h-full min-h-0 min-w-0 bg-[#1a1a1e] border-[#26262B]">
       <ScrollArea className="h-full p-4 relative z-10">
+        {hasMore && (
+          <div className="flex justify-center pb-3">
+            <button
+              onClick={handleLoadMore}
+              disabled={isLoadingMore}
+              className="pixel-font text-xs px-3 py-1.5 border border-[#444] text-[#a3a3a3] hover:opacity-80 disabled:opacity-50"
+            >
+              {isLoadingMore ? 'Loading...' : 'Load older messages'}
+            </button>
+          </div>
+        )}
+
         {items.map((item) =>
           item.type === 'separator' ? (
             <DateSeparator key={item.key} date={item.label} />

@@ -1,17 +1,16 @@
 'use client';
-
-import { selectedRoomContextNullSafe } from '../context/chat-ui-context';
+import { useSelectedRoom } from '@/store/selectors';
 import { ChatInput } from './ChatInput';
 import { MessageArea } from './MessageArea';
 import { TopBar } from './TopBar';
 
 export function ChatArea() {
-  const { selectedRoom } = selectedRoomContextNullSafe();
+  const selectedRoom = useSelectedRoom();
 
   if (!selectedRoom) {
     return (
-      <div className="flex items-center justify-center w-full h-full border-t-4 border-b-4 border-r-4 bg-[#1a1a1e] border-[#26262B]">
-        <p className="font-ui text-lg text-[#C4B5FD]">
+      <div className="flex flex-1 items-center justify-center w-full h-full bg-background">
+        <p className="font-ui text-lg text-foreground">
           Select a chat to start messaging
         </p>
       </div>
@@ -19,7 +18,7 @@ export function ChatArea() {
   }
 
   return (
-    <div className="grid grid-rows-[10%_1fr_auto] w-full h-full min-h-0 min-w-0 border-t-4 border-b-4 border-r-4 bg-[#121214] border-[#1E1E22]">
+    <div className="flex flex-col justify-center items-center w-full h-full min-h-0 min-w-0 bg-background">
       <TopBar />
       <MessageArea />
       <ChatInput />

@@ -17,12 +17,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/pixelact-ui/dialog';
-import { useUser } from '@/providers/user-provider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import z from 'zod';
 import { createClient } from '@/lib/supabase/client';
- // adjust to your supabase client path
+import { useCurrentUser } from '@/store/selectors';
+import { useChatStore } from '@/store/chatStore';
 
 const registerSchema = z.object({
   name: z.string().trim().nonempty('Name is required').max(255),
@@ -36,7 +36,11 @@ const registerSchema = z.object({
 });
 
 export function UserSettings() {
-  const { user, setUser } = useUser();
+  const user = useCurrentUser();
+  // setCurrentUser has no dedicated selector hook yet (it's an
+  // infrequent write, mirrors the pattern AppBootstrap.tsx already
+  // uses) — pulled directly off the store rather than via selectors.ts.
+  const setCurrentUser = useChatStore((s) => s.setCurrentUser);
   const supabase = createClient();
 
   // Preview is only for inside the dialog — starts as null
@@ -57,8 +61,8 @@ export function UserSettings() {
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: user?.full_name,
-      username: user?.username,
+      name: user?.full_name ?? '',
+      username: user?.username ?? '',
     },
   });
 
@@ -137,9 +141,9 @@ export function UserSettings() {
 
       if (error) throw new Error(error.message);
 
-      // 3. Update React Context
+      // 3. Update the store (replaces the old React Context setUser)
       if (updatedUser) {
-        setUser(updatedUser);
+        setCurrentUser(updatedUser);
         setCommittedAvatarUrl(updatedUser.avatar_url);
       }
 

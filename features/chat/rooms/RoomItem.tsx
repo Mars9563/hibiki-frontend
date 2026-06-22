@@ -3,35 +3,24 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/components/ui/pixelact-ui/avatar';
-import { selectedRoomContextNullSafe } from '../context/chat-ui-context';
+import { DirectChatRoom } from '@/lib/types';
+import { useSelectRoom } from '@/store/selectors';
 
-interface DirectChatRoom {
-  roomId: string;
-  roomType: string;
-  currentUserId: string;
-  otherUserId: string;
-  otherUser: {
-    id: string;
-    fullName: string | null;
-    username: string;
-    avatarUrl: string | null;
-  };
-}
 interface RoomItemProps {
   room: DirectChatRoom;
   onClick?: () => void;
 }
 
-export function RoomItem({room , onClick}: RoomItemProps) {
-  const { setSelectedRoom } = selectedRoomContextNullSafe();
+export function RoomItem({ room, onClick }: RoomItemProps) {
+  const selectRoom = useSelectRoom();
 
   return (
     <div
       className="min-w-0 py-3 px-4 grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-center cursor-pointer transition-colors duration-100 border-b-4 border-[#1E1E22]"
       onClick={() => {
-        setSelectedRoom(room) 
+        selectRoom(room.roomId);
         onClick?.();
-      }      }
+      }}
     >
       <Avatar
         size="large"

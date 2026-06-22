@@ -22,6 +22,7 @@ export function LoginForm() {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -54,8 +55,8 @@ export function LoginForm() {
         throw error;
       }
 
-      router.push('/');
-      router.refresh();
+      setIsRedirecting(true);
+      router.replace('/');
     } catch (error) {
       console.error(error);
 
@@ -128,11 +129,15 @@ export function LoginForm() {
 
       <div className="pt-2">
         <Button
-          type="submit"
-          disabled={isLoading}
+          disabled={isLoading || isRedirecting}
           className="h-11 w-full bg-primary text-primary-foreground hover:bg-primary/90"
+          type="submit"
         >
-          {isLoading ? 'Signing In...' : 'Sign In'}
+          {isLoading
+            ? 'Signing In...'
+            : isRedirecting
+              ? 'Redirecting...'
+              : 'Sign In'}
         </Button>
       </div>
     </form>

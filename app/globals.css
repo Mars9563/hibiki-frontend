@@ -56,28 +56,31 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
   --font-ui: var(--font-ui);
   --font-chat: var(--font-chat);
   --font-sans: var(--font-sans);
   --font-heading: var(--font-sans);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 :root {
   --radius: 0.625rem;
 
-  /* Main Theme */
+  /* Main Surfaces */
 
-  --background: #fafbff;
+  --background: #fafbff; /* Chat Area */
   --foreground: #111827;
 
-  --card: #f5f6ff;
+  --card: #f5f6ff; /* Rooms / Requests */
   --card-foreground: #111827;
 
-  --popover: #fafbff;
+  --popover: #ffffff;
   --popover-foreground: #111827;
+
+  /* Brand Colors */
 
   --primary: #6367ff;
   --primary-foreground: #ffffff;
@@ -88,12 +91,13 @@
   --accent: #c9beff;
   --accent-foreground: #111827;
 
+  /* Utility */
+
   --muted: #eef1ff;
   --muted-foreground: #6b7280;
 
   --border: #dfe3f2;
   --input: #ffffff;
-
   --ring: #6367ff;
 
   --destructive: #ef4444;
@@ -122,14 +126,18 @@
 }
 
 .dark {
-  --background: #1b1f2f;
+  /* Main Surfaces */
+
+  --background: #1b1f2f; /* Chat Area */
   --foreground: #f8fafc;
 
-  --card: #171a28;
+  --card: #171a28; /* Rooms / Requests */
   --card-foreground: #f8fafc;
 
   --popover: #171a28;
   --popover-foreground: #f8fafc;
+
+  /* Brand Colors */
 
   --primary: #6367ff;
   --primary-foreground: #ffffff;
@@ -140,12 +148,13 @@
   --accent: #c9beff;
   --accent-foreground: #111827;
 
+  /* Utility */
+
   --muted: #131521;
   --muted-foreground: #a1a1aa;
 
   --border: #2a3042;
   --input: #1f2434;
-
   --ring: #6367ff;
 
   --destructive: #ef4444;
