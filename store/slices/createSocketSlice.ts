@@ -109,9 +109,15 @@ export const createSocketSlice: StateCreator<
 
     socket.connect();
 
-    set((state) => {
-      state.socket = socket;
-    });
+    // IMPORTANT: don't assign the live Socket instance inside an
+    // Immer draft mutator. Immer tries to recursively wrap it in a
+    // WritableDraft, and Socket has internal readonly array fields
+    // (e.g. receiveBuffer) that TypeScript can't reconcile with that
+    // draft type — this fails the build with a type error, even
+    // though nothing about it is actually a logic bug. Passing a
+    // plain object here (Zustand's "replacer" call signature) stores
+    // the socket as-is, untouched by Immer's draft proxy.
+    set({ socket });
   },
 
   disconnectSocket: () => {
@@ -119,8 +125,11 @@ export const createSocketSlice: StateCreator<
     if (!socket) return;
     socket.removeAllListeners();
     socket.disconnect();
+
+    // Same reasoning as above: assign `socket: null` via the plain
+    // replacer form, only flip the boolean through the normal draft.
+    set({ socket: null });
     set((state) => {
-      state.socket = null;
       state.isSocketConnected = false;
     });
   },
