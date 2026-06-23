@@ -84,4 +84,4 @@ export type SearchUser = {
 
 // ---------- UI ----------
 
-export type ViewMode = 'rooms' | 'requests' | 'userpanel';
+export type ViewMode = 'rooms' | 'userpanel';

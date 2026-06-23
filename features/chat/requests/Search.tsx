@@ -1,22 +1,18 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
-import { useEffect } from 'react';
 import { toast } from 'sonner';
+import { Search as SearchIcon, UserPlus, Loader2 } from 'lucide-react';
 
 import { Field, FieldGroup } from '@/components/ui/field';
-import { Input } from '@/components/ui/pixelact-ui/input';
-import { Button } from '@/components/ui/pixelact-ui/button';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/pixelact-ui/avatar';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-import { Search as SearchIcon } from 'lucide-react';
 import {
   useSearchUsersState,
   useSearchUsers,
@@ -26,7 +22,7 @@ import {
 
 const formData = z.object({
   search: z.string().trim().min(1, 'Search cannot be empty'),
-}); 
+});
 
 export function Search() {
   const form = useForm<z.infer<typeof formData>>({
@@ -48,7 +44,7 @@ export function Search() {
   // render — same guard the original component had via isError+useEffect.
   useEffect(() => {
     if (status === 'error' && error) {
-      toast.error('Search Failed', { description: error });
+      toast.error('Search failed', { description: error });
     }
   }, [status, error]);
 
@@ -56,20 +52,20 @@ export function Search() {
     try {
       await sendFriendRequest(userId);
     } catch (err: any) {
-      toast.error('Request Failed', {
+      toast.error('Request failed', {
         description: err?.message || 'Could not send request',
       });
     }
   }
 
   return (
-    <div className="h-full min-h-0 w-full min-w-0 grid grid-rows-[auto_1fr]">
-      {/* Search Input */}
-      <div className="p-4 border-b-4 border-[#1E1E22] grid grid-cols-[1fr_auto] gap-4 items-center">
+    <div className="grid h-full min-h-0 grid-rows-[auto_1fr]">
+      {/* Search input */}
+      <div className="flex items-center gap-2 border-b px-5 py-4">
         <form
           onSubmit={form.handleSubmit(handleSearch)}
           id="searchForm"
-          className="w-full"
+          className="flex-1"
         >
           <FieldGroup>
             <Controller
@@ -80,9 +76,8 @@ export function Search() {
                   <Input
                     {...field}
                     type="text"
-                    placeholder="Enter username"
+                    placeholder="Search by username"
                     autoComplete="off"
-                    className="bg-[#1c1c1e]"
                   />
                 </Field>
               )}
@@ -94,36 +89,47 @@ export function Search() {
           disabled={isLoading}
           type="submit"
           form="searchForm"
-          variant="secondary"
+          size="icon"
         >
-          <SearchIcon size={18} />
-          {isLoading ? 'Searching...' : 'Search'}
+          {isLoading ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <SearchIcon className="size-4" />
+          )}
         </Button>
       </div>
 
       {/* Results */}
-      <div className="h-full w-full min-h-0 min-w-0">
-        <ScrollArea className="h-full w-full min-h-0 min-w-0">
-          {isLoading && (
-            <div className="p-4 text-sm text-[#C4B5FD]">Searching...</div>
-          )}
+      <div className="min-h-0">
+        <ScrollArea className="h-full">
+          <div className="flex flex-col gap-1 p-3">
+            {!isLoading && results.length === 0 && query.trim().length >= 2 && (
+              <EmptyState text="No users found" />
+            )}
 
-          {!isLoading && results.length === 0 && query.length >= 2 && (
-            <div className="p-4 text-sm text-[#C4B5FD]">No users found</div>
-          )}
+            {!isLoading && results.length === 0 && query.trim().length < 2 && (
+              <EmptyState text="Search results will be displayed here." />
+            )}
 
-          {!isLoading &&
-            results.length > 0 &&
-            results.map((user) => (
-              <SearchResultRow
-                key={user.id}
-                userId={user.id}
-                fullName={user.full_name}
-                username={user.username}
-                avatarUrl={user.avatar_url}
-                onSend={() => handleSend(user.id)}
+            {isLoading && (
+              <EmptyState
+                text="Searching..."
+                icon={<Loader2 className="size-4 animate-spin" />}
               />
-            ))}
+            )}
+
+            {!isLoading &&
+              results.map((user) => (
+                <SearchResultRow
+                  key={user.id}
+                  userId={user.id}
+                  fullName={user.full_name}
+                  username={user.username}
+                  avatarUrl={user.avatar_url}
+                  onSend={() => handleSend(user.id)}
+                />
+              ))}
+          </div>
         </ScrollArea>
       </div>
     </div>
@@ -148,27 +154,43 @@ function SearchResultRow({
   const isSending = useIsSendingRequestTo(userId);
 
   return (
-    <div className="p-4 grid grid-cols-[auto_minmax(0,1fr)_auto] gap-4 items-center">
-      <Avatar size="large" variant="round">
+    <div className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5">
+      <Avatar size="lg">
         <AvatarImage src={avatarUrl ?? undefined} />
-        <AvatarFallback>{fullName?.slice(0, 2) ?? 'U'}</AvatarFallback>
+        <AvatarFallback>
+          {fullName?.slice(0, 2)?.toUpperCase() ?? 'U'}
+        </AvatarFallback>
       </Avatar>
 
-      <div className="min-w-0">
-        <p className="font-ui text-xl truncate text-[#F3E8FF]">{fullName}</p>
-        <p className="font-ui text-sm truncate text-[#C4B5FD]">
-          {'@' + username}
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-foreground">
+          {fullName}
         </p>
+        <p className="truncate text-xs text-muted-foreground">@{username}</p>
       </div>
 
       <Button
-        onClick={onSend}
+        size="icon-sm"
+        variant="outline"
         disabled={isSending}
-        variant="secondary"
-        size="sm"
+        onClick={onSend}
+        aria-label="Send friend request"
       >
-        {isSending ? 'Sending...' : 'Send'}
+        {isSending ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <UserPlus className="size-4" />
+        )}
       </Button>
+    </div>
+  );
+}
+
+function EmptyState({ text, icon }: { text: string; icon?: React.ReactNode }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-2 px-6 py-10 text-center text-sm text-muted-foreground">
+      {icon}
+      <span>{text}</span>
     </div>
   );
 }

@@ -15,15 +15,23 @@ import {
   DialogTrigger,
   DialogClose,
 } from '@/components/ui/dialog';
-import { useViewMode, useSetViewMode, useCurrentUser } from '@/store/selectors';
+import { RequestsDialog } from '../requests/RequestsDialog';
+import {
+  useViewMode,
+  useSetViewMode,
+  useCurrentUser,
+  usePendingRequests,
+} from '@/store/selectors';
 
 export function Sidebar() {
   const [isLoading, setIsLoading] = useState(false);
+  const [requestsOpen, setRequestsOpen] = useState(false);
   const router = useRouter();
 
   const viewMode = useViewMode();
   const setViewMode = useSetViewMode();
   const user = useCurrentUser();
+  const { received } = usePendingRequests();
 
   async function logOut() {
     setIsLoading(true);
@@ -49,7 +57,7 @@ export function Sidebar() {
       <div className="flex flex-col items-center gap-3">
         <Button
           size="icon"
-          variant="ghost"
+          variant={viewMode === 'rooms' ? 'secondary' : 'ghost'}
           onClick={() => setViewMode('rooms')}
         >
           <MessageSquare className="size-5" />
@@ -57,12 +65,20 @@ export function Sidebar() {
 
         <Button
           size="icon"
-          variant="ghost"
-          onClick={() => setViewMode('requests')}
+          variant={requestsOpen ? 'secondary' : 'ghost'}
+          onClick={() => setRequestsOpen(true)}
+          className="relative"
         >
           <UserPlus2 className="size-5" />
+          {received.length > 0 && (
+            <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+              {received.length > 9 ? '9+' : received.length}
+            </span>
+          )}
         </Button>
       </div>
+
+      <RequestsDialog open={requestsOpen} onOpenChange={setRequestsOpen} />
 
       {/* Bottom Controls */}
       <div className="flex flex-col items-center gap-3">
@@ -102,7 +118,7 @@ export function Sidebar() {
         <Avatar
           className="cursor-pointer border"
           onClick={() => setViewMode('userpanel')}
-          size='lg'
+          size="lg"
         >
           <AvatarImage src={user?.avatar_url ?? ''} alt="Profile Photo" />
           <AvatarFallback>

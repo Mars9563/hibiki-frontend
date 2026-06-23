@@ -1,13 +1,11 @@
 'use client';
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/pixelact-ui/avatar';
-import { Button } from '@/components/ui/pixelact-ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Check, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   usePendingRequests,
   useAcceptFriendRequest,
@@ -20,18 +18,6 @@ export function PendingRequests() {
   const { sent, received, status, error } = usePendingRequests();
   const acceptFriendRequest = useAcceptFriendRequest();
   const rejectFriendRequest = useRejectFriendRequest();
-
-  if (status === 'loading') {
-    return <div className="p-4 text-[#C4B5FD]">Loading requests...</div>;
-  }
-
-  if (status === 'error') {
-    return (
-      <div className="p-4 text-[#C4B5FD]">
-        {error ?? 'Failed to load requests'}
-      </div>
-    );
-  }
 
   async function handleAccept(requesterId: string, fullName: string | null) {
     try {
@@ -51,76 +37,98 @@ export function PendingRequests() {
     }
   }
 
+  if (status === 'loading') {
+    return (
+      <div className="flex h-full items-center justify-center gap-2 p-4 text-sm text-muted-foreground">
+        <Loader2 className="size-4 animate-spin" />
+        <span>Loading requests...</span>
+      </div>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="flex h-full items-center justify-center p-4 text-sm text-muted-foreground">
+        {error ?? 'Failed to load requests'}
+      </div>
+    );
+  }
+
   return (
-    <div className="h-full min-h-0 grid grid-rows-[auto_1fr_auto_1fr] overflow-hidden bg-[#121214] border-[#1E1E22]">
-      {/* SENT HEADER */}
-      <div className="px-4 py-3 border-b-4 border-[#1E1E22]">
-        <p className="font-ui text-lg text-[#F3E8FF]">Sent by you</p>
+    <div className="grid h-full min-h-0 grid-rows-[auto_1fr_auto_1fr]">
+      {/* RECEIVED HEADER */}
+      <div className="border-b px-5 py-4">
+        <p className="text-sm font-semibold text-foreground">
+          Received requests
+        </p>
       </div>
 
-      <div className="min-h-0 overflow-hidden">
+      <div className="min-h-0">
         <ScrollArea className="h-full">
-          {sent.length === 0 && (
-            <p className="px-4 py-3 text-sm text-[#C4B5FD]">
-              No sent requests.
-            </p>
-          )}
-
-          {sent.map((req) => (
-            <div
-              key={req.id}
-              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 border-b-4"
-            >
-              <Avatar variant="round" size="large">
-                <AvatarImage src={req.addressee.avatar_url ?? undefined} />
-                <AvatarFallback>
-                  {req.addressee.full_name?.slice(0, 1)}
-                </AvatarFallback>
-              </Avatar>
-
-              <div className="min-w-0 overflow-hidden">
-                <p className="truncate font-ui text-[#F3E8FF]">
-                  {req.addressee.full_name}
-                </p>
-                <p className="truncate text-sm text-[#C4B5FD]">
-                  @{req.addressee.username}
-                </p>
-              </div>
-
-              <span className="text-xs text-[#C4B5FD]">Pending</span>
-            </div>
-          ))}
+          <div className="flex flex-col gap-1 p-3">
+            {received.length === 0 ? (
+              <EmptyState text="No requests found." />
+            ) : (
+              received.map((req) => (
+                <ReceivedRow
+                  key={req.id}
+                  requesterId={req.requester.id}
+                  fullName={req.requester.full_name}
+                  username={req.requester.username}
+                  avatarUrl={req.requester.avatar_url}
+                  onAccept={() =>
+                    handleAccept(req.requester.id, req.requester.full_name)
+                  }
+                  onReject={() =>
+                    handleReject(req.requester.id, req.requester.full_name)
+                  }
+                />
+              ))
+            )}
+          </div>
         </ScrollArea>
       </div>
 
-      {/* RECEIVED HEADER */}
-      <div className="px-4 py-3 border-y-4 border-[#1E1E22]">
-        <p className="font-ui text-lg text-[#F3E8FF]">Received by you</p>
+      {/* SENT HEADER */}
+      <div className="border-y px-5 py-4">
+        <p className="text-sm font-semibold text-foreground">Sent requests</p>
       </div>
 
-      <div className="min-h-0 overflow-hidden">
+      <div className="min-h-0">
         <ScrollArea className="h-full">
-          {received.length === 0 && (
-            <p className="px-4 py-3 text-sm text-[#C4B5FD]">
-              No received requests.
-            </p>
-          )}
+          <div className="flex flex-col gap-1 p-3">
+            {sent.length === 0 ? (
+              <EmptyState text="No requests found." />
+            ) : (
+              sent.map((req) => (
+                <div
+                  key={req.id}
+                  className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5"
+                >
+                  <Avatar size="lg">
+                    <AvatarImage src={req.addressee.avatar_url ?? undefined} />
+                    <AvatarFallback>
+                      {req.addressee.full_name?.slice(0, 2)?.toUpperCase() ??
+                        'U'}
+                    </AvatarFallback>
+                  </Avatar>
 
-          {received.map((req) => (
-            <PendingReceivedRow
-              key={req.id}
-              requesterId={req.requester.id}
-              fullName={req.requester.full_name}
-              username={req.requester.username}
-              avatarUrl={req.requester.avatar_url}
-              onAccept={() =>
-                handleAccept(req.requester.id, req.requester.full_name)
-              }
-              onReject={() =>
-                handleReject(req.requester.id, req.requester.full_name)
-              }
-            />
-          ))}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-foreground">
+                      {req.addressee.full_name}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      @{req.addressee.username}
+                    </p>
+                  </div>
+
+                  <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                    Pending
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
         </ScrollArea>
       </div>
     </div>
@@ -130,7 +138,7 @@ export function PendingRequests() {
 // Pulled into its own component so each row can read its own
 // accepting/rejecting flag from the store without re-rendering
 // every other row in the list.
-function PendingReceivedRow({
+function ReceivedRow({
   requesterId,
   fullName,
   username,
@@ -147,38 +155,60 @@ function PendingReceivedRow({
 }) {
   const isAccepting = useIsAcceptingFrom(requesterId);
   const isRejecting = useIsRejectingFrom(requesterId);
+  const isBusy = isAccepting || isRejecting;
 
   return (
-    <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 border-b-4">
-      <Avatar variant="round" size="large">
+    <div className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5">
+      <Avatar size="lg">
         <AvatarImage src={avatarUrl ?? undefined} />
-        <AvatarFallback>{fullName?.slice(0, 1)}</AvatarFallback>
+        <AvatarFallback>
+          {fullName?.slice(0, 2)?.toUpperCase() ?? 'U'}
+        </AvatarFallback>
       </Avatar>
 
-      <div className="min-w-0 overflow-hidden">
-        <p className="truncate font-ui text-[#F3E8FF]">{fullName}</p>
-        <p className="truncate text-sm text-[#C4B5FD]">@{username}</p>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-foreground">
+          {fullName}
+        </p>
+        <p className="truncate text-xs text-muted-foreground">@{username}</p>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex shrink-0 items-center gap-1.5">
         <Button
-          size="sm"
-          variant="secondary"
-          disabled={isAccepting || isRejecting}
-          onClick={onAccept}
-        >
-          {isAccepting ? 'Accepting...' : 'Accept'}
-        </Button>
-
-        <Button
-          size="sm"
-          variant="destructive"
-          disabled={isRejecting || isAccepting}
+          size="icon-sm"
+          variant="outline"
+          disabled={isBusy}
           onClick={onReject}
+          aria-label="Reject request"
         >
-          {isRejecting ? 'Rejecting...' : 'Reject'}
+          {isRejecting ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <X className="size-4" />
+          )}
+        </Button>
+
+        <Button
+          size="icon-sm"
+          disabled={isBusy}
+          onClick={onAccept}
+          aria-label="Accept request"
+        >
+          {isAccepting ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Check className="size-4" />
+          )}
         </Button>
       </div>
+    </div>
+  );
+}
+
+function EmptyState({ text }: { text: string }) {
+  return (
+    <div className="flex h-full items-center justify-center px-6 py-10 text-center text-sm text-muted-foreground">
+      {text}
     </div>
   );
 }
