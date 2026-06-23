@@ -10,7 +10,7 @@ export function ViewListContainer() {
   const viewMode = useViewMode();
 
   return (
-    <div className="h-full min-h-0 w-125 min-w-0 overflow-hidden border-r bg-card">
+    <div className="h-full min-h-0 w-25/100 min-w-0 overflow-hidden border-r bg-card">
       {viewMode === 'rooms' && <RoomsList />}
       {viewMode === 'requests' && <RequestsList />}
       {viewMode === 'userpanel' && <UserSettings />}

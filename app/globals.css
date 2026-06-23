@@ -64,6 +64,9 @@
   --font-chat: var(--font-chat);
   --font-sans: var(--font-sans);
   --font-heading: var(--font-sans);
+
+
+  --color-mine: var(--mine);
 }
 
 :root {
@@ -115,6 +118,7 @@
 
   --sidebar-border: #dfe3f2;
   --sidebar-ring: #6367ff;
+  --mine: #8494FF;
 
   /* Charts */
 
@@ -172,6 +176,7 @@
 
   --sidebar-border: #2a3042;
   --sidebar-ring: #6367ff;
+  --mine: #8494FF;
 
   /* Charts */
 

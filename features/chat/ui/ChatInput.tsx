@@ -1,7 +1,7 @@
 'use client';
 import { Field, FieldGroup } from '@/components/ui/field';
-import { Button } from '@/components/ui/pixelact-ui/button';
-import { Textarea } from '@/components/ui/pixelact-ui/textarea';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SendIcon } from 'lucide-react';
 import { useRef, useState } from 'react';
@@ -45,7 +45,7 @@ export function ChatInput() {
   }
 
   return (
-    <div className="grid grid-cols-[1fr_5%] gap-4 items-center p-3 border-t-4 ">
+    <div className="flex flex-row justify-center items-center flex-1 gap-4 w-full p-3 bg-card">
       <form
         onSubmit={form.handleSubmit(onMessageSubmit)}
         id="message_submit_form"

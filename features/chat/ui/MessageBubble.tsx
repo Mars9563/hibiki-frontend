@@ -1,23 +1,21 @@
 'use client';
+
 import { format } from 'date-fns';
-import { Clock, Check, CheckCheck } from 'lucide-react';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/pixelact-ui/avatar';
+import { Clock, Check, CheckCheck, Copy, ChevronDown } from 'lucide-react';
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 import {
   ContextMenu,
-  ContextMenuTrigger,
   ContextMenuContent,
   ContextMenuItem,
-} from '@/components/ui/pixelact-ui/context-menu';
-import '@/components/ui/pixelact-ui/styles/styles.css';
-import { IoIosArrowDown } from 'react-icons/io';
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
+
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
-// Number of characters before the message gets truncated
 const TRUNCATE_LIMIT = 300;
 
 interface MessageBubbleProps {
@@ -40,171 +38,169 @@ export function MessageBubble({
   createdAt,
 }: MessageBubbleProps) {
   const isMine = senderId === currentUserId;
+
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const formattedTime = createdAt
     ? format(new Date(createdAt), 'hh:mm a')
     : null;
 
-  const [isCopying, setIsCopying] = useState<boolean>(false);
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
-
   const isLong = content.length > TRUNCATE_LIMIT;
+
   const displayedContent =
     isLong && !isExpanded
       ? content.slice(0, TRUNCATE_LIMIT).trimEnd()
       : content;
 
-  const copyToClipBord = async () => {
-    setIsCopying(true);
+  async function handleCopy() {
     try {
       await navigator.clipboard.writeText(content);
-      toast.success('Message has been copied to clipboard.');
+      toast.success('Copied message');
     } catch {
-      toast.error('Message copying failed.');
-    } finally {
-      setIsCopying(false);
+      toast.error('Failed to copy');
     }
-  };
+  }
 
   return (
     <div
-      className={`w-full flex gap-2 px-3 py-1 ${
+      className={cn(
+        'group flex w-full gap-3 py-1.5',
         isMine ? 'justify-end' : 'justify-start'
-      }`}
+      )}
     >
-      {/* Avatar for other user */}
       {!isMine && (
-        <div className="flex-shrink-0 self-end mb-1">
-          <Avatar size="small" variant="square">
-            <AvatarImage src={avatarUrl ?? undefined} />
-            <AvatarFallback
-              className="pixel-font rounded-none"
-              style={{ backgroundColor: '#241259', color: '#F3E8FF' }}
-            >
-              {fallback ?? '??'}
-            </AvatarFallback>
-          </Avatar>
-        </div>
+        <Avatar size="lg" className="mt-auto shrink-0">
+          <AvatarImage src={avatarUrl ?? undefined} />
+
+          <AvatarFallback className="bg-accent text-accent-foreground font-medium">
+            {fallback ?? '??'}
+          </AvatarFallback>
+        </Avatar>
       )}
 
-      {/* Pixel Bubble */}
-      <div
-        className="pixel-font box-shadow-margin"
-        style={{
-          maxWidth: '60%',
-          minWidth: '60px',
-          boxShadow: isMine
-            ? '4px 4px 0px #4a2a8a, -2px -2px 0px #4a2a8a, 2px -2px 0px #4a2a8a, -2px 2px 0px #4a2a8a'
-            : '4px 4px 0px #333, -2px -2px 0px #333, 2px -2px 0px #333, -2px 2px 0px #333',
-          backgroundColor: isMine ? '#241259' : '#1a1a1a',
-          border: isMine ? '2px solid #6b3fa0' : '2px solid #444',
-          borderRadius: 0,
-          padding: '8px 10px 5px 10px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '4px',
-          imageRendering: 'pixelated',
-        }}
-      >
-        {/* Context menu trigger row */}
-        <div className="w-full flex justify-end items-center">
-          <ContextMenu>
-            <ContextMenuTrigger asChild>
-              <button>
-                <IoIosArrowDown />
-              </button>
-            </ContextMenuTrigger>
-            <ContextMenuContent>
-              <ContextMenuItem onClick={copyToClipBord}>Copy</ContextMenuItem>
-            </ContextMenuContent>
-          </ContextMenu>
-        </div>
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          <div
+            className={cn(
+              'relative',
 
-        {/* Message text */}
-        <pre
-          style={{
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
-            overflowWrap: 'break-word',
-            fontSize: '0.99rem',
-            margin: 0,
-            lineHeight: '1.5',
-            color: '#f0f0f0',
-            letterSpacing: '0.02em',
-          }}
-        >
-          {displayedContent}
-          {/* Inline ellipsis when truncated */}
-          {isLong && !isExpanded && (
-            <span style={{ color: '#888', userSelect: 'none' }}>…</span>
-          )}
-        </pre>
+              // responsive width
+              'w-fit',
+              'min-w-[120px]',
 
-        {/* Read more / Read less button */}
-        {isLong && (
-          <button
-            onClick={() => setIsExpanded((prev) => !prev)}
-            className="pixel-font"
-            style={{
-              alignSelf: 'flex-start',
-              marginTop: '2px',
-              padding: '2px 6px',
-              fontSize: '0.6rem',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              color: isMine ? '#c084fc' : '#a3a3a3',
-              background: 'transparent',
-              border: isMine ? '1px solid #6b3fa0' : '1px solid #444',
-              borderRadius: 0,
-              cursor: 'pointer',
-              // subtle pixel hover handled via inline — no Tailwind hover needed
-              transition: 'opacity 0.1s',
-            }}
-            onMouseEnter={(e) =>
-              ((e.target as HTMLButtonElement).style.opacity = '0.7')
-            }
-            onMouseLeave={(e) =>
-              ((e.target as HTMLButtonElement).style.opacity = '1')
-            }
+              'max-w-[85%]',
+              'sm:max-w-[80%]',
+              'md:max-w-[75%]',
+              'lg:max-w-[65%]',
+              'xl:max-w-[700px]',
+
+              // layout
+              'flex flex-col',
+              'gap-2',
+
+              // shape
+              'rounded-3xl',
+              'px-4 py-3',
+
+              // animation
+              'transition-all duration-200',
+
+              isMine
+                ? [
+                    'bg-mine',
+                    'text-primary-foreground',
+                    'rounded-br-lg',
+                    'shadow-lg shadow-primary/15',
+                  ]
+                : [
+                    'bg-card',
+                    'text-card-foreground',
+                    'border border-border',
+                    'rounded-bl-lg',
+                  ]
+            )}
           >
-            {isExpanded ? '▲ Read less' : '▼ Read more'}
-          </button>
-        )}
+            <button
+              className={cn(
+                'absolute right-2 top-2',
 
-        {/* Footer: time + status */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            gap: '4px',
-            opacity: 0.6,
-          }}
-        >
-          {formattedTime && (
-            <span
-              className="pixel-font"
-              style={{
-                fontSize: '0.55rem',
-                lineHeight: 1,
-                letterSpacing: '0.05em',
-              }}
+                'opacity-0',
+                'group-hover:opacity-100',
+
+                'transition-opacity duration-200',
+
+                isMine ? 'text-primary-foreground/70' : 'text-muted-foreground'
+              )}
             >
-              {formattedTime}
-            </span>
-          )}
-          {isMine && status === 'pending' && (
-            <Clock
-              size={9}
-              strokeWidth={2}
-              style={{ imageRendering: 'pixelated' }}
-            />
-          )}
-          {isMine && status === 'sent' && <Check size={9} strokeWidth={3} />}
-          {isMine && status === 'received' && (
-            <CheckCheck size={9} strokeWidth={3} />
-          )}
-        </div>
-      </div>
+              <ChevronDown className="size-4" />
+            </button>
+
+            <p
+              className={cn(
+                'pr-5',
+
+                'whitespace-pre-wrap',
+                'break-words',
+                'overflow-hidden',
+
+                'text-[15px]',
+                'leading-6'
+              )}
+            >
+              {displayedContent}
+
+              {isLong && !isExpanded && <span className="opacity-50">…</span>}
+            </p>
+
+            {isLong && (
+              <button
+                onClick={() => setIsExpanded((prev) => !prev)}
+                className={cn(
+                  'w-fit',
+
+                  'text-xs font-medium',
+
+                  'transition-opacity',
+                  'hover:opacity-80',
+
+                  isMine
+                    ? 'text-primary-foreground/80'
+                    : 'text-muted-foreground'
+                )}
+              >
+                {isExpanded ? 'Show less' : 'Read more'}
+              </button>
+            )}
+
+            <div
+              className={cn(
+                'flex items-center justify-end gap-1.5',
+
+                'text-[11px]',
+
+                isMine ? 'text-primary-foreground/70' : 'text-muted-foreground'
+              )}
+            >
+              {formattedTime && <span>{formattedTime}</span>}
+
+              {isMine && status === 'pending' && <Clock className="size-3" />}
+
+              {isMine && status === 'sent' && <Check className="size-3" />}
+
+              {isMine && status === 'received' && (
+                <CheckCheck className="size-3" />
+              )}
+            </div>
+          </div>
+        </ContextMenuTrigger>
+
+        <ContextMenuContent>
+          <ContextMenuItem onClick={handleCopy}>
+            <Copy className="mr-2 size-4" />
+            Copy Message
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
     </div>
   );
 }

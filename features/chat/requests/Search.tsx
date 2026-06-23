@@ -26,7 +26,7 @@ import {
 
 const formData = z.object({
   search: z.string().trim().min(1, 'Search cannot be empty'),
-});
+}); 
 
 export function Search() {
   const form = useForm<z.infer<typeof formData>>({

@@ -1,10 +1,9 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/pixelact-ui/avatar';
+'use client';
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DirectChatRoom } from '@/lib/types';
-import { useSelectRoom } from '@/store/selectors';
+import { useSelectRoom, useSelectedRoom } from '@/store/selectors';
+import { cn } from '@/lib/utils';
 
 interface RoomItemProps {
   room: DirectChatRoom;
@@ -13,39 +12,43 @@ interface RoomItemProps {
 
 export function RoomItem({ room, onClick }: RoomItemProps) {
   const selectRoom = useSelectRoom();
+  const selectedRoom = useSelectedRoom();
+  const isActive = selectedRoom?.roomId === room.roomId;
+
+  const initials = room.otherUser.fullName?.slice(0, 2) ?? '??';
 
   return (
-    <div
-      className="min-w-0 py-3 px-4 grid grid-cols-[auto_minmax(0,1fr)] gap-3 items-center cursor-pointer transition-colors duration-100 border-b-4 border-[#1E1E22]"
+    <button
+      type="button"
       onClick={() => {
         selectRoom(room.roomId);
         onClick?.();
       }}
+      className={cn(
+        'flex w-full min-w-0 items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors',
+        isActive ? 'bg-primary/10' : 'hover:bg-muted'
+      )}
     >
-      <Avatar
-        size="large"
-        variant="square"
-        style={{
-          backgroundColor: '#1C1333',
-          color: '#F3E8FF',
-        }}
-      >
+      <Avatar className="size-11 shrink-0">
         <AvatarImage src={room.otherUser.avatarUrl ?? undefined} />
-        <AvatarFallback
-          style={{
-            backgroundColor: '#241259',
-            color: '#F3E8FF',
-          }}
-        >
-          {room.otherUser.fullName?.slice(0, 2)}
+        <AvatarFallback className="bg-accent text-accent-foreground">
+          {initials}
         </AvatarFallback>
       </Avatar>
 
-      <div className="min-w-0">
-        <p className="font-ui text-xl truncate text-[#F3E8FF]">
-          {room.otherUser.fullName}
+      <div className="min-w-0 flex-1">
+        <p
+          className={cn(
+            'truncate text-sm font-medium',
+            isActive ? 'text-primary' : 'text-foreground'
+          )}
+        >
+          {room.otherUser.fullName ?? room.otherUser.username}
+        </p>
+        <p className="truncate text-xs text-muted-foreground">
+          @{room.otherUser.username}
         </p>
       </div>
-    </div>
+    </button>
   );
 }

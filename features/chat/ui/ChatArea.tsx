@@ -18,7 +18,7 @@ export function ChatArea() {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center w-full h-full min-h-0 min-w-0 bg-background">
+    <div className="flex flex-1 flex-col justify-center items-center w-full h-full min-h-0 min-w-0 bg-background">
       <TopBar />
       <MessageArea />
       <ChatInput />
