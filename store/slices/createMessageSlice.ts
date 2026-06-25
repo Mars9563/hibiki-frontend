@@ -17,6 +17,7 @@
 // ============================================================
 import type { StateCreator } from 'zustand';
 import type {
+  ChatRoom,
   DirectChatRoom,
   MessageEntry,
   MessageStructure,
@@ -42,7 +43,7 @@ export type MessagesSlice = {
 
   loadInitialMessages: (roomId: string) => Promise<void>;
   loadMoreMessages: (roomId: string) => Promise<void>;
-  sendMessage: (content: string, room: DirectChatRoom) => void;
+  sendMessage: (content: string, room: ChatRoom) => void;
   mergeRealMessage: (
     message: MessageStructure,
     clientTempId?: string | null
