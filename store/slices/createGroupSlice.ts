@@ -7,8 +7,8 @@
 // vs rooms (RoomsSlice) for direct chats.
 // ============================================================
 import type { StateCreator } from 'zustand';
-import type { ChatRoom, PendingGroupInvite } from '@/lib/types';
 import type { ChatStore } from '../chatStore';
+import type { ChatRoom, PendingGroupInvite, PendingGroupInviteWithRoster, SearchUser } from '@/lib/types';
 
 export type GroupSlice = {
   pendingGroupInvites: PendingGroupInvite[];
@@ -20,11 +20,36 @@ export type GroupSlice = {
   acceptingGroupInvite: Set<string>; // inviteIds in flight
   rejectingGroupInvite: Set<string>;
 
+  groupSearchQuery: string;
+  groupSearchResults: SearchUser[];
+  groupSearchStatus: 'idle' | 'loading' | 'error' | 'success';
+  groupSearchError: string | null;
+
+  draftGroupName: string;
+  draftMembers: Map<string, SearchUser>; // userId -> profile, preserves what was selected
+
+  searchUsersForGroup: (query: string) => Promise<void>;
+  setDraftGroupName: (name: string) => void;
+  addDraftMember: (user: SearchUser) => void;
+  removeDraftMember: (userId: string) => void;
+  resetGroupDraft: () => void;
+
   createGroup: (name: string, inviteeIds: string[]) => Promise<void>;
   inviteToGroup: (roomId: string, inviteeId: string) => Promise<void>;
   fetchPendingGroupInvites: () => Promise<void>;
   acceptGroupInvite: (inviteId: string) => Promise<void>;
   rejectGroupInvite: (inviteId: string) => Promise<void>;
+
+  groupInvites: PendingGroupInviteWithRoster[];
+  selectedGroupInviteId: string | null;
+
+  acceptingInviteId: string | null;
+  rejectingInviteId: string | null;
+
+  fetchGroupInvites: () => Promise<void>;
+  selectGroupInvite: (inviteId: string | null) => void;
+  acceptGroupInviteAction: (inviteId: string) => Promise<void>;
+  rejectGroupInviteAction: (inviteId: string) => Promise<void>;
 };
 
 export const createGroupSlice: StateCreator<
@@ -115,7 +140,7 @@ export const createGroupSlice: StateCreator<
     });
 
     try {
-      const res = await fetch('/api/group-invites/pending', {
+      const res = await fetch('/api/groups/invites/pending', {
         credentials: 'include',
       });
 
@@ -143,7 +168,7 @@ export const createGroupSlice: StateCreator<
     });
 
     try {
-      const res = await fetch('/api/group-invites/accept', {
+      const res = await fetch('/api/groups/invites/accept', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -182,7 +207,7 @@ export const createGroupSlice: StateCreator<
     });
 
     try {
-      const res = await fetch('/api/group-invites/reject', {
+      const res = await fetch('/api/groups/invites/reject', {
         method: 'DELETE',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -203,6 +228,194 @@ export const createGroupSlice: StateCreator<
     } catch (err) {
       set((state) => {
         state.rejectingGroupInvite.delete(inviteId);
+      });
+      throw err;
+    }
+  },
+
+  groupSearchQuery: '',
+  groupSearchResults: [],
+  groupSearchStatus: 'idle',
+  groupSearchError: null,
+
+  draftGroupName: '',
+  draftMembers: new Map(),
+
+  searchUsersForGroup: async (query) => {
+    set((state) => {
+      state.groupSearchQuery = query;
+    });
+
+    if (query.length < 2) {
+      set((state) => {
+        state.groupSearchResults = [];
+        state.groupSearchStatus = 'idle';
+      });
+      return;
+    }
+
+    set((state) => {
+      state.groupSearchStatus = 'loading';
+      state.groupSearchError = null;
+    });
+
+    try {
+      const res = await fetch(
+        `/api/groups/search?q=${encodeURIComponent(query)}`,
+        { method: 'GET', credentials: 'include' }
+      );
+
+      if (!res.ok) throw new Error('Failed to search users');
+
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Search failed');
+
+      set((state) => {
+        if (state.groupSearchQuery !== query) return; // stale response guard
+        state.groupSearchResults = data.results;
+        state.groupSearchStatus = 'success';
+      });
+    } catch (err) {
+      set((state) => {
+        state.groupSearchStatus = 'error';
+        state.groupSearchError =
+          err instanceof Error ? err.message : 'Search failed';
+      });
+    }
+  },
+
+  setDraftGroupName: (name) =>
+    set((state) => {
+      state.draftGroupName = name;
+    }),
+
+  addDraftMember: (user) =>
+    set((state) => {
+      state.draftMembers.set(user.id, user);
+    }),
+
+  removeDraftMember: (userId) =>
+    set((state) => {
+      state.draftMembers.delete(userId);
+    }),
+
+  resetGroupDraft: () =>
+    set((state) => {
+      state.draftGroupName = '';
+      state.draftMembers = new Map();
+      state.groupSearchQuery = '';
+      state.groupSearchResults = [];
+      state.groupSearchStatus = 'idle';
+    }),
+  groupInvites: [],
+  selectedGroupInviteId: null,
+
+  acceptingInviteId: null,
+  rejectingInviteId: null,
+
+  fetchGroupInvites: async () => {
+    set((state) => {
+      state.groupInvitesStatus = 'loading';
+      state.groupInvitesError = null;
+    });
+
+    try {
+      const res = await fetch('/api/groups/invites/pending', {
+        credentials: 'include',
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to load group invites');
+      }
+
+      set((state) => {
+        state.groupInvites = data.pending;
+        state.groupInvitesStatus = 'success';
+      });
+    } catch (err) {
+      set((state) => {
+        state.groupInvitesStatus = 'error';
+        state.groupInvitesError =
+          err instanceof Error ? err.message : 'Failed to load invites';
+      });
+    }
+  },
+
+  selectGroupInvite: (inviteId) =>
+    set((state) => {
+      state.selectedGroupInviteId = inviteId;
+    }),
+
+  acceptGroupInviteAction: async (inviteId) => {
+    set((state) => {
+      state.acceptingInviteId = inviteId;
+    });
+
+    try {
+      const res = await fetch('/api/groups/invites/accept', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ inviteId }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to accept invite');
+      }
+
+      get().upsertRoom(data.room);
+
+      set((state) => {
+        state.groupInvites = state.groupInvites.filter(
+          (inv) => inv.id !== inviteId
+        );
+        if (state.selectedGroupInviteId === inviteId) {
+          state.selectedGroupInviteId = null;
+        }
+        state.acceptingInviteId = null;
+      });
+    } catch (err) {
+      set((state) => {
+        state.acceptingInviteId = null;
+      });
+      throw err;
+    }
+  },
+
+  rejectGroupInviteAction: async (inviteId) => {
+    set((state) => {
+      state.rejectingInviteId = inviteId;
+    });
+
+    try {
+      const res = await fetch('/api/groups/invites/reject', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ inviteId }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to reject invite');
+      }
+
+      // Per spec: rejecting clears the right pane immediately if that
+      // invite's roster was the one being shown.
+      set((state) => {
+        state.groupInvites = state.groupInvites.filter(
+          (inv) => inv.id !== inviteId
+        );
+        if (state.selectedGroupInviteId === inviteId) {
+          state.selectedGroupInviteId = null;
+        }
+        state.rejectingInviteId = null;
+      });
+    } catch (err) {
+      set((state) => {
+        state.rejectingInviteId = null;
       });
       throw err;
     }

@@ -12,7 +12,7 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
 
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -23,7 +23,7 @@ interface MessageBubbleProps {
   senderId: string;
   currentUserId: string;
   avatarUrl?: string | null;
-  fallback?: string;
+  fallback?: ReactNode;
   status?: 'pending' | 'sent' | 'received' | 'failed';
   createdAt?: Date | string;
 }

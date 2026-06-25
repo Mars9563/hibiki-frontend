@@ -13,7 +13,7 @@
 // ============================================================
 import { useShallow } from 'zustand/react/shallow';
 import { useChatStore } from './chatStore';
-import type { ChatRoom, MessageEntry } from '@/lib/types';
+import type { ChatRoom, MessageEntry, SearchUser } from '@/lib/types';
 
 // ---------- Auth ----------
 
@@ -131,3 +131,68 @@ export const useIsRejectingFrom = (userId: string) =>
 
 export const useIsSocketConnected = () =>
   useChatStore((s) => s.isSocketConnected);
+
+// ---------- Groups ----------
+
+export const useGroupSearchState = () =>
+  useChatStore(
+    useShallow((s) => ({
+      query: s.groupSearchQuery,
+      results: s.groupSearchResults,
+      status: s.groupSearchStatus,
+      error: s.groupSearchError,
+    }))
+  );
+
+export const useSearchUsersForGroup = () =>
+  useChatStore((s) => s.searchUsersForGroup);
+
+export const useDraftGroupName = () => useChatStore((s) => s.draftGroupName);
+export const useSetDraftGroupName = () =>
+  useChatStore((s) => s.setDraftGroupName);
+
+export const useDraftMembers = (): SearchUser[] =>
+  useChatStore(useShallow((s) => Array.from(s.draftMembers.values())));
+
+export const useAddDraftMember = () => useChatStore((s) => s.addDraftMember);
+export const useRemoveDraftMember = () =>
+  useChatStore((s) => s.removeDraftMember);
+export const useResetGroupDraft = () => useChatStore((s) => s.resetGroupDraft);
+
+export const useCreateGroup = () => useChatStore((s) => s.createGroup);
+export const useCreatingGroup = () => useChatStore((s) => s.creatingGroup);
+
+export const useGroupInvitesState = () =>
+  useChatStore(
+    useShallow((s) => ({
+      invites: s.groupInvites,
+      status: s.groupInvitesStatus,
+      error: s.groupInvitesError,
+    }))
+  );
+
+export const useFetchGroupInvites = () =>
+  useChatStore((s) => s.fetchGroupInvites);
+
+export const useSelectedGroupInviteId = () =>
+  useChatStore((s) => s.selectedGroupInviteId);
+
+export const useSelectedGroupInvite = () =>
+  useChatStore(
+    (s) => s.groupInvites.find((i) => i.id === s.selectedGroupInviteId) ?? null
+  );
+
+export const useSelectGroupInvite = () =>
+  useChatStore((s) => s.selectGroupInvite);
+
+export const useAcceptGroupInvite = () =>
+  useChatStore((s) => s.acceptGroupInviteAction);
+
+export const useRejectGroupInvite = () =>
+  useChatStore((s) => s.rejectGroupInviteAction);
+
+export const useIsAcceptingGroupInvite = (inviteId: string) =>
+  useChatStore((s) => s.acceptingInviteId === inviteId);
+
+export const useIsRejectingGroupInvite = (inviteId: string) =>
+  useChatStore((s) => s.rejectingInviteId === inviteId);

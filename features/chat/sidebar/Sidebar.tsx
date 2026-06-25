@@ -22,10 +22,22 @@ import {
   useCurrentUser,
   usePendingRequests,
 } from '@/store/selectors';
+import { MdGroups2 } from 'react-icons/md';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { UsersRound, Plus, Inbox } from 'lucide-react';
+import { CreateGroupDialog } from '../groups/createGroupDialog';
+import { GroupInvitesDialog } from '../groups/groupInviteDialog';
 
 export function Sidebar() {
   const [isLoading, setIsLoading] = useState(false);
   const [requestsOpen, setRequestsOpen] = useState(false);
+  const [createGroupOpen, setCreateGroupOpen] = useState(false);
+  const [groupInvitesOpen, setGroupInvitesOpen] = useState(false);
   const router = useRouter();
 
   const viewMode = useViewMode();
@@ -52,7 +64,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="flex h-full w-20 flex-col items-center justify-between border-r bg-sidebar px-3 py-4">
+    <aside className="flex h-full w-20 flex-col items-center justify-between border-r bg-sidebar px-3 py-4 font-chat">
       {/* Top Controls */}
       <div className="flex flex-col items-center gap-3">
         <Button
@@ -76,9 +88,38 @@ export function Sidebar() {
             </span>
           )}
         </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <MdGroups2 size={24} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className='w-fit p-2'>
+            <DropdownMenuItem
+              onClick={() => setCreateGroupOpen(true)}
+              className="flex flex-row justify-between items-center gap-2"
+            >
+              <span>Create group</span>
+              <Plus className="size-4" />
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setGroupInvitesOpen(true)}
+              className="flex flex-row justify-center items-center gap-2"
+            >
+              <span>Group invites</span>
+              <Inbox className="size-4" />
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <RequestsDialog open={requestsOpen} onOpenChange={setRequestsOpen} />
+      <CreateGroupDialog
+        open={createGroupOpen}
+        onOpenChange={setCreateGroupOpen}
+      />
+      <GroupInvitesDialog
+        open={groupInvitesOpen}
+        onOpenChange={setGroupInvitesOpen}
+      />
 
       {/* Bottom Controls */}
       <div className="flex flex-col items-center gap-3">

@@ -98,6 +98,17 @@ export type PendingGroupInvite = {
   };
   inviter: Profile;
 };
+export type GroupInviteRosterEntry = {
+  userId: string;
+  username: string;
+  fullName: string | null;
+  avatarUrl: string | null;
+  status: 'accepted' | 'pending';
+};
+
+export type PendingGroupInviteWithRoster = PendingGroupInvite & {
+  roster: GroupInviteRosterEntry[];
+};
 
 // ---------- Friendships ----------
 

@@ -9,6 +9,7 @@ import {
   useRoomMessageMeta,
   useLoadMoreMessages,
 } from '@/store/selectors';
+import { FaUserLarge } from 'react-icons/fa6';
 
 function getDateLabel(date: Date): string {
   if (isToday(date)) return 'Today';
@@ -152,6 +153,11 @@ export function MessageArea() {
     });
   }
 
+  const isGroup = selectedRoom?.roomType === 'group';
+  const avatarUrl = isGroup
+    ? selectedRoom.avatarUrl
+    : selectedRoom?.otherUser.avatarUrl;
+
   return (
     <div className="relative flex flex-col h-full min-h-0 min-w-0 w-full">
       <div ref={scrollContainerRef} className="h-full">
@@ -177,8 +183,8 @@ export function MessageArea() {
                 content={item.entry.message.content}
                 senderId={item.entry.message.sender_id}
                 currentUserId={selectedRoom?.currentUserId ?? ''}
-                avatarUrl={selectedRoom?.otherUser.avatarUrl}
-                fallback={selectedRoom?.otherUser.fullName?.slice(0, 2)}
+                avatarUrl={avatarUrl}
+                fallback={isGroup ? <FaUserLarge /> : <FaUserLarge />}
                 status={item.entry.status}
                 createdAt={item.entry.message.created_at}
               />
