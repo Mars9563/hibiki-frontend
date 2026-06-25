@@ -11,7 +11,7 @@
 // ============================================================
 import type { StateCreator } from 'zustand';
 import { io, type Socket } from 'socket.io-client';
-import type { MessageStructure } from '@/lib/types';
+import type { GroupChatRoom, MessageStructure } from '@/lib/types';
 import type { ChatStore } from '../chatStore';
 import { toast } from 'sonner';
 
@@ -105,6 +105,32 @@ export const createSocketSlice: StateCreator<
 
     socket.on('friendship:rejected', () => {
       toast.info('Your friend request was declined');
+    });
+
+    // ---- group events ----
+    socket.on(
+      'group:invited',
+      (data: {
+        roomId: string;
+        roomName?: string;
+        inviterId: string;
+        inviteId: string;
+      }) => {
+        get().fetchPendingGroupInvites();
+        toast.info(
+          `New group invite${data.roomName ? `: ${data.roomName}` : ''}`
+        );
+      }
+    );
+
+    socket.on('group:joined', (data: { room: GroupChatRoom }) => {
+      get().upsertRoom(data.room);
+      get().joinRoom(data.room.roomId);
+      toast.success(`You joined ${data.room.name}`);
+    });
+
+    socket.on('group:memberJoined', () => {
+      get().fetchRooms();
     });
 
     socket.connect();

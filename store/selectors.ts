@@ -13,7 +13,7 @@
 // ============================================================
 import { useShallow } from 'zustand/react/shallow';
 import { useChatStore } from './chatStore';
-import type { DirectChatRoom, MessageEntry } from '@/lib/types';
+import type { ChatRoom, MessageEntry } from '@/lib/types';
 
 // ---------- Auth ----------
 
@@ -25,14 +25,14 @@ export const useViewMode = () => useChatStore((s) => s.viewMode);
 export const useSetViewMode = () => useChatStore((s) => s.setViewMode);
 export const useSelectRoom = () => useChatStore((s) => s.selectRoom);
 
-export const useSelectedRoom = (): DirectChatRoom | null =>
+export const useSelectedRoom = (): ChatRoom | null =>
   useChatStore((s) =>
     s.selectedRoomId ? (s.roomsById.get(s.selectedRoomId) ?? null) : null
   );
 
 // ---------- Rooms ----------
 
-export const useRoomsList = (): DirectChatRoom[] =>
+export const useRoomsList = (): ChatRoom[] =>
   useChatStore(
     useShallow((s) =>
       s.roomOrder.map((id) => s.roomsById.get(id)!).filter(Boolean)

@@ -1,6 +1,6 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { RoomItem } from './RoomItem';
-import { DirectChatRoom } from '@/lib/types';
+import { ChatRoom } from '@/lib/types';
 import { useRoomsList, useRoomsStatus } from '@/store/selectors';
 import { MessageSquare, Loader2 } from 'lucide-react';
 
@@ -37,7 +37,7 @@ export function RoomsList() {
         {status === 'success' && rooms.length > 0 && (
           <ScrollArea className="h-full w-full min-h-0 min-w-0">
             <div className="flex flex-col gap-0.5 p-2">
-              {rooms.map((room: DirectChatRoom) => (
+              {rooms.map((room: ChatRoom) => (
                 <RoomItem key={room.roomId} room={room} />
               ))}
             </div>

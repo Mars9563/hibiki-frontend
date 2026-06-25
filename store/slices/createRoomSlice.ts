@@ -9,17 +9,17 @@
 // already have the data from a socket event (no need to refetch).
 // ============================================================
 import type { StateCreator } from 'zustand';
-import type { DirectChatRoom } from '@/lib/types';
+import type { ChatRoom } from '@/lib/types';
 import type { ChatStore } from '../chatStore';
 
 export type RoomsSlice = {
-  roomsById: Map<string, DirectChatRoom>;
+  roomsById: Map<string, ChatRoom>;
   roomOrder: string[]; // preserves list order without re-sorting a Map
   roomsStatus: 'idle' | 'loading' | 'error' | 'success';
   roomsError: string | null;
 
   fetchRooms: () => Promise<void>;
-  upsertRoom: (room: DirectChatRoom) => void;
+  upsertRoom: (room: ChatRoom) => void;
   removeRoom: (roomId: string) => void;
 };
 
@@ -51,7 +51,7 @@ export const createRoomsSlice: StateCreator<
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Backend error');
 
-      const rooms: DirectChatRoom[] = data.directRooms ?? [];
+      const rooms: ChatRoom[] = data.rooms ?? [];
 
       set((state) => {
         state.roomsById = new Map(rooms.map((r) => [r.roomId, r]));

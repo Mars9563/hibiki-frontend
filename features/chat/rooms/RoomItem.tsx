@@ -1,12 +1,12 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { DirectChatRoom } from '@/lib/types';
 import { useSelectRoom, useSelectedRoom } from '@/store/selectors';
 import { cn } from '@/lib/utils';
+import { ChatRoom } from '@/lib/types';
 
 interface RoomItemProps {
-  room: DirectChatRoom;
+  room: ChatRoom;
   onClick?: () => void;
 }
 
@@ -15,7 +15,20 @@ export function RoomItem({ room, onClick }: RoomItemProps) {
   const selectedRoom = useSelectedRoom();
   const isActive = selectedRoom?.roomId === room.roomId;
 
-  const initials = room.otherUser.fullName?.slice(0, 2) ?? '??';
+  const displayName =
+    room.roomType === 'direct'
+      ? (room.otherUser.fullName ?? room.otherUser.username)
+      : room.name;
+
+  const subtitle =
+    room.roomType === 'direct'
+      ? `@${room.otherUser.username}`
+      : `${room.members.length} members`;
+
+  const avatarUrl =
+    room.roomType === 'direct' ? room.otherUser.avatarUrl : room.avatarUrl;
+
+  const initials = displayName?.slice(0, 2) ?? '??';
 
   return (
     <button
@@ -30,7 +43,7 @@ export function RoomItem({ room, onClick }: RoomItemProps) {
       )}
     >
       <Avatar className="size-11 shrink-0">
-        <AvatarImage src={room.otherUser.avatarUrl ?? undefined} />
+        <AvatarImage src={avatarUrl ?? undefined} />
         <AvatarFallback className="bg-accent text-accent-foreground">
           {initials}
         </AvatarFallback>
@@ -43,11 +56,9 @@ export function RoomItem({ room, onClick }: RoomItemProps) {
             isActive ? 'text-primary' : 'text-foreground'
           )}
         >
-          {room.otherUser.fullName ?? room.otherUser.username}
+          {displayName}
         </p>
-        <p className="truncate text-xs text-muted-foreground">
-          @{room.otherUser.username}
-        </p>
+        <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
       </div>
     </button>
   );

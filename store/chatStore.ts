@@ -38,6 +38,10 @@ import {
   createSocketSlice,
   type SocketSlice,
 } from '@/store/slices/createSocketSlice';
+import {
+  createGroupSlice,
+  type GroupSlice,
+} from '@/store/slices/createGroupSlice';
 
 // REQUIRED: every slice mutates native Map/Set instances inside
 // immer drafts (roomsById, messagesByRoom, sendingRequestTo, etc).
@@ -50,7 +54,8 @@ export type ChatStore = AuthSlice &
   RoomsSlice &
   MessagesSlice &
   FriendshipsSlice &
-  SocketSlice;
+  SocketSlice &
+  GroupSlice;
 
 export const useChatStore = create<ChatStore>()(
   devtools(
@@ -61,6 +66,7 @@ export const useChatStore = create<ChatStore>()(
       ...createMessagesSlice(...a),
       ...createFriendshipsSlice(...a),
       ...createSocketSlice(...a),
+      ...createGroupSlice(...a)
     })),
     { name: 'hibiki-chat-store' }
   )

@@ -41,7 +41,7 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      directRooms: data.directRooms,
+      rooms: data.rooms,
     });
   } catch (error) {
     console.log(error);

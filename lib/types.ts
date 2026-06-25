@@ -47,7 +47,6 @@ export type RoomMessageState = {
 };
 
 // ---------- Rooms ----------
-
 export type DirectChatRoom = {
   roomId: string;
   roomType: 'direct';
@@ -59,6 +58,45 @@ export type DirectChatRoom = {
     username: string;
     avatarUrl: string | null;
   };
+};
+
+export type ParticipantRole = 'admin' | 'member';
+
+export type GroupMember = {
+  id: string;
+  username: string;
+  fullName: string | null;
+  avatarUrl: string | null;
+  role: ParticipantRole;
+};
+
+export type GroupChatRoom = {
+  roomId: string;
+  roomType: 'group';
+  currentUserId: string;
+  currentUserRole: ParticipantRole;
+  name: string;
+  avatarUrl: string | null;
+  members: GroupMember[];
+};
+
+export type ChatRoom = DirectChatRoom | GroupChatRoom;
+
+export type GroupInviteStatus = 'pending' | 'accepted' | 'rejected';
+
+export type PendingGroupInvite = {
+  id: string;
+  status: GroupInviteStatus;
+  created_at: string;
+  room_id: string;
+  inviter_id: string;
+  invitee_id: string;
+  room: {
+    id: string;
+    name: string;
+    avatar_url: string | null;
+  };
+  inviter: Profile;
 };
 
 // ---------- Friendships ----------

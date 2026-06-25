@@ -4714,7 +4714,6 @@ export function ChatLayout() {
 'use client';
 
 import { useViewMode } from '@/store/selectors';
-import { RequestsList } from '../requests/RequestsList';
 import { RoomsList } from '../rooms/RoomsList';
 import { UserSettings } from '../userpanel/UserSettings';
 
@@ -4725,7 +4724,6 @@ export function ViewListContainer() {
   return (
     <div className="h-full min-h-0 w-25/100 min-w-0 overflow-hidden border-r bg-card">
       {viewMode === 'rooms' && <RoomsList />}
-      {viewMode === 'requests' && <RequestsList />}
       {viewMode === 'userpanel' && <UserSettings />}
     </div>
   );
@@ -4735,14 +4733,12 @@ export function ViewListContainer() {
 ===== ./features/chat/requests/PendingRequests.tsx =====
 'use client';
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/pixelact-ui/avatar';
-import { Button } from '@/components/ui/pixelact-ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Check, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   usePendingRequests,
   useAcceptFriendRequest,
@@ -4755,18 +4751,6 @@ export function PendingRequests() {
   const { sent, received, status, error } = usePendingRequests();
   const acceptFriendRequest = useAcceptFriendRequest();
   const rejectFriendRequest = useRejectFriendRequest();
-
-  if (status === 'loading') {
-    return <div className="p-4 text-[#C4B5FD]">Loading requests...</div>;
-  }
-
-  if (status === 'error') {
-    return (
-      <div className="p-4 text-[#C4B5FD]">
-        {error ?? 'Failed to load requests'}
-      </div>
-    );
-  }
 
   async function handleAccept(requesterId: string, fullName: string | null) {
     try {
@@ -4786,76 +4770,98 @@ export function PendingRequests() {
     }
   }
 
+  if (status === 'loading') {
+    return (
+      <div className="flex h-full items-center justify-center gap-2 p-4 text-sm text-muted-foreground">
+        <Loader2 className="size-4 animate-spin" />
+        <span>Loading requests...</span>
+      </div>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="flex h-full items-center justify-center p-4 text-sm text-muted-foreground">
+        {error ?? 'Failed to load requests'}
+      </div>
+    );
+  }
+
   return (
-    <div className="h-full min-h-0 grid grid-rows-[auto_1fr_auto_1fr] overflow-hidden bg-[#121214] border-[#1E1E22]">
-      {/* SENT HEADER */}
-      <div className="px-4 py-3 border-b-4 border-[#1E1E22]">
-        <p className="font-ui text-lg text-[#F3E8FF]">Sent by you</p>
+    <div className="grid h-full min-h-0 grid-rows-[auto_1fr_auto_1fr]">
+      {/* RECEIVED HEADER */}
+      <div className="border-b px-5 py-4">
+        <p className="text-sm font-semibold text-foreground">
+          Received requests
+        </p>
       </div>
 
-      <div className="min-h-0 overflow-hidden">
+      <div className="min-h-0">
         <ScrollArea className="h-full">
-          {sent.length === 0 && (
-            <p className="px-4 py-3 text-sm text-[#C4B5FD]">
-              No sent requests.
-            </p>
-          )}
-
-          {sent.map((req) => (
-            <div
-              key={req.id}
-              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 border-b-4"
-            >
-              <Avatar variant="round" size="large">
-                <AvatarImage src={req.addressee.avatar_url ?? undefined} />
-                <AvatarFallback>
-                  {req.addressee.full_name?.slice(0, 1)}
-                </AvatarFallback>
-              </Avatar>
-
-              <div className="min-w-0 overflow-hidden">
-                <p className="truncate font-ui text-[#F3E8FF]">
-                  {req.addressee.full_name}
-                </p>
-                <p className="truncate text-sm text-[#C4B5FD]">
-                  @{req.addressee.username}
-                </p>
-              </div>
-
-              <span className="text-xs text-[#C4B5FD]">Pending</span>
-            </div>
-          ))}
+          <div className="flex flex-col gap-1 p-3">
+            {received.length === 0 ? (
+              <EmptyState text="No requests found." />
+            ) : (
+              received.map((req) => (
+                <ReceivedRow
+                  key={req.id}
+                  requesterId={req.requester.id}
+                  fullName={req.requester.full_name}
+                  username={req.requester.username}
+                  avatarUrl={req.requester.avatar_url}
+                  onAccept={() =>
+                    handleAccept(req.requester.id, req.requester.full_name)
+                  }
+                  onReject={() =>
+                    handleReject(req.requester.id, req.requester.full_name)
+                  }
+                />
+              ))
+            )}
+          </div>
         </ScrollArea>
       </div>
 
-      {/* RECEIVED HEADER */}
-      <div className="px-4 py-3 border-y-4 border-[#1E1E22]">
-        <p className="font-ui text-lg text-[#F3E8FF]">Received by you</p>
+      {/* SENT HEADER */}
+      <div className="border-y px-5 py-4">
+        <p className="text-sm font-semibold text-foreground">Sent requests</p>
       </div>
 
-      <div className="min-h-0 overflow-hidden">
+      <div className="min-h-0">
         <ScrollArea className="h-full">
-          {received.length === 0 && (
-            <p className="px-4 py-3 text-sm text-[#C4B5FD]">
-              No received requests.
-            </p>
-          )}
+          <div className="flex flex-col gap-1 p-3">
+            {sent.length === 0 ? (
+              <EmptyState text="No requests found." />
+            ) : (
+              sent.map((req) => (
+                <div
+                  key={req.id}
+                  className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5"
+                >
+                  <Avatar size="lg">
+                    <AvatarImage src={req.addressee.avatar_url ?? undefined} />
+                    <AvatarFallback>
+                      {req.addressee.full_name?.slice(0, 2)?.toUpperCase() ??
+                        'U'}
+                    </AvatarFallback>
+                  </Avatar>
 
-          {received.map((req) => (
-            <PendingReceivedRow
-              key={req.id}
-              requesterId={req.requester.id}
-              fullName={req.requester.full_name}
-              username={req.requester.username}
-              avatarUrl={req.requester.avatar_url}
-              onAccept={() =>
-                handleAccept(req.requester.id, req.requester.full_name)
-              }
-              onReject={() =>
-                handleReject(req.requester.id, req.requester.full_name)
-              }
-            />
-          ))}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-foreground">
+                      {req.addressee.full_name}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      @{req.addressee.username}
+                    </p>
+                  </div>
+
+                  <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                    Pending
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
         </ScrollArea>
       </div>
     </div>
@@ -4865,7 +4871,7 @@ export function PendingRequests() {
 // Pulled into its own component so each row can read its own
 // accepting/rejecting flag from the store without re-rendering
 // every other row in the list.
-function PendingReceivedRow({
+function ReceivedRow({
   requesterId,
   fullName,
   username,
@@ -4882,62 +4888,103 @@ function PendingReceivedRow({
 }) {
   const isAccepting = useIsAcceptingFrom(requesterId);
   const isRejecting = useIsRejectingFrom(requesterId);
+  const isBusy = isAccepting || isRejecting;
 
   return (
-    <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 border-b-4">
-      <Avatar variant="round" size="large">
+    <div className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5">
+      <Avatar size="lg">
         <AvatarImage src={avatarUrl ?? undefined} />
-        <AvatarFallback>{fullName?.slice(0, 1)}</AvatarFallback>
+        <AvatarFallback>
+          {fullName?.slice(0, 2)?.toUpperCase() ?? 'U'}
+        </AvatarFallback>
       </Avatar>
 
-      <div className="min-w-0 overflow-hidden">
-        <p className="truncate font-ui text-[#F3E8FF]">{fullName}</p>
-        <p className="truncate text-sm text-[#C4B5FD]">@{username}</p>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-foreground">
+          {fullName}
+        </p>
+        <p className="truncate text-xs text-muted-foreground">@{username}</p>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex shrink-0 items-center gap-1.5">
         <Button
-          size="sm"
-          variant="secondary"
-          disabled={isAccepting || isRejecting}
-          onClick={onAccept}
+          size="icon-sm"
+          variant="outline"
+          disabled={isBusy}
+          onClick={onReject}
+          aria-label="Reject request"
         >
-          {isAccepting ? 'Accepting...' : 'Accept'}
+          {isRejecting ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <X className="size-4" />
+          )}
         </Button>
 
         <Button
-          size="sm"
-          variant="destructive"
-          disabled={isRejecting || isAccepting}
-          onClick={onReject}
+          size="icon-sm"
+          disabled={isBusy}
+          onClick={onAccept}
+          aria-label="Accept request"
         >
-          {isRejecting ? 'Rejecting...' : 'Reject'}
+          {isAccepting ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Check className="size-4" />
+          )}
         </Button>
       </div>
     </div>
   );
 }
 
-
-===== ./features/chat/requests/RequestsList.tsx =====
-import { PendingRequests } from './PendingRequests';
-import { Search } from './Search';
-
-export function RequestsList() {
+function EmptyState({ text }: { text: string }) {
   return (
-    <div className="grid grid-rows-[auto_1fr_auto_1fr] h-full min-h-0 w-full min-w-0 overflow-hidden bg-[#121214] border-[#1E1E22]">
-      <div className="flex flex-col justify-center items-start p-4 border-b-4 border-[#1E1E22]">
-        <p className="font-ui text-3xl text-[#F3E8FF]">Search</p>
-      </div>
-
-      <Search />
-
-      <div className="flex flex-col justify-center items-start p-4 border-y-4 border-[#1E1E22]">
-        <p className="font-ui text-3xl text-[#F3E8FF]">Requests</p>
-      </div>
-
-      <PendingRequests />
+    <div className="flex h-full items-center justify-center px-6 py-10 text-center text-sm text-muted-foreground">
+      {text}
     </div>
+  );
+}
+
+
+===== ./features/chat/requests/RequestsDialog.tsx =====
+'use client';
+
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Search } from './Search';
+import { PendingRequests } from './PendingRequests';
+
+interface RequestsDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function RequestsDialog({ open, onOpenChange }: RequestsDialogProps) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        showCloseButton
+        className="@container flex max-h-[85vh] w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl"
+      >
+        {/* DialogTitle is required for a11y; visually hidden since each
+            pane already carries its own heading, matching the wireframe
+            which has no single top-level dialog title. */}
+        <DialogTitle className="sr-only">Friend requests</DialogTitle>
+
+        <div className="grid min-h-0 flex-1 grid-cols-1 @2xl:grid-cols-[1fr_1px_1fr]">
+          <div className="min-h-0 min-w-0">
+            <Search />
+          </div>
+
+          {/* Divider: horizontal line when stacked, vertical line when side-by-side */}
+          <div className="h-px w-full bg-border @2xl:h-full @2xl:w-px" />
+
+          <div className="min-h-0 min-w-0">
+            <PendingRequests />
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -4945,23 +4992,19 @@ export function RequestsList() {
 ===== ./features/chat/requests/Search.tsx =====
 'use client';
 
+import { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
-import { useEffect } from 'react';
 import { toast } from 'sonner';
+import { Search as SearchIcon, UserPlus, Loader2 } from 'lucide-react';
 
 import { Field, FieldGroup } from '@/components/ui/field';
-import { Input } from '@/components/ui/pixelact-ui/input';
-import { Button } from '@/components/ui/pixelact-ui/button';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/pixelact-ui/avatar';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-import { Search as SearchIcon } from 'lucide-react';
 import {
   useSearchUsersState,
   useSearchUsers,
@@ -4971,7 +5014,7 @@ import {
 
 const formData = z.object({
   search: z.string().trim().min(1, 'Search cannot be empty'),
-}); 
+});
 
 export function Search() {
   const form = useForm<z.infer<typeof formData>>({
@@ -4993,7 +5036,7 @@ export function Search() {
   // render — same guard the original component had via isError+useEffect.
   useEffect(() => {
     if (status === 'error' && error) {
-      toast.error('Search Failed', { description: error });
+      toast.error('Search failed', { description: error });
     }
   }, [status, error]);
 
@@ -5001,20 +5044,20 @@ export function Search() {
     try {
       await sendFriendRequest(userId);
     } catch (err: any) {
-      toast.error('Request Failed', {
+      toast.error('Request failed', {
         description: err?.message || 'Could not send request',
       });
     }
   }
 
   return (
-    <div className="h-full min-h-0 w-full min-w-0 grid grid-rows-[auto_1fr]">
-      {/* Search Input */}
-      <div className="p-4 border-b-4 border-[#1E1E22] grid grid-cols-[1fr_auto] gap-4 items-center">
+    <div className="grid h-full min-h-0 grid-rows-[auto_1fr]">
+      {/* Search input */}
+      <div className="flex items-center gap-2 border-b px-5 py-4">
         <form
           onSubmit={form.handleSubmit(handleSearch)}
           id="searchForm"
-          className="w-full"
+          className="flex-1"
         >
           <FieldGroup>
             <Controller
@@ -5025,9 +5068,8 @@ export function Search() {
                   <Input
                     {...field}
                     type="text"
-                    placeholder="Enter username"
+                    placeholder="Search by username"
                     autoComplete="off"
-                    className="bg-[#1c1c1e]"
                   />
                 </Field>
               )}
@@ -5039,36 +5081,47 @@ export function Search() {
           disabled={isLoading}
           type="submit"
           form="searchForm"
-          variant="secondary"
+          size="icon"
         >
-          <SearchIcon size={18} />
-          {isLoading ? 'Searching...' : 'Search'}
+          {isLoading ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <SearchIcon className="size-4" />
+          )}
         </Button>
       </div>
 
       {/* Results */}
-      <div className="h-full w-full min-h-0 min-w-0">
-        <ScrollArea className="h-full w-full min-h-0 min-w-0">
-          {isLoading && (
-            <div className="p-4 text-sm text-[#C4B5FD]">Searching...</div>
-          )}
+      <div className="min-h-0">
+        <ScrollArea className="h-full">
+          <div className="flex flex-col gap-1 p-3">
+            {!isLoading && results.length === 0 && query.trim().length >= 2 && (
+              <EmptyState text="No users found" />
+            )}
 
-          {!isLoading && results.length === 0 && query.length >= 2 && (
-            <div className="p-4 text-sm text-[#C4B5FD]">No users found</div>
-          )}
+            {!isLoading && results.length === 0 && query.trim().length < 2 && (
+              <EmptyState text="Search results will be displayed here." />
+            )}
 
-          {!isLoading &&
-            results.length > 0 &&
-            results.map((user) => (
-              <SearchResultRow
-                key={user.id}
-                userId={user.id}
-                fullName={user.full_name}
-                username={user.username}
-                avatarUrl={user.avatar_url}
-                onSend={() => handleSend(user.id)}
+            {isLoading && (
+              <EmptyState
+                text="Searching..."
+                icon={<Loader2 className="size-4 animate-spin" />}
               />
-            ))}
+            )}
+
+            {!isLoading &&
+              results.map((user) => (
+                <SearchResultRow
+                  key={user.id}
+                  userId={user.id}
+                  fullName={user.full_name}
+                  username={user.username}
+                  avatarUrl={user.avatar_url}
+                  onSend={() => handleSend(user.id)}
+                />
+              ))}
+          </div>
         </ScrollArea>
       </div>
     </div>
@@ -5093,27 +5146,43 @@ function SearchResultRow({
   const isSending = useIsSendingRequestTo(userId);
 
   return (
-    <div className="p-4 grid grid-cols-[auto_minmax(0,1fr)_auto] gap-4 items-center">
-      <Avatar size="large" variant="round">
+    <div className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5">
+      <Avatar size="lg">
         <AvatarImage src={avatarUrl ?? undefined} />
-        <AvatarFallback>{fullName?.slice(0, 2) ?? 'U'}</AvatarFallback>
+        <AvatarFallback>
+          {fullName?.slice(0, 2)?.toUpperCase() ?? 'U'}
+        </AvatarFallback>
       </Avatar>
 
-      <div className="min-w-0">
-        <p className="font-ui text-xl truncate text-[#F3E8FF]">{fullName}</p>
-        <p className="font-ui text-sm truncate text-[#C4B5FD]">
-          {'@' + username}
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-foreground">
+          {fullName}
         </p>
+        <p className="truncate text-xs text-muted-foreground">@{username}</p>
       </div>
 
       <Button
-        onClick={onSend}
+        size="icon-sm"
+        variant="outline"
         disabled={isSending}
-        variant="secondary"
-        size="sm"
+        onClick={onSend}
+        aria-label="Send friend request"
       >
-        {isSending ? 'Sending...' : 'Send'}
+        {isSending ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <UserPlus className="size-4" />
+        )}
       </Button>
+    </div>
+  );
+}
+
+function EmptyState({ text, icon }: { text: string; icon?: React.ReactNode }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-2 px-6 py-10 text-center text-sm text-muted-foreground">
+      {icon}
+      <span>{text}</span>
     </div>
   );
 }
@@ -5264,15 +5333,23 @@ import {
   DialogTrigger,
   DialogClose,
 } from '@/components/ui/dialog';
-import { useViewMode, useSetViewMode, useCurrentUser } from '@/store/selectors';
+import { RequestsDialog } from '../requests/RequestsDialog';
+import {
+  useViewMode,
+  useSetViewMode,
+  useCurrentUser,
+  usePendingRequests,
+} from '@/store/selectors';
 
 export function Sidebar() {
   const [isLoading, setIsLoading] = useState(false);
+  const [requestsOpen, setRequestsOpen] = useState(false);
   const router = useRouter();
 
   const viewMode = useViewMode();
   const setViewMode = useSetViewMode();
   const user = useCurrentUser();
+  const { received } = usePendingRequests();
 
   async function logOut() {
     setIsLoading(true);
@@ -5298,7 +5375,7 @@ export function Sidebar() {
       <div className="flex flex-col items-center gap-3">
         <Button
           size="icon"
-          variant="ghost"
+          variant={viewMode === 'rooms' ? 'secondary' : 'ghost'}
           onClick={() => setViewMode('rooms')}
         >
           <MessageSquare className="size-5" />
@@ -5306,12 +5383,20 @@ export function Sidebar() {
 
         <Button
           size="icon"
-          variant="ghost"
-          onClick={() => setViewMode('requests')}
+          variant={requestsOpen ? 'secondary' : 'ghost'}
+          onClick={() => setRequestsOpen(true)}
+          className="relative"
         >
           <UserPlus2 className="size-5" />
+          {received.length > 0 && (
+            <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+              {received.length > 9 ? '9+' : received.length}
+            </span>
+          )}
         </Button>
       </div>
+
+      <RequestsDialog open={requestsOpen} onOpenChange={setRequestsOpen} />
 
       {/* Bottom Controls */}
       <div className="flex flex-col items-center gap-3">
@@ -5351,7 +5436,7 @@ export function Sidebar() {
         <Avatar
           className="cursor-pointer border"
           onClick={() => setViewMode('userpanel')}
-          size='lg'
+          size="lg"
         >
           <AvatarImage src={user?.avatar_url ?? ''} alt="Profile Photo" />
           <AvatarFallback>
@@ -6436,7 +6521,6 @@ export type RoomMessageState = {
 };
 
 // ---------- Rooms ----------
-
 export type DirectChatRoom = {
   roomId: string;
   roomType: 'direct';
@@ -6448,6 +6532,45 @@ export type DirectChatRoom = {
     username: string;
     avatarUrl: string | null;
   };
+};
+
+export type ParticipantRole = 'admin' | 'member';
+
+export type GroupMember = {
+  id: string;
+  username: string;
+  fullName: string | null;
+  avatarUrl: string | null;
+  role: ParticipantRole;
+};
+
+export type GroupChatRoom = {
+  roomId: string;
+  roomType: 'group';
+  currentUserId: string;
+  currentUserRole: ParticipantRole;
+  name: string;
+  avatarUrl: string | null;
+  members: GroupMember[];
+};
+
+export type ChatRoom = DirectChatRoom | GroupChatRoom;
+
+export type GroupInviteStatus = 'pending' | 'accepted' | 'rejected';
+
+export type PendingGroupInvite = {
+  id: string;
+  status: GroupInviteStatus;
+  created_at: string;
+  room_id: string;
+  inviter_id: string;
+  invitee_id: string;
+  room: {
+    id: string;
+    name: string;
+    avatar_url: string | null;
+  };
+  inviter: Profile;
 };
 
 // ---------- Friendships ----------
@@ -6473,7 +6596,7 @@ export type SearchUser = {
 
 // ---------- UI ----------
 
-export type ViewMode = 'rooms' | 'requests' | 'userpanel';
+export type ViewMode = 'rooms' | 'userpanel';
 
 
 ===== ./lib/utils.ts =====
@@ -7296,6 +7419,10 @@ import {
   createSocketSlice,
   type SocketSlice,
 } from '@/store/slices/createSocketSlice';
+import {
+  createGroupSlice,
+  type GroupSlice,
+} from '@/store/slices/createGroupSlice';
 
 // REQUIRED: every slice mutates native Map/Set instances inside
 // immer drafts (roomsById, messagesByRoom, sendingRequestTo, etc).
@@ -7308,7 +7435,8 @@ export type ChatStore = AuthSlice &
   RoomsSlice &
   MessagesSlice &
   FriendshipsSlice &
-  SocketSlice;
+  SocketSlice &
+  GroupSlice;
 
 export const useChatStore = create<ChatStore>()(
   devtools(
@@ -7319,6 +7447,7 @@ export const useChatStore = create<ChatStore>()(
       ...createMessagesSlice(...a),
       ...createFriendshipsSlice(...a),
       ...createSocketSlice(...a),
+      ...createGroupSlice(...a)
     })),
     { name: 'hibiki-chat-store' }
   )
@@ -7731,6 +7860,218 @@ export const createFriendshipsSlice: StateCreator<
 });
 
 
+===== ./store/slices/createGroupSlice.ts =====
+// ============================================================
+// store/slices/createGroupSlice.ts
+// Group-specific actions: create, invite, fetch/accept/reject
+// pending invites. Group *rooms* themselves still live in
+// roomsById (RoomsSlice) — this slice only owns the invite
+// lifecycle, same separation as friendships (FriendshipsSlice)
+// vs rooms (RoomsSlice) for direct chats.
+// ============================================================
+import type { StateCreator } from 'zustand';
+import type { ChatRoom, PendingGroupInvite } from '@/lib/types';
+import type { ChatStore } from '../chatStore';
+
+export type GroupSlice = {
+  pendingGroupInvites: PendingGroupInvite[];
+  groupInvitesStatus: 'idle' | 'loading' | 'error' | 'success';
+  groupInvitesError: string | null;
+
+  creatingGroup: boolean;
+  invitingToGroup: Set<string>; // composite "roomId:inviteeId" keys in flight
+  acceptingGroupInvite: Set<string>; // inviteIds in flight
+  rejectingGroupInvite: Set<string>;
+
+  createGroup: (name: string, inviteeIds: string[]) => Promise<void>;
+  inviteToGroup: (roomId: string, inviteeId: string) => Promise<void>;
+  fetchPendingGroupInvites: () => Promise<void>;
+  acceptGroupInvite: (inviteId: string) => Promise<void>;
+  rejectGroupInvite: (inviteId: string) => Promise<void>;
+};
+
+export const createGroupSlice: StateCreator<
+  ChatStore,
+  [['zustand/immer', never]],
+  [],
+  GroupSlice
+> = (set, get) => ({
+  pendingGroupInvites: [],
+  groupInvitesStatus: 'idle',
+  groupInvitesError: null,
+
+  creatingGroup: false,
+  invitingToGroup: new Set(),
+  acceptingGroupInvite: new Set(),
+  rejectingGroupInvite: new Set(),
+
+  createGroup: async (name, inviteeIds) => {
+    set((state) => {
+      state.creatingGroup = true;
+    });
+
+    try {
+      const res = await fetch('/api/groups', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, inviteeIds }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Failed to create group');
+      }
+
+      // The backend now returns the fully-enriched room shape directly
+      // (roomId/roomType/members[]/etc — same contract as GET /rooms),
+      // so no shape translation is needed here.
+      const room: ChatRoom = data.room;
+      get().upsertRoom(room);
+      get().joinRoom(room.roomId);
+
+      set((state) => {
+        state.creatingGroup = false;
+      });
+    } catch (err) {
+      set((state) => {
+        state.creatingGroup = false;
+      });
+      throw err; // let the caller toast it
+    }
+  },
+
+  inviteToGroup: async (roomId, inviteeId) => {
+    const key = `${roomId}:${inviteeId}`;
+    set((state) => {
+      state.invitingToGroup.add(key);
+    });
+
+    try {
+      const res = await fetch(`/api/groups/${roomId}/invites`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inviteeId }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Failed to send invite');
+      }
+
+      set((state) => {
+        state.invitingToGroup.delete(key);
+      });
+    } catch (err) {
+      set((state) => {
+        state.invitingToGroup.delete(key);
+      });
+      throw err;
+    }
+  },
+
+  fetchPendingGroupInvites: async () => {
+    set((state) => {
+      state.groupInvitesStatus = 'loading';
+      state.groupInvitesError = null;
+    });
+
+    try {
+      const res = await fetch('/api/group-invites/pending', {
+        credentials: 'include',
+      });
+
+      if (!res.ok) throw new Error('Failed to fetch group invites');
+
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message || 'Fetch failed');
+
+      set((state) => {
+        state.pendingGroupInvites = data.pending;
+        state.groupInvitesStatus = 'success';
+      });
+    } catch (err) {
+      set((state) => {
+        state.groupInvitesStatus = 'error';
+        state.groupInvitesError =
+          err instanceof Error ? err.message : 'Failed to load invites';
+      });
+    }
+  },
+
+  acceptGroupInvite: async (inviteId) => {
+    set((state) => {
+      state.acceptingGroupInvite.add(inviteId);
+    });
+
+    try {
+      const res = await fetch('/api/group-invites/accept', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inviteId }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Failed to accept invite');
+      }
+
+      set((state) => {
+        state.pendingGroupInvites = state.pendingGroupInvites.filter(
+          (inv) => inv.id !== inviteId
+        );
+        state.acceptingGroupInvite.delete(inviteId);
+      });
+
+      // The backend returns the fully-enriched room shape now (see
+      // getEnrichedGroupRoom in room.service.ts) — same contract as
+      // GET /api/rooms — so we can upsert directly with no refetch.
+      const room: ChatRoom = data.room;
+      get().upsertRoom(room);
+      get().joinRoom(room.roomId);
+    } catch (err) {
+      set((state) => {
+        state.acceptingGroupInvite.delete(inviteId);
+      });
+      throw err;
+    }
+  },
+
+  rejectGroupInvite: async (inviteId) => {
+    set((state) => {
+      state.rejectingGroupInvite.add(inviteId);
+    });
+
+    try {
+      const res = await fetch('/api/group-invites/reject', {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inviteId }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Failed to reject invite');
+      }
+
+      set((state) => {
+        state.pendingGroupInvites = state.pendingGroupInvites.filter(
+          (inv) => inv.id !== inviteId
+        );
+        state.rejectingGroupInvite.delete(inviteId);
+      });
+    } catch (err) {
+      set((state) => {
+        state.rejectingGroupInvite.delete(inviteId);
+      });
+      throw err;
+    }
+  },
+});
+
 ===== ./store/slices/createMessageSlice.ts =====
 // ============================================================
 // store/slices/createMessagesSlice.ts
@@ -7992,17 +8333,17 @@ export const createMessagesSlice: StateCreator<
 // already have the data from a socket event (no need to refetch).
 // ============================================================
 import type { StateCreator } from 'zustand';
-import type { DirectChatRoom } from '@/lib/types';
+import type { ChatRoom } from '@/lib/types';
 import type { ChatStore } from '../chatStore';
 
 export type RoomsSlice = {
-  roomsById: Map<string, DirectChatRoom>;
+  roomsById: Map<string, ChatRoom>;
   roomOrder: string[]; // preserves list order without re-sorting a Map
   roomsStatus: 'idle' | 'loading' | 'error' | 'success';
   roomsError: string | null;
 
   fetchRooms: () => Promise<void>;
-  upsertRoom: (room: DirectChatRoom) => void;
+  upsertRoom: (room: ChatRoom) => void;
   removeRoom: (roomId: string) => void;
 };
 
@@ -8034,7 +8375,7 @@ export const createRoomsSlice: StateCreator<
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'Backend error');
 
-      const rooms: DirectChatRoom[] = data.directRooms ?? [];
+      const rooms: ChatRoom[] = data.rooms ?? [];
 
       set((state) => {
         state.roomsById = new Map(rooms.map((r) => [r.roomId, r]));
@@ -8088,7 +8429,7 @@ export const createRoomsSlice: StateCreator<
 // ============================================================
 import type { StateCreator } from 'zustand';
 import { io, type Socket } from 'socket.io-client';
-import type { MessageStructure } from '@/lib/types';
+import type { GroupChatRoom, MessageStructure } from '@/lib/types';
 import type { ChatStore } from '../chatStore';
 import { toast } from 'sonner';
 
@@ -8182,6 +8523,32 @@ export const createSocketSlice: StateCreator<
 
     socket.on('friendship:rejected', () => {
       toast.info('Your friend request was declined');
+    });
+
+    // ---- group events ----
+    socket.on(
+      'group:invited',
+      (data: {
+        roomId: string;
+        roomName?: string;
+        inviterId: string;
+        inviteId: string;
+      }) => {
+        get().fetchPendingGroupInvites();
+        toast.info(
+          `New group invite${data.roomName ? `: ${data.roomName}` : ''}`
+        );
+      }
+    );
+
+    socket.on('group:joined', (data: { room: GroupChatRoom }) => {
+      get().upsertRoom(data.room);
+      get().joinRoom(data.room.roomId);
+      toast.success(`You joined ${data.room.name}`);
+    });
+
+    socket.on('group:memberJoined', () => {
+      get().fetchRooms();
     });
 
     socket.connect();
