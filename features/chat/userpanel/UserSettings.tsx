@@ -182,7 +182,7 @@ export function UserSettings() {
   }
 
   const displayedAvatarUrl = avatarPreviewUrl ?? user?.avatar_url ?? '';
-
+  console.log(displayedAvatarUrl);
   return (
     <div className="h-full w-full font-chat">
       <div className="flex flex-col justify-center items-start w-full h-17 p-4 border-b">

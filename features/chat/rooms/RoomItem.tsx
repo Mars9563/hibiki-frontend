@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useSelectRoom, useSelectedRoom } from '@/store/selectors';
 import { cn } from '@/lib/utils';
 import { ChatRoom } from '@/lib/types';
+import { FaUserLarge } from 'react-icons/fa6';
 
 interface RoomItemProps {
   room: ChatRoom;
@@ -28,7 +29,7 @@ export function RoomItem({ room, onClick }: RoomItemProps) {
   const avatarUrl =
     room.roomType === 'direct' ? room.otherUser.avatarUrl : room.avatarUrl;
 
-  const initials = displayName?.slice(0, 2) ?? '??';
+  const initials = <FaUserLarge />;
 
   return (
     <button

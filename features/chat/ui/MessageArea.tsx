@@ -154,9 +154,7 @@ export function MessageArea() {
   }
 
   const isGroup = selectedRoom?.roomType === 'group';
-  const avatarUrl = isGroup
-    ? selectedRoom.avatarUrl
-    : selectedRoom?.otherUser.avatarUrl;
+  
 
   return (
     <div className="relative flex flex-col h-full min-h-0 min-w-0 w-full">
@@ -183,7 +181,7 @@ export function MessageArea() {
                 content={item.entry.message.content}
                 senderId={item.entry.message.sender_id}
                 currentUserId={selectedRoom?.currentUserId ?? ''}
-                avatarUrl={avatarUrl}
+                avatarUrl={isGroup ? selectedRoom?.members.find(member => member.id == item.entry.message.sender_id)?.avatarUrl: selectedRoom?.otherUser.avatarUrl}
                 fallback={isGroup ? <FaUserLarge /> : <FaUserLarge />}
                 status={item.entry.status}
                 createdAt={item.entry.message.created_at}

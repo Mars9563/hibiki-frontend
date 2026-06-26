@@ -802,6 +802,75 @@ export async function GET(request: NextRequest) {
 }
 
 
+===== ./app/api/personal/me/route.ts =====
+import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
+
+// Forwards the browser's multipart form data straight through to
+// Express as-is (name/username fields + an optional avatar file, all
+// in one request). We don't parse the body here — req.formData()
+// followed by a re-built FormData keeps the file as a real Blob
+// rather than reading it into a JSON-safe shape and losing it.
+export async function PATCH(req: Request) {
+  try {
+    const incomingForm = await req.formData();
+
+    const supabase = await createClient();
+
+    const { data: userData, error } = await supabase.auth.getUser();
+
+    if (error || !userData.user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+
+    if (!token) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const response = await fetch(
+      `${process.env.BACKEND_BASE_URL}/api/personal/me`,
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // Deliberately no Content-Type — fetch sets the correct
+          // multipart boundary itself when the body is a FormData.
+        },
+        body: incomingForm,
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      return NextResponse.json(
+        { success: false, error: data.message || 'Failed to update profile.' },
+        { status: response.status || 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      profile: data.profile,
+    });
+  } catch {
+    return NextResponse.json(
+      { success: false, error: 'Internal server error.' },
+      { status: 500 }
+    );
+  }
+}
+
+
 ===== ./app/api/rooms/route.ts =====
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
@@ -873,12 +942,21 @@ export default async function AppLayout({ children }: ChatLayoutProps) {
 ===== ./app/(app)/page.tsx =====
 import { AppBootstrap } from '@/features/chat/AppBootStrap';
 import { ChatLayout } from '@/features/chat/layout/ChatLayout';
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+import type { Profile } from '@/lib/types';
 
 export default async function Home() {
-  const supabase = createClient();
-  let userData = null;
+  let userData: Profile | null = null;
   try {
+    // This is a server component, so it must use the server Supabase
+    // client (cookie-based) — the browser client used here previously
+    // has no session in this context, which meant `token` below was
+    // always undefined, every request to /api/personal/me 401'd, and
+    // initialUser silently became undefined for every user on first
+    // load. That bug is the root of "currentUser shows up as undefined"
+    // — see also: GET /me now always returns a single object, not an
+    // array, so there's no [0] indexing footgun left on this end either.
+    const supabase = await createClient();
     const { data: sessionData } = await supabase.auth.getSession();
     const token = sessionData.session?.access_token;
 
@@ -890,13 +968,20 @@ export default async function Home() {
         },
       }
     );
-    userData = (await response.json())[0];
+
+    const data = await response.json();
+    if (response.ok && data.success) {
+      userData = data.profile;
+    } else {
+      console.error('Failed to load initial profile:', data);
+    }
   } catch (error) {
     console.log(error);
   }
+
   return (
     <>
-      <AppBootstrap initialUser={userData}/>
+      <AppBootstrap initialUser={userData} />
       <ChatLayout />
     </>
   );
@@ -6472,9 +6557,9 @@ export function RoomsList() {
   const { status, error } = useRoomsStatus();
 
   return (
-    <div className="grid h-full min-h-0 w-full min-w-0 grid-rows-[auto_1fr]">
+    <div className="grid h-full min-h-0 w-full min-w-0 grid-rows-[auto_1fr] font-chat">
       <div className="border-b px-4 py-4.5 flex flex-row justify-start items-center h-17">
-        <p className="font-chat text-xl font-semibold text-foreground">Chats</p>
+        <p className="text-2xl font-semibold text-foreground">Chats</p>
       </div>
 
       <div className="min-h-0 w-full min-w-0">
@@ -6562,9 +6647,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { UsersRound, Plus, Inbox } from 'lucide-react';
+import { Plus, Inbox } from 'lucide-react';
 import { CreateGroupDialog } from '../groups/createGroupDialog';
 import { GroupInvitesDialog } from '../groups/groupInviteDialog';
+import { ThemeToggle } from './ThemeToggle';
 
 export function Sidebar() {
   const [isLoading, setIsLoading] = useState(false);
@@ -6625,7 +6711,7 @@ export function Sidebar() {
           <DropdownMenuTrigger asChild>
             <MdGroups2 size={24} />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className='w-fit p-2'>
+          <DropdownMenuContent align="start" className="w-fit p-2">
             <DropdownMenuItem
               onClick={() => setCreateGroupOpen(true)}
               className="flex flex-row justify-between items-center gap-2"
@@ -6656,6 +6742,7 @@ export function Sidebar() {
 
       {/* Bottom Controls */}
       <div className="flex flex-col items-center gap-3">
+        <ThemeToggle />
         <Dialog>
           <DialogTrigger asChild>
             <Button size="icon" variant="destructive" disabled={isLoading}>
@@ -6701,6 +6788,42 @@ export function Sidebar() {
         </Avatar>
       </div>
     </aside>
+  );
+}
+
+
+===== ./features/chat/sidebar/ThemeToggle.tsx =====
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useTheme } from 'next-themes';
+import { Moon, Sun } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+export function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme();
+
+  // next-themes only knows the real theme after mount (it reads
+  // localStorage/system preference client-side) — render a neutral
+  // placeholder first to avoid a hydration mismatch/flash.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return <Button size="icon" variant="ghost" disabled />;
+  }
+
+  const isDark = resolvedTheme === 'dark';
+
+  return (
+    <Button
+      size="icon"
+      variant="ghost"
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      aria-label="Toggle theme"
+    >
+      {isDark ? <Sun className="size-5" /> : <Moon className="size-5" />}
+    </Button>
   );
 }
 
@@ -7319,31 +7442,34 @@ export function TopBar() {
 ===== ./features/chat/userpanel/UserSettings.tsx =====
 'use client';
 
-import { useState } from 'react';
-import { AvatarImage } from '@/components/ui/avatar';
+import { useCallback, useEffect, useState } from 'react';
+import Cropper, { type Area } from 'react-easy-crop';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from '@/components/ui/field';
-import { Avatar, AvatarFallback } from '@/components/ui/pixelact-ui/avatar';
-import { Input } from '@/components/ui/pixelact-ui/input';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/pixelact-ui/dialog';
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import z from 'zod';
-import { createClient } from '@/lib/supabase/client';
+import { toast } from 'sonner';
 import { useCurrentUser } from '@/store/selectors';
 import { useChatStore } from '@/store/chatStore';
+import { getCroppedImageBlob } from '@/lib/cropImage';
+import { FaUserLarge } from 'react-icons/fa6';
 
-const registerSchema = z.object({
+const profileSchema = z.object({
   name: z.string().trim().nonempty('Name is required').max(255),
   username: z
     .string()
@@ -7354,259 +7480,300 @@ const registerSchema = z.object({
     ),
 });
 
+type ProfileFormValues = z.infer<typeof profileSchema>;
+
 export function UserSettings() {
   const user = useCurrentUser();
   // setCurrentUser has no dedicated selector hook yet (it's an
   // infrequent write, mirrors the pattern AppBootstrap.tsx already
   // uses) — pulled directly off the store rather than via selectors.ts.
   const setCurrentUser = useChatStore((s) => s.setCurrentUser);
-  const supabase = createClient();
 
-  // Preview is only for inside the dialog — starts as null
-  const [dialogPreviewUrl, setDialogPreviewUrl] = useState<string | null>(null);
-  // The pending file to upload when user hits Save
-  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  // ---------- Avatar crop dialog state ----------
+  // Cropping happens up front, in its own dialog, but nothing is
+  // uploaded yet — the cropped Blob just sits in state until the
+  // single Save button below submits everything together.
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [isCropping, setIsCropping] = useState(false);
 
-  const [isUploading, setIsUploading] = useState(false);
+  // Pending avatar — staged after cropping, applied on Save.
+  const [pendingAvatarBlob, setPendingAvatarBlob] = useState<Blob | null>(null);
+  const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
+
   const [isSaving, setIsSaving] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
 
-  // The committed avatar URL (set after saving)
-  const [committedAvatarUrl, setCommittedAvatarUrl] = useState<string | null>(
-    user?.avatar_url ?? null
-  );
-
-  const form = useForm<z.infer<typeof registerSchema>>({
-    resolver: zodResolver(registerSchema),
+  const form = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileSchema),
     defaultValues: {
       name: user?.full_name ?? '',
       username: user?.username ?? '',
     },
   });
 
-  // When dialog opens, reset preview to the current committed avatar
-  function handleDialogOpen(open: boolean) {
-    setDialogOpen(open);
-    if (open) {
-      setDialogPreviewUrl(committedAvatarUrl);
-      setPendingFile(null);
-      setUploadError(null);
-    }
-  }
+  // Resync the form's baseline whenever the underlying user changes —
+  // covers the case where this panel mounts before AppBootstrap has
+  // finished populating currentUser, or the panel is reopened after
+  // a value changed elsewhere. Without this, isDirty would compare
+  // against a stale/empty baseline forever.
+  useEffect(() => {
+    if (!user) return;
+    form.reset({
+      name: user.full_name ?? '',
+      username: user.username ?? '',
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.full_name, user?.username]);
 
-  // File picked → show preview inside dialog only, store file for later upload
+  // Save is locked until something actually changed — either a text
+  // field (react-hook-form's isDirty, compared against the values
+  // last saved/loaded) or a newly staged avatar. Re-locks itself
+  // after a successful save via form.reset() + clearing the pending
+  // avatar below, rather than just leaving it enabled post-save.
+  const hasChanges = form.formState.isDirty || pendingAvatarBlob !== null;
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setUploadError(null);
-
-    if (file.size > 2 * 1024 * 1024) {
-      setUploadError('File must be less than 2MB.');
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File must be less than 5MB.');
       return;
     }
 
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-      setUploadError('Only JPG, PNG, WEBP allowed.');
+      toast.error('Only JPG, PNG, or WEBP allowed.');
       return;
     }
 
-    // Show preview inside dialog only — don't touch the main avatar yet
-    const localPreview = URL.createObjectURL(file);
-    setDialogPreviewUrl(localPreview);
-    setPendingFile(file);
+    setRawImageSrc(URL.createObjectURL(file));
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCroppedAreaPixels(null);
+    setCropDialogOpen(true);
+    // Allow picking the same file again later.
+    e.target.value = '';
   }
 
-  // Save button inside dialog → upload to Cloudinary → update Supabase
-  async function handleSave() {
-    if (!pendingFile) {
-      setDialogOpen(false);
-      return;
-    }
+  const onCropComplete = useCallback((_area: Area, areaPixels: Area) => {
+    setCroppedAreaPixels(areaPixels);
+  }, []);
+
+  // Confirming the crop only stages the result locally — it does not
+  // touch the network. The actual upload happens once, in
+  // onSubmit, alongside name/username.
+  async function handleConfirmCrop() {
+    if (!rawImageSrc || !croppedAreaPixels) return;
 
     try {
-      setIsUploading(true);
-      setUploadError(null);
+      setIsCropping(true);
+      const blob = await getCroppedImageBlob(rawImageSrc, croppedAreaPixels);
 
-      // 1. Upload to Cloudinary
+      setPendingAvatarBlob(blob);
+      setAvatarPreviewUrl(URL.createObjectURL(blob));
+      setCropDialogOpen(false);
+      setRawImageSrc(null);
+    } catch {
+      toast.error('Could not process that image.');
+    } finally {
+      setIsCropping(false);
+    }
+  }
+
+  // Single combined save: name, username, and the staged avatar (if
+  // any) all go in one multipart request, handled as one write on
+  // the backend — see services/profile.service.ts. This is what
+  // makes the signed-upload + overwrite-in-place avatar strategy
+  // work cleanly, since there's only ever one save to reason about.
+  async function onSubmit(values: ProfileFormValues) {
+    setIsSaving(true);
+    try {
       const formData = new FormData();
-      formData.append('file', pendingFile);
-      formData.append(
-        'upload_preset',
-        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!
-      );
-
-      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        { method: 'POST', body: formData }
-      );
-
-      if (!response.ok) throw new Error('Cloudinary upload failed.');
-
-      const data = await response.json();
-      const secureUrl: string = data.secure_url;
-
-      // 2. Update Supabase and return updated row
-      setIsSaving(true);
-
-      const { data: updatedUser, error } = await supabase
-        .from('profiles')
-        .update({ avatar_url: secureUrl })
-        .eq('id', user?.id)
-        .select()
-        .single();
-
-      if (error) throw new Error(error.message);
-
-      // 3. Update the store (replaces the old React Context setUser)
-      if (updatedUser) {
-        setCurrentUser(updatedUser);
-        setCommittedAvatarUrl(updatedUser.avatar_url);
+      formData.append('fullName', values.name);
+      formData.append('username', values.username);
+      if (pendingAvatarBlob) {
+        formData.append('avatar', pendingAvatarBlob, 'avatar.jpg');
       }
 
-      // 4. Cleanup
-      setPendingFile(null);
-      setDialogOpen(false);
-    } catch (err: any) {
-      console.error(err);
-      setUploadError(err.message ?? 'Something went wrong.');
+      const res = await fetch('/api/personal/me', {
+        method: 'PATCH',
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to update profile.');
+      }
+
+      setCurrentUser(data.profile);
+      setPendingAvatarBlob(null);
+      setAvatarPreviewUrl(null);
+      // Re-baseline the form to the values just saved so isDirty goes
+      // back to false and the Save button locks again until the next
+      // actual edit.
+      form.reset({ name: values.name, username: values.username });
+      toast.success('Profile updated');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Something went wrong.');
     } finally {
-      setIsUploading(false);
       setIsSaving(false);
     }
   }
 
-  function onSubmit(values: z.infer<typeof registerSchema>) {
-    // handle name/username update here
-    console.log(values);
-  }
-
-  const loading = isUploading || isSaving;
+  const displayedAvatarUrl = avatarPreviewUrl ?? user?.avatar_url ?? '';
 
   return (
-    <div className="h-full w-full">
-      <div className="flex flex-col justify-center items-start w-full p-4 border-b-4 border-[#1E1E22]">
-        <p className="font-ui text-4xl text-[#F3E8FF]">Update Details</p>
+    <div className="h-full w-full font-chat">
+      <div className="flex flex-col justify-center items-start w-full h-17 p-4 border-b">
+        <p className="text-2xl text-foreground font-semibold">
+          Profile settings
+        </p>
       </div>
 
-      <div className="flex flex-col justify-center items-center p-4 gap-4">
-        {/* Avatar triggers dialog */}
-        <Dialog open={dialogOpen} onOpenChange={handleDialogOpen}>
-          <DialogTrigger asChild>
-            <button className="cursor-pointer">
-              <Avatar size="extralarge" variant="square">
-                {/* Main view always shows the committed avatar */}
-                <AvatarImage src={committedAvatarUrl || ''} />
-                <AvatarFallback className="bg-[#000000]">
-                  {user?.username?.slice(0, 2)}
-                </AvatarFallback>
-              </Avatar>
-            </button>
-          </DialogTrigger>
+      <div className="flex flex-col justify-center items-center p-6 gap-6">
+        {/* Avatar — clicking opens the file picker, which opens the
+            crop dialog. Nothing uploads until Save below. */}
+        <label className="cursor-pointer group flex flex-col justify-center items-center">
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          <Avatar
+            size="lg"
+            className="size-24 transition-opacity group-hover:opacity-80"
+          >
+            <AvatarImage src={displayedAvatarUrl} alt="Profile photo" />
+            <AvatarFallback className="text-2xl">
+              <FaUserLarge />
+            </AvatarFallback>
+          </Avatar>
+          <p className="mt-2 text-center text-xs text-muted-foreground">
+            {pendingAvatarBlob ? 'New photo selected' : 'Change photo'}
+          </p>
+        </label>
 
-          <DialogContent className="bg-[#1a1a1e] text-white">
-            <DialogHeader>
-              <DialogTitle className="text-[#C4B5FD]">
-                Upload Profile Picture
-              </DialogTitle>
-            </DialogHeader>
-
-            <div className="flex flex-col items-center gap-6 mt-6 w-full">
-              <Avatar size="extralarge" variant="round">
-                <AvatarImage src={dialogPreviewUrl || ''} />
-                <AvatarFallback className="bg-[#000000]">
-                  {user?.username?.slice(0, 2)}
-                </AvatarFallback>
-              </Avatar>
-
-              {/* Upload Button */}
-              <label className="cursor-pointer w-full">
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={handleFileChange}
-                  disabled={loading}
-                  className="hidden"
-                />
-                <div className="w-full border border-[#2a2a2f] rounded-lg py-3 px-4 text-center bg-[#111114] hover:bg-[#1c1c21] transition-colors">
-                  <span className="text-[#C4B5FD] font-ui">Choose Image</span>
-                </div>
-              </label>
-
-              {uploadError && (
-                <p className="text-sm text-red-500 text-center">
-                  {uploadError}
-                </p>
+        {/* Name/username + Save — one form, one submit, one request. */}
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full max-w-sm"
+        >
+          <FieldGroup>
+            <Controller
+              name="name"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel>Name</FieldLabel>
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="John Doe"
+                    autoComplete="name"
+                    className="bg-background"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
               )}
+            />
 
-              <button
-                onClick={handleSave}
-                disabled={loading}
-                className="w-full py-3 rounded-lg bg-gradient-to-r from-purple-600 to-purple-500 hover:opacity-90 disabled:opacity-50 text-white font-ui transition-all"
-              >
-                {loading
-                  ? isUploading
-                    ? 'Uploading...'
-                    : 'Saving...'
-                  : 'Save'}
-              </button>
-            </div>
-          </DialogContent>
-        </Dialog>
+            <Controller
+              name="username"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel>Username</FieldLabel>
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Username"
+                    autoComplete="username"
+                    className="bg-background"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
 
-        {/* Form */}
-        <div className="w-full">
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FieldGroup>
-              <Controller
-                name="name"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel className="font-ui text-[#F3E8FF] text-2xl">
-                      Name
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      type="text"
-                      placeholder="John Doe"
-                      autoComplete="name"
-                      className="bg-[#222327] text-[#555d63]"
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-
-              <Controller
-                name="username"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel className="font-ui text-[#F3E8FF] text-2xl">
-                      Username
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      type="text"
-                      placeholder="Username"
-                      autoComplete="username"
-                      className="bg-[#222327] text-[#555d63]"
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
-              />
-            </FieldGroup>
-          </form>
-        </div>
+            <Button
+              type="submit"
+              disabled={isSaving || !hasChanges}
+              className="mt-2"
+            >
+              {isSaving ? 'Saving...' : 'Save changes'}
+            </Button>
+          </FieldGroup>
+        </form>
       </div>
+
+      {/* Crop dialog — staging only, no network calls here */}
+      <Dialog
+        open={cropDialogOpen}
+        onOpenChange={(open) => {
+          if (!isCropping) setCropDialogOpen(open);
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Crop your photo</DialogTitle>
+          </DialogHeader>
+
+          {/* Square crop area; round overlay previews what will
+              actually be visible once masked by the round avatar
+              elsewhere in the app. The stored image stays square so
+              it still looks right anywhere a square frame is used
+              later. */}
+          <div className="relative h-72 w-full overflow-hidden rounded-md bg-muted">
+            {rawImageSrc && (
+              <Cropper
+                image={rawImageSrc}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                cropShape="round"
+                showGrid={false}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+              />
+            )}
+          </div>
+
+          <div className="flex items-center gap-3 px-1">
+            <span className="text-xs text-muted-foreground">Zoom</span>
+            <input
+              type="range"
+              min={1}
+              max={3}
+              step={0.05}
+              value={zoom}
+              onChange={(e) => setZoom(Number(e.target.value))}
+              className="flex-1"
+            />
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setCropDialogOpen(false)}
+              disabled={isCropping}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmCrop} disabled={isCropping}>
+              {isCropping ? 'Processing...' : 'Use this photo'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -7616,7 +7783,70 @@ export function UserSettings() {
 declare module '*.css';
 
 
-===== ./lib/query-client.ts =====
+===== ./lib/cropImage.ts =====
+// ============================================================
+// lib/cropImage.ts
+// Pure canvas helper: takes a source image + the crop rectangle
+// react-easy-crop reports (in source-image pixels) and returns a
+// JPEG Blob of just that square region. No dependency beyond the
+// browser canvas API.
+// ============================================================
+export type CropArea = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+// outputSize keeps every avatar a consistent, reasonably small
+// upload regardless of the source photo's resolution.
+export async function getCroppedImageBlob(
+  imageSrc: string,
+  cropArea: CropArea,
+  outputSize = 512
+): Promise<Blob> {
+  const image = await loadImage(imageSrc);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = outputSize;
+  canvas.height = outputSize;
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Canvas not supported');
+
+  ctx.drawImage(
+    image,
+    cropArea.x,
+    cropArea.y,
+    cropArea.width,
+    cropArea.height,
+    0,
+    0,
+    outputSize,
+    outputSize
+  );
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error('Failed to crop image'));
+      },
+      'image/jpeg',
+      0.92
+    );
+  });
+}
 
 
 ===== ./lib/supabase/client.ts =====
@@ -7757,6 +7987,7 @@ export type Profile = {
   username: string;
   full_name: string | null;
   avatar_url: string | null;
+  status: string | null;
 };
 
 // ---------- Messages ----------
@@ -7798,6 +8029,7 @@ export type DirectChatRoom = {
     fullName: string | null;
     username: string;
     avatarUrl: string | null;
+    status: string | null; // new
   };
 };
 
@@ -7808,6 +8040,7 @@ export type GroupMember = {
   username: string;
   fullName: string | null;
   avatarUrl: string | null;
+  status: string | null; // new
   role: ParticipantRole;
 };
 
@@ -7818,6 +8051,7 @@ export type GroupChatRoom = {
   currentUserRole: ParticipantRole;
   name: string;
   avatarUrl: string | null;
+  description: string | null; // new
   members: GroupMember[];
 };
 
@@ -7933,6 +8167,7 @@ import "./.next/dev/types/routes.d.ts";
     "radix-ui": "^1.6.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-easy-crop": "^6.0.2",
     "react-hook-form": "^7.71.1",
     "react-icons": "^5.6.0",
     "shadcn": "^4.11.0",
@@ -9648,7 +9883,6 @@ export const createGroupSlice: StateCreator<
 import type { StateCreator } from 'zustand';
 import type {
   ChatRoom,
-  DirectChatRoom,
   MessageEntry,
   MessageStructure,
   RoomMessageState,
