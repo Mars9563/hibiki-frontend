@@ -16,6 +16,7 @@ export type Profile = {
   username: string;
   full_name: string | null;
   avatar_url: string | null;
+  status: string | null;
 };
 
 // ---------- Messages ----------
@@ -57,6 +58,7 @@ export type DirectChatRoom = {
     fullName: string | null;
     username: string;
     avatarUrl: string | null;
+    status: string | null; // new
   };
 };
 
@@ -67,6 +69,7 @@ export type GroupMember = {
   username: string;
   fullName: string | null;
   avatarUrl: string | null;
+  status: string | null; // new
   role: ParticipantRole;
 };
 
@@ -77,6 +80,7 @@ export type GroupChatRoom = {
   currentUserRole: ParticipantRole;
   name: string;
   avatarUrl: string | null;
+  description: string | null; // new
   members: GroupMember[];
 };
 

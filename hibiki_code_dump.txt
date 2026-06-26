@@ -355,6 +355,391 @@ export async function GET(req: Request) {
 }
 
 
+===== ./app/api/groups/invites/accept/route.ts =====
+// app/api/group-invites/accept/route.ts
+import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const { inviteId } = body as { inviteId?: string };
+
+    if (!inviteId) {
+      return NextResponse.json(
+        { success: false, error: 'inviteId is required' },
+        { status: 400 }
+      );
+    }
+
+    const supabase = await createClient();
+    const { data: userData, error } = await supabase.auth.getUser();
+
+    if (error || !userData.user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+
+    if (!token) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const response = await fetch(
+      `${process.env.BACKEND_BASE_URL}/api/group-invites/accept`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ inviteId }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      return NextResponse.json(
+        { success: false, error: data.message || 'Failed to accept invite' },
+        { status: response.status || 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, room: data.room });
+  } catch {
+    return NextResponse.json(
+      { success: false, error: 'Internal server error.' },
+      { status: 500 }
+    );
+  }
+}
+
+
+===== ./app/api/groups/invites/pending/route.ts =====
+import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  try {
+    const supabase = await createClient();
+    const { data: userData, error } = await supabase.auth.getUser();
+
+    if (error || !userData.user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+
+    if (!token) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const response = await fetch(
+      `${process.env.BACKEND_BASE_URL}/api/group-invites/pending`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      return NextResponse.json(
+        { success: false, error: 'Failed to fetch group invites.' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, pending: data.pending });
+  } catch {
+    return NextResponse.json(
+      { success: false, error: 'Internal server error.' },
+      { status: 500 }
+    );
+  }
+}
+
+
+===== ./app/api/groups/invites/reject/route.ts =====
+// app/api/group-invites/reject/route.ts
+import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
+
+export async function DELETE(req: Request) {
+  try {
+    const body = await req.json();
+    const { inviteId } = body as { inviteId?: string };
+
+    if (!inviteId) {
+      return NextResponse.json(
+        { success: false, error: 'inviteId is required' },
+        { status: 400 }
+      );
+    }
+
+    const supabase = await createClient();
+    const { data: userData, error } = await supabase.auth.getUser();
+
+    if (error || !userData.user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+
+    if (!token) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const response = await fetch(
+      `${process.env.BACKEND_BASE_URL}/api/group-invites/reject`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ inviteId }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      return NextResponse.json(
+        { success: false, error: data.message || 'Failed to reject invite' },
+        { status: response.status || 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch {
+    return NextResponse.json(
+      { success: false, error: 'Internal server error.' },
+      { status: 500 }
+    );
+  }
+}
+
+
+===== ./app/api/groups/[roomId]/invites/route.ts =====
+import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
+
+export async function POST(
+  req: Request,
+  { params }: { params: Promise<{ roomId: string }> }
+) {
+  try {
+    const { roomId } = await params;
+    const body = await req.json();
+    const { inviteeId } = body as { inviteeId?: string };
+
+    if (!inviteeId) {
+      return NextResponse.json(
+        { success: false, error: 'inviteeId is required' },
+        { status: 400 }
+      );
+    }
+
+    const supabase = await createClient();
+    const { data: userData, error } = await supabase.auth.getUser();
+
+    if (error || !userData.user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+
+    if (!token) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const response = await fetch(
+      `${process.env.BACKEND_BASE_URL}/api/groups/${roomId}/invites`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ inviteeId }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      return NextResponse.json(
+        { success: false, error: data.message || 'Failed to send invite' },
+        { status: response.status || 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, invite: data.invite });
+  } catch {
+    return NextResponse.json(
+      { success: false, error: 'Internal server error.' },
+      { status: 500 }
+    );
+  }
+}
+
+
+===== ./app/api/groups/route.ts =====
+import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const { name, inviteeIds } = body as {
+      name?: string;
+      inviteeIds?: string[];
+    };
+
+    if (!name) {
+      return NextResponse.json(
+        { success: false, error: 'Group name is required' },
+        { status: 400 }
+      );
+    }
+
+    const supabase = await createClient();
+    const { data: userData, error } = await supabase.auth.getUser();
+
+    if (error || !userData.user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+
+    if (!token) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const response = await fetch(`${process.env.BACKEND_BASE_URL}/api/groups`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ name, inviteeIds: inviteeIds ?? [] }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      return NextResponse.json(
+        { success: false, error: data.message || 'Failed to create group' },
+        { status: response.status || 500 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      room: data.room,
+      invites: data.invites,
+    });
+  } catch {
+    return NextResponse.json(
+      { success: false, error: 'Internal server error.' },
+      { status: 500 }
+    );
+  }
+}
+
+
+===== ./app/api/groups/search/route.ts =====
+import { createClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
+
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const query = searchParams.get('q');
+
+    if (!query || query.length < 2) {
+      return NextResponse.json({ success: true, results: [] });
+    }
+
+    const supabase = await createClient();
+    const { data: userData, error } = await supabase.auth.getUser();
+
+    if (error || !userData.user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+
+    if (!token) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const response = await fetch(
+      `${process.env.BACKEND_BASE_URL}/api/groups/search?q=${encodeURIComponent(query)}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      return NextResponse.json(
+        { success: false, error: 'Search failed.' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({ success: true, results: data.results });
+  } catch {
+    return NextResponse.json(
+      { success: false, error: 'Internal server error.' },
+      { status: 500 }
+    );
+  }
+}
+
+
 ===== ./app/api/messages/route.ts =====
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
@@ -461,7 +846,7 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      directRooms: data.directRooms,
+      rooms: data.rooms,
     });
   } catch (error) {
     console.log(error);
@@ -2241,6 +2626,278 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
+}
+
+
+===== ./components/ui/dropdown-menu.tsx =====
+"use client"
+
+import * as React from "react"
+import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui"
+
+import { cn } from "@/lib/utils"
+import { CheckIcon, ChevronRightIcon } from "lucide-react"
+
+function DropdownMenu({
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
+  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />
+}
+
+function DropdownMenuPortal({
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Portal>) {
+  return (
+    <DropdownMenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />
+  )
+}
+
+function DropdownMenuTrigger({
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) {
+  return (
+    <DropdownMenuPrimitive.Trigger
+      data-slot="dropdown-menu-trigger"
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuContent({
+  className,
+  align = "start",
+  sideOffset = 4,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
+  return (
+    <DropdownMenuPrimitive.Portal>
+      <DropdownMenuPrimitive.Content
+        data-slot="dropdown-menu-content"
+        sideOffset={sideOffset}
+        align={align}
+        className={cn("z-50 max-h-(--radix-dropdown-menu-content-available-height) w-(--radix-dropdown-menu-trigger-width) min-w-32 origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:overflow-hidden data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95", className )}
+        {...props}
+      />
+    </DropdownMenuPrimitive.Portal>
+  )
+}
+
+function DropdownMenuGroup({
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Group>) {
+  return (
+    <DropdownMenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />
+  )
+}
+
+function DropdownMenuItem({
+  className,
+  inset,
+  variant = "default",
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Item> & {
+  inset?: boolean
+  variant?: "default" | "destructive"
+}) {
+  return (
+    <DropdownMenuPrimitive.Item
+      data-slot="dropdown-menu-item"
+      data-inset={inset}
+      data-variant={variant}
+      className={cn(
+        "group/dropdown-menu-item relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-8 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuCheckboxItem({
+  className,
+  children,
+  checked,
+  inset,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.CheckboxItem> & {
+  inset?: boolean
+}) {
+  return (
+    <DropdownMenuPrimitive.CheckboxItem
+      data-slot="dropdown-menu-checkbox-item"
+      data-inset={inset}
+      className={cn(
+        "relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-8 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      checked={checked}
+      {...props}
+    >
+      <span
+        className="pointer-events-none absolute right-2 flex items-center justify-center"
+        data-slot="dropdown-menu-checkbox-item-indicator"
+      >
+        <DropdownMenuPrimitive.ItemIndicator>
+          <CheckIcon
+          />
+        </DropdownMenuPrimitive.ItemIndicator>
+      </span>
+      {children}
+    </DropdownMenuPrimitive.CheckboxItem>
+  )
+}
+
+function DropdownMenuRadioGroup({
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.RadioGroup>) {
+  return (
+    <DropdownMenuPrimitive.RadioGroup
+      data-slot="dropdown-menu-radio-group"
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuRadioItem({
+  className,
+  children,
+  inset,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.RadioItem> & {
+  inset?: boolean
+}) {
+  return (
+    <DropdownMenuPrimitive.RadioItem
+      data-slot="dropdown-menu-radio-item"
+      data-inset={inset}
+      className={cn(
+        "relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-8 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    >
+      <span
+        className="pointer-events-none absolute right-2 flex items-center justify-center"
+        data-slot="dropdown-menu-radio-item-indicator"
+      >
+        <DropdownMenuPrimitive.ItemIndicator>
+          <CheckIcon
+          />
+        </DropdownMenuPrimitive.ItemIndicator>
+      </span>
+      {children}
+    </DropdownMenuPrimitive.RadioItem>
+  )
+}
+
+function DropdownMenuLabel({
+  className,
+  inset,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Label> & {
+  inset?: boolean
+}) {
+  return (
+    <DropdownMenuPrimitive.Label
+      data-slot="dropdown-menu-label"
+      data-inset={inset}
+      className={cn(
+        "px-2 py-1.5 text-xs font-medium text-muted-foreground data-inset:pl-8",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuSeparator({
+  className,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Separator>) {
+  return (
+    <DropdownMenuPrimitive.Separator
+      data-slot="dropdown-menu-separator"
+      className={cn("-mx-1 my-1 h-px bg-border", className)}
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuShortcut({
+  className,
+  ...props
+}: React.ComponentProps<"span">) {
+  return (
+    <span
+      data-slot="dropdown-menu-shortcut"
+      className={cn(
+        "ml-auto text-xs tracking-widest text-muted-foreground group-focus/dropdown-menu-item:text-accent-foreground",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function DropdownMenuSub({
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Sub>) {
+  return <DropdownMenuPrimitive.Sub data-slot="dropdown-menu-sub" {...props} />
+}
+
+function DropdownMenuSubTrigger({
+  className,
+  inset,
+  children,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.SubTrigger> & {
+  inset?: boolean
+}) {
+  return (
+    <DropdownMenuPrimitive.SubTrigger
+      data-slot="dropdown-menu-sub-trigger"
+      data-inset={inset}
+      className={cn(
+        "flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-8 data-open:bg-accent data-open:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      <ChevronRightIcon className="ml-auto" />
+    </DropdownMenuPrimitive.SubTrigger>
+  )
+}
+
+function DropdownMenuSubContent({
+  className,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
+  return (
+    <DropdownMenuPrimitive.SubContent
+      data-slot="dropdown-menu-sub-content"
+      className={cn("z-50 min-w-[96px] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md bg-popover p-1 text-popover-foreground shadow-lg ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95", className )}
+      {...props}
+    />
+  )
+}
+
+export {
+  DropdownMenu,
+  DropdownMenuPortal,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuItem,
+  DropdownMenuCheckboxItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 }
 
 
@@ -4694,6 +5351,554 @@ export function AppBootstrap({ initialUser }: { initialUser: Profile | null }) {
 }
 
 
+===== ./features/chat/groups/createGroupDialog.tsx =====
+'use client';
+
+import { useEffect } from 'react';
+import { toast } from 'sonner';
+import { Search as SearchIcon, X, Loader2, UsersRound } from 'lucide-react';
+
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+import {
+  useGroupSearchState,
+  useSearchUsersForGroup,
+  useDraftGroupName,
+  useSetDraftGroupName,
+  useDraftMembers,
+  useAddDraftMember,
+  useRemoveDraftMember,
+  useResetGroupDraft,
+  useCreateGroup,
+  useCreatingGroup,
+} from '@/store/selectors';
+import type { SearchUser } from '@/lib/types';
+
+interface CreateGroupDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function CreateGroupDialog({
+  open,
+  onOpenChange,
+}: CreateGroupDialogProps) {
+  const { query, results, status } = useGroupSearchState();
+  const searchUsers = useSearchUsersForGroup();
+
+  const draftName = useDraftGroupName();
+  const setDraftName = useSetDraftGroupName();
+
+  const members = useDraftMembers();
+  const addMember = useAddDraftMember();
+  const removeMember = useRemoveDraftMember();
+  const resetDraft = useResetGroupDraft();
+
+  const createGroup = useCreateGroup();
+  const creating = useCreatingGroup();
+
+  const memberIds = new Set(members.map((m) => m.id));
+  const isLoading = status === 'loading';
+
+  // Reset the draft whenever the dialog is closed, so reopening it
+  // always starts clean rather than showing the last attempt.
+  useEffect(() => {
+    if (!open) resetDraft();
+  }, [open, resetDraft]);
+
+  async function handleCreate() {
+    if (!draftName.trim()) {
+      toast.error('Group name is required');
+      return;
+    }
+    if (members.length === 0) {
+      toast.error('Add at least one person to the group');
+      return;
+    }
+
+    try {
+      await createGroup(draftName.trim(), Array.from(memberIds));
+      toast.success('Group created');
+      onOpenChange(false);
+    } catch (err: any) {
+      toast.error('Failed to create group', {
+        description: err?.message,
+      });
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        showCloseButton
+        className="@container flex max-h-[85vh] w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl"
+      >
+        <DialogTitle className="sr-only">Create group</DialogTitle>
+
+        <div className="grid min-h-0 flex-1 grid-cols-1 @2xl:grid-cols-[1fr_1px_1fr]">
+          {/* Left pane: search + addable results */}
+          <div className="grid h-full min-h-0 grid-rows-[auto_1fr]">
+            <div className="flex items-center gap-2 border-b px-5 py-4">
+              <div className="relative flex-1">
+                <SearchIcon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={query}
+                  onChange={(e) => searchUsers(e.target.value)}
+                  placeholder="Search by username"
+                  autoComplete="off"
+                  className="pl-9"
+                />
+              </div>
+            </div>
+
+            <div className="min-h-0">
+              <ScrollArea className="h-full">
+                <div className="flex flex-col gap-1 p-3">
+                  {!isLoading &&
+                    results.length === 0 &&
+                    query.trim().length >= 2 && (
+                      <EmptyState text="No users found" />
+                    )}
+                  {!isLoading && query.trim().length < 2 && (
+                    <EmptyState text="Search results will be displayed here." />
+                  )}
+                  {isLoading && (
+                    <EmptyState
+                      text="Searching..."
+                      icon={<Loader2 className="size-4 animate-spin" />}
+                    />
+                  )}
+
+                  {!isLoading &&
+                    results
+                      .filter((u) => !memberIds.has(u.id))
+                      .map((user) => (
+                        <ResultRow
+                          key={user.id}
+                          user={user}
+                          onAdd={() => addMember(user)}
+                        />
+                      ))}
+                </div>
+              </ScrollArea>
+            </div>
+          </div>
+
+          <div className="h-px w-full bg-border @2xl:h-full @2xl:w-px" />
+
+          {/* Right pane: group name + selected members */}
+          <div className="grid h-full min-h-0 grid-rows-[auto_1fr]">
+            <div className="flex items-center gap-3 border-b px-5 py-4">
+              <span className="text-sm font-medium text-foreground shrink-0">
+                Group name
+              </span>
+              <Input
+                value={draftName}
+                onChange={(e) => setDraftName(e.target.value)}
+                placeholder="New group name"
+                autoComplete="off"
+              />
+            </div>
+
+            <div className="min-h-0">
+              <ScrollArea className="h-full">
+                <div className="flex flex-col gap-1 p-3">
+                  {members.length === 0 && (
+                    <EmptyState
+                      icon={<UsersRound className="size-4" />}
+                      text="Add people from the left to build your group."
+                    />
+                  )}
+
+                  {members.map((user) => (
+                    <SelectedRow
+                      key={user.id}
+                      user={user}
+                      onRemove={() => removeMember(user.id)}
+                    />
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+
+            <div className="border-t p-3">
+              <Button
+                className="w-full"
+                disabled={creating}
+                onClick={handleCreate}
+              >
+                {creating ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  'Create group'
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ResultRow({ user, onAdd }: { user: SearchUser; onAdd: () => void }) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5">
+      <Avatar size="lg">
+        <AvatarImage src={user.avatar_url ?? undefined} />
+        <AvatarFallback>
+          {user.full_name?.slice(0, 2)?.toUpperCase() ?? 'U'}
+        </AvatarFallback>
+      </Avatar>
+
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-foreground">
+          {user.full_name}
+        </p>
+        <p className="truncate text-xs text-muted-foreground">
+          @{user.username}
+        </p>
+      </div>
+
+      <Button
+        size="icon-sm"
+        variant="outline"
+        onClick={onAdd}
+        aria-label="Add to group"
+      >
+        <UsersRound className="size-4" />
+      </Button>
+    </div>
+  );
+}
+
+function SelectedRow({
+  user,
+  onRemove,
+}: {
+  user: SearchUser;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5">
+      <Avatar size="lg">
+        <AvatarImage src={user.avatar_url ?? undefined} />
+        <AvatarFallback>
+          {user.full_name?.slice(0, 2)?.toUpperCase() ?? 'U'}
+        </AvatarFallback>
+      </Avatar>
+
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-foreground">
+          {user.full_name}
+        </p>
+        <p className="truncate text-xs text-muted-foreground">
+          @{user.username}
+        </p>
+      </div>
+
+      <Button
+        size="icon-sm"
+        variant="ghost"
+        onClick={onRemove}
+        aria-label="Remove from group"
+      >
+        <X className="size-4" />
+      </Button>
+    </div>
+  );
+}
+
+function EmptyState({ text, icon }: { text: string; icon?: React.ReactNode }) {
+  return (
+    <div className="flex flex-col items-center justify-center gap-2 px-6 py-10 text-center text-sm text-muted-foreground">
+      {icon}
+      <span>{text}</span>
+    </div>
+  );
+}
+
+
+===== ./features/chat/groups/groupInviteDialog.tsx =====
+'use client';
+
+import { useEffect } from 'react';
+import { Check, X, Loader2, UsersRound } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+import {
+  useGroupInvitesState,
+  useFetchGroupInvites,
+  useSelectedGroupInviteId,
+  useSelectedGroupInvite,
+  useSelectGroupInvite,
+  useAcceptGroupInvite,
+  useRejectGroupInvite,
+  useIsAcceptingGroupInvite,
+  useIsRejectingGroupInvite,
+} from '@/store/selectors';
+import type { GroupInviteRosterEntry } from '@/lib/types';
+import { cn } from '@/lib/utils';
+
+interface GroupInvitesDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function GroupInvitesDialog({
+  open,
+  onOpenChange,
+}: GroupInvitesDialogProps) {
+  const { invites, status, error } = useGroupInvitesState();
+  const fetchInvites = useFetchGroupInvites();
+  const selectedId = useSelectedGroupInviteId();
+  const selected = useSelectedGroupInvite();
+  const selectInvite = useSelectGroupInvite();
+  const acceptInvite = useAcceptGroupInvite();
+  const rejectInvite = useRejectGroupInvite();
+
+  // Fetch fresh every time the dialog opens, same as PendingRequests
+  // does implicitly via its own mount-time fetch pattern.
+  useEffect(() => {
+    if (open) fetchInvites();
+  }, [open, fetchInvites]);
+
+  async function handleAccept(inviteId: string, roomName: string) {
+    try {
+      await acceptInvite(inviteId);
+      toast.success(`Joined ${roomName}`);
+    } catch {
+      toast.error('Failed to accept invite');
+    }
+  }
+
+  async function handleReject(inviteId: string, roomName: string) {
+    try {
+      await rejectInvite(inviteId);
+      toast.success(`Declined invite to ${roomName}`);
+    } catch {
+      toast.error('Failed to decline invite');
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        showCloseButton
+        className="@container flex max-h-[85vh] w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl"
+      >
+        <DialogTitle className="sr-only">Group invites</DialogTitle>
+
+        <div className="grid min-h-0 flex-1 grid-cols-1 @2xl:grid-cols-[1fr_1px_1fr]">
+          {/* Left pane: invites received */}
+          <div className="grid h-full min-h-0 grid-rows-[auto_1fr]">
+            <div className="border-b px-5 py-4">
+              <p className="text-sm font-semibold text-foreground">
+                Group invites
+              </p>
+            </div>
+
+            <div className="min-h-0">
+              <ScrollArea className="h-full">
+                <div className="flex flex-col gap-1 p-3">
+                  {status === 'loading' && (
+                    <EmptyState
+                      icon={<Loader2 className="size-4 animate-spin" />}
+                      text="Loading invites..."
+                    />
+                  )}
+                  {status === 'error' && (
+                    <EmptyState text={error ?? 'Failed to load invites'} />
+                  )}
+                  {status === 'success' && invites.length === 0 && (
+                    <EmptyState text="No pending group invites." />
+                  )}
+
+                  {status === 'success' &&
+                    invites.map((invite) => (
+                      <InviteRow
+                        key={invite.id}
+                        inviteId={invite.id}
+                        roomName={invite.room.name}
+                        avatarUrl={invite.room.avatar_url}
+                        isSelected={invite.id === selectedId}
+                        onSelect={() => selectInvite(invite.id)}
+                        onAccept={() =>
+                          handleAccept(invite.id, invite.room.name)
+                        }
+                        onReject={() =>
+                          handleReject(invite.id, invite.room.name)
+                        }
+                      />
+                    ))}
+                </div>
+              </ScrollArea>
+            </div>
+          </div>
+
+          <div className="h-px w-full bg-border @2xl:h-full @2xl:w-px" />
+
+          {/* Right pane: roster for the selected invite */}
+          <div className="grid h-full min-h-0 grid-rows-[auto_1fr]">
+            <div className="border-b px-5 py-4">
+              <p className="truncate text-sm font-semibold text-foreground">
+                {selected ? selected.room.name : 'Group members'}
+              </p>
+            </div>
+
+            <div className="min-h-0">
+              <ScrollArea className="h-full">
+                <div className="flex flex-col gap-1 p-3">
+                  {!selected && (
+                    <EmptyState
+                      icon={<UsersRound className="size-4" />}
+                      text="Select an invite to view group members."
+                    />
+                  )}
+
+                  {selected?.roster.map((member) => (
+                    <RosterRow key={member.userId} member={member} />
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function InviteRow({
+  inviteId,
+  roomName,
+  avatarUrl,
+  isSelected,
+  onSelect,
+  onAccept,
+  onReject,
+}: {
+  inviteId: string;
+  roomName: string;
+  avatarUrl: string | null;
+  isSelected: boolean;
+  onSelect: () => void;
+  onAccept: () => void;
+  onReject: () => void;
+}) {
+  const isAccepting = useIsAcceptingGroupInvite(inviteId);
+  const isRejecting = useIsRejectingGroupInvite(inviteId);
+  const isBusy = isAccepting || isRejecting;
+
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={cn(
+        'flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors',
+        isSelected ? 'border-primary bg-primary/5' : 'bg-card hover:bg-muted'
+      )}
+    >
+      <Avatar size="lg">
+        <AvatarImage src={avatarUrl ?? undefined} />
+        <AvatarFallback>
+          <UsersRound className="size-4" />
+        </AvatarFallback>
+      </Avatar>
+
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-foreground">
+          {roomName}
+        </p>
+      </div>
+
+      <div
+        className="flex shrink-0 items-center gap-1.5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Button
+          size="icon-sm"
+          variant="outline"
+          disabled={isBusy}
+          onClick={onReject}
+          aria-label="Decline invite"
+        >
+          {isRejecting ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <X className="size-4" />
+          )}
+        </Button>
+
+        <Button
+          size="icon-sm"
+          disabled={isBusy}
+          onClick={onAccept}
+          aria-label="Accept invite"
+        >
+          {isAccepting ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Check className="size-4" />
+          )}
+        </Button>
+      </div>
+    </button>
+  );
+}
+
+function RosterRow({ member }: { member: GroupInviteRosterEntry }) {
+  return (
+    <div className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5">
+      <Avatar size="lg">
+        <AvatarImage src={member.avatarUrl ?? undefined} />
+        <AvatarFallback>
+          {member.fullName?.slice(0, 2)?.toUpperCase() ?? 'U'}
+        </AvatarFallback>
+      </Avatar>
+
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-foreground">
+          {member.fullName}
+        </p>
+        <p className="truncate text-xs text-muted-foreground">
+          @{member.username}
+        </p>
+      </div>
+
+      <span
+        className={cn(
+          'shrink-0 rounded-full px-2.5 py-1 text-xs font-medium',
+          member.status === 'accepted'
+            ? 'bg-emerald-500/10 text-emerald-600'
+            : 'bg-muted text-muted-foreground'
+        )}
+      >
+        {member.status === 'accepted' ? 'Accepted' : 'Pending'}
+      </span>
+    </div>
+  );
+}
+
+function EmptyState({ text, icon }: { text: string; icon?: React.ReactNode }) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-2 px-6 py-10 text-center text-sm text-muted-foreground">
+      {icon}
+      <span>{text}</span>
+    </div>
+  );
+}
+
+
 ===== ./features/chat/layout/ChatLayout.tsx =====
 import { Sidebar } from '../sidebar/Sidebar';
 import { ChatArea } from '../ui/ChatArea';
@@ -5192,12 +6397,12 @@ function EmptyState({ text, icon }: { text: string; icon?: React.ReactNode }) {
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { DirectChatRoom } from '@/lib/types';
 import { useSelectRoom, useSelectedRoom } from '@/store/selectors';
 import { cn } from '@/lib/utils';
+import { ChatRoom } from '@/lib/types';
 
 interface RoomItemProps {
-  room: DirectChatRoom;
+  room: ChatRoom;
   onClick?: () => void;
 }
 
@@ -5206,7 +6411,20 @@ export function RoomItem({ room, onClick }: RoomItemProps) {
   const selectedRoom = useSelectedRoom();
   const isActive = selectedRoom?.roomId === room.roomId;
 
-  const initials = room.otherUser.fullName?.slice(0, 2) ?? '??';
+  const displayName =
+    room.roomType === 'direct'
+      ? (room.otherUser.fullName ?? room.otherUser.username)
+      : room.name;
+
+  const subtitle =
+    room.roomType === 'direct'
+      ? `@${room.otherUser.username}`
+      : `${room.members.length} members`;
+
+  const avatarUrl =
+    room.roomType === 'direct' ? room.otherUser.avatarUrl : room.avatarUrl;
+
+  const initials = displayName?.slice(0, 2) ?? '??';
 
   return (
     <button
@@ -5221,7 +6439,7 @@ export function RoomItem({ room, onClick }: RoomItemProps) {
       )}
     >
       <Avatar className="size-11 shrink-0">
-        <AvatarImage src={room.otherUser.avatarUrl ?? undefined} />
+        <AvatarImage src={avatarUrl ?? undefined} />
         <AvatarFallback className="bg-accent text-accent-foreground">
           {initials}
         </AvatarFallback>
@@ -5234,21 +6452,18 @@ export function RoomItem({ room, onClick }: RoomItemProps) {
             isActive ? 'text-primary' : 'text-foreground'
           )}
         >
-          {room.otherUser.fullName ?? room.otherUser.username}
+          {displayName}
         </p>
-        <p className="truncate text-xs text-muted-foreground">
-          @{room.otherUser.username}
-        </p>
+        <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
       </div>
     </button>
   );
 }
 
-
 ===== ./features/chat/rooms/RoomsList.tsx =====
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { RoomItem } from './RoomItem';
-import { DirectChatRoom } from '@/lib/types';
+import { ChatRoom } from '@/lib/types';
 import { useRoomsList, useRoomsStatus } from '@/store/selectors';
 import { MessageSquare, Loader2 } from 'lucide-react';
 
@@ -5285,7 +6500,7 @@ export function RoomsList() {
         {status === 'success' && rooms.length > 0 && (
           <ScrollArea className="h-full w-full min-h-0 min-w-0">
             <div className="flex flex-col gap-0.5 p-2">
-              {rooms.map((room: DirectChatRoom) => (
+              {rooms.map((room: ChatRoom) => (
                 <RoomItem key={room.roomId} room={room} />
               ))}
             </div>
@@ -5340,10 +6555,22 @@ import {
   useCurrentUser,
   usePendingRequests,
 } from '@/store/selectors';
+import { MdGroups2 } from 'react-icons/md';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { UsersRound, Plus, Inbox } from 'lucide-react';
+import { CreateGroupDialog } from '../groups/createGroupDialog';
+import { GroupInvitesDialog } from '../groups/groupInviteDialog';
 
 export function Sidebar() {
   const [isLoading, setIsLoading] = useState(false);
   const [requestsOpen, setRequestsOpen] = useState(false);
+  const [createGroupOpen, setCreateGroupOpen] = useState(false);
+  const [groupInvitesOpen, setGroupInvitesOpen] = useState(false);
   const router = useRouter();
 
   const viewMode = useViewMode();
@@ -5370,7 +6597,7 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="flex h-full w-20 flex-col items-center justify-between border-r bg-sidebar px-3 py-4">
+    <aside className="flex h-full w-20 flex-col items-center justify-between border-r bg-sidebar px-3 py-4 font-chat">
       {/* Top Controls */}
       <div className="flex flex-col items-center gap-3">
         <Button
@@ -5394,9 +6621,38 @@ export function Sidebar() {
             </span>
           )}
         </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <MdGroups2 size={24} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className='w-fit p-2'>
+            <DropdownMenuItem
+              onClick={() => setCreateGroupOpen(true)}
+              className="flex flex-row justify-between items-center gap-2"
+            >
+              <span>Create group</span>
+              <Plus className="size-4" />
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setGroupInvitesOpen(true)}
+              className="flex flex-row justify-center items-center gap-2"
+            >
+              <span>Group invites</span>
+              <Inbox className="size-4" />
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <RequestsDialog open={requestsOpen} onOpenChange={setRequestsOpen} />
+      <CreateGroupDialog
+        open={createGroupOpen}
+        onOpenChange={setCreateGroupOpen}
+      />
+      <GroupInvitesDialog
+        open={groupInvitesOpen}
+        onOpenChange={setGroupInvitesOpen}
+      />
 
       {/* Bottom Controls */}
       <div className="flex flex-col items-center gap-3">
@@ -5598,6 +6854,7 @@ import {
   useRoomMessageMeta,
   useLoadMoreMessages,
 } from '@/store/selectors';
+import { FaUserLarge } from 'react-icons/fa6';
 
 function getDateLabel(date: Date): string {
   if (isToday(date)) return 'Today';
@@ -5741,6 +6998,11 @@ export function MessageArea() {
     });
   }
 
+  const isGroup = selectedRoom?.roomType === 'group';
+  const avatarUrl = isGroup
+    ? selectedRoom.avatarUrl
+    : selectedRoom?.otherUser.avatarUrl;
+
   return (
     <div className="relative flex flex-col h-full min-h-0 min-w-0 w-full">
       <div ref={scrollContainerRef} className="h-full">
@@ -5766,8 +7028,8 @@ export function MessageArea() {
                 content={item.entry.message.content}
                 senderId={item.entry.message.sender_id}
                 currentUserId={selectedRoom?.currentUserId ?? ''}
-                avatarUrl={selectedRoom?.otherUser.avatarUrl}
-                fallback={selectedRoom?.otherUser.fullName?.slice(0, 2)}
+                avatarUrl={avatarUrl}
+                fallback={isGroup ? <FaUserLarge /> : <FaUserLarge />}
                 status={item.entry.status}
                 createdAt={item.entry.message.created_at}
               />
@@ -5797,7 +7059,7 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
 
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -5808,7 +7070,7 @@ interface MessageBubbleProps {
   senderId: string;
   currentUserId: string;
   avatarUrl?: string | null;
-  fallback?: string;
+  fallback?: ReactNode;
   status?: 'pending' | 'sent' | 'received' | 'failed';
   createdAt?: Date | string;
 }
@@ -5993,15 +7255,12 @@ export function MessageBubble({
 
 ===== ./features/chat/ui/TopBar.tsx =====
 'use client';
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useSelectedRoom } from '@/store/selectors';
 import { FaUserLarge } from 'react-icons/fa6';
 import { PiDotsThreeOutlineVerticalDuotone } from 'react-icons/pi';
+import { UsersRound } from 'lucide-react';
 
 export function TopBar() {
   const selectedRoom = useSelectedRoom();
@@ -6018,30 +7277,38 @@ export function TopBar() {
     );
   }
 
+  // Direct and group rooms surface name/avatar from different places
+  // on the same ChatRoom union — direct rooms nest it under
+  // otherUser, groups carry it directly on the room. Branch once here
+  // rather than letting either field get read unconditionally.
+  const isGroup = selectedRoom.roomType === 'group';
+  const displayName = isGroup
+    ? selectedRoom.name
+    : selectedRoom.otherUser.fullName;
+  const avatarUrl = isGroup
+    ? selectedRoom.avatarUrl
+    : selectedRoom.otherUser.avatarUrl;
+  const subtitle = isGroup
+    ? `${selectedRoom.members.length} members`
+    : undefined;
+
   return (
     <div className="flex flex-row justify-between items-center px-2 py-3 w-full bg-card min-h-17 border-b">
       <div className="flex flex-row items-center gap-3 min-w-0">
-        <Avatar
-          size="lg"
-        >
-          <AvatarImage
-            src={selectedRoom.otherUser.avatarUrl ?? undefined}
-            alt="Profile Photo"
-          />
-          <AvatarFallback
-          >
-            <FaUserLarge/>
+        <Avatar size="lg">
+          <AvatarImage src={avatarUrl ?? undefined} alt="Profile Photo" />
+          <AvatarFallback>
+            {isGroup ? <UsersRound /> : <FaUserLarge />}
           </AvatarFallback>
         </Avatar>
-
         <div className="flex flex-col min-w-0">
-          <p className="font-chat truncate text-xl">
-            {selectedRoom.otherUser.fullName}
-          </p>
+          <p className="font-chat truncate text-xl">{displayName}</p>
+          {subtitle && (
+            <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
+          )}
         </div>
       </div>
-
-      <Button className='text-'>
+      <Button className="text-">
         <PiDotsThreeOutlineVerticalDuotone />
       </Button>
     </div>
@@ -6571,6 +7838,17 @@ export type PendingGroupInvite = {
     avatar_url: string | null;
   };
   inviter: Profile;
+};
+export type GroupInviteRosterEntry = {
+  userId: string;
+  username: string;
+  fullName: string | null;
+  avatarUrl: string | null;
+  status: 'accepted' | 'pending';
+};
+
+export type PendingGroupInviteWithRoster = PendingGroupInvite & {
+  roster: GroupInviteRosterEntry[];
 };
 
 // ---------- Friendships ----------
@@ -7470,7 +8748,7 @@ export const useChatStore = create<ChatStore>()(
 // ============================================================
 import { useShallow } from 'zustand/react/shallow';
 import { useChatStore } from './chatStore';
-import type { DirectChatRoom, MessageEntry } from '@/lib/types';
+import type { ChatRoom, MessageEntry, SearchUser } from '@/lib/types';
 
 // ---------- Auth ----------
 
@@ -7482,14 +8760,14 @@ export const useViewMode = () => useChatStore((s) => s.viewMode);
 export const useSetViewMode = () => useChatStore((s) => s.setViewMode);
 export const useSelectRoom = () => useChatStore((s) => s.selectRoom);
 
-export const useSelectedRoom = (): DirectChatRoom | null =>
+export const useSelectedRoom = (): ChatRoom | null =>
   useChatStore((s) =>
     s.selectedRoomId ? (s.roomsById.get(s.selectedRoomId) ?? null) : null
   );
 
 // ---------- Rooms ----------
 
-export const useRoomsList = (): DirectChatRoom[] =>
+export const useRoomsList = (): ChatRoom[] =>
   useChatStore(
     useShallow((s) =>
       s.roomOrder.map((id) => s.roomsById.get(id)!).filter(Boolean)
@@ -7589,6 +8867,70 @@ export const useIsRejectingFrom = (userId: string) =>
 export const useIsSocketConnected = () =>
   useChatStore((s) => s.isSocketConnected);
 
+// ---------- Groups ----------
+
+export const useGroupSearchState = () =>
+  useChatStore(
+    useShallow((s) => ({
+      query: s.groupSearchQuery,
+      results: s.groupSearchResults,
+      status: s.groupSearchStatus,
+      error: s.groupSearchError,
+    }))
+  );
+
+export const useSearchUsersForGroup = () =>
+  useChatStore((s) => s.searchUsersForGroup);
+
+export const useDraftGroupName = () => useChatStore((s) => s.draftGroupName);
+export const useSetDraftGroupName = () =>
+  useChatStore((s) => s.setDraftGroupName);
+
+export const useDraftMembers = (): SearchUser[] =>
+  useChatStore(useShallow((s) => Array.from(s.draftMembers.values())));
+
+export const useAddDraftMember = () => useChatStore((s) => s.addDraftMember);
+export const useRemoveDraftMember = () =>
+  useChatStore((s) => s.removeDraftMember);
+export const useResetGroupDraft = () => useChatStore((s) => s.resetGroupDraft);
+
+export const useCreateGroup = () => useChatStore((s) => s.createGroup);
+export const useCreatingGroup = () => useChatStore((s) => s.creatingGroup);
+
+export const useGroupInvitesState = () =>
+  useChatStore(
+    useShallow((s) => ({
+      invites: s.groupInvites,
+      status: s.groupInvitesStatus,
+      error: s.groupInvitesError,
+    }))
+  );
+
+export const useFetchGroupInvites = () =>
+  useChatStore((s) => s.fetchGroupInvites);
+
+export const useSelectedGroupInviteId = () =>
+  useChatStore((s) => s.selectedGroupInviteId);
+
+export const useSelectedGroupInvite = () =>
+  useChatStore(
+    (s) => s.groupInvites.find((i) => i.id === s.selectedGroupInviteId) ?? null
+  );
+
+export const useSelectGroupInvite = () =>
+  useChatStore((s) => s.selectGroupInvite);
+
+export const useAcceptGroupInvite = () =>
+  useChatStore((s) => s.acceptGroupInviteAction);
+
+export const useRejectGroupInvite = () =>
+  useChatStore((s) => s.rejectGroupInviteAction);
+
+export const useIsAcceptingGroupInvite = (inviteId: string) =>
+  useChatStore((s) => s.acceptingInviteId === inviteId);
+
+export const useIsRejectingGroupInvite = (inviteId: string) =>
+  useChatStore((s) => s.rejectingInviteId === inviteId);
 
 ===== ./store/slices/createAuthSlice.ts =====
 // ============================================================
@@ -7870,8 +9212,8 @@ export const createFriendshipsSlice: StateCreator<
 // vs rooms (RoomsSlice) for direct chats.
 // ============================================================
 import type { StateCreator } from 'zustand';
-import type { ChatRoom, PendingGroupInvite } from '@/lib/types';
 import type { ChatStore } from '../chatStore';
+import type { ChatRoom, PendingGroupInvite, PendingGroupInviteWithRoster, SearchUser } from '@/lib/types';
 
 export type GroupSlice = {
   pendingGroupInvites: PendingGroupInvite[];
@@ -7883,11 +9225,36 @@ export type GroupSlice = {
   acceptingGroupInvite: Set<string>; // inviteIds in flight
   rejectingGroupInvite: Set<string>;
 
+  groupSearchQuery: string;
+  groupSearchResults: SearchUser[];
+  groupSearchStatus: 'idle' | 'loading' | 'error' | 'success';
+  groupSearchError: string | null;
+
+  draftGroupName: string;
+  draftMembers: Map<string, SearchUser>; // userId -> profile, preserves what was selected
+
+  searchUsersForGroup: (query: string) => Promise<void>;
+  setDraftGroupName: (name: string) => void;
+  addDraftMember: (user: SearchUser) => void;
+  removeDraftMember: (userId: string) => void;
+  resetGroupDraft: () => void;
+
   createGroup: (name: string, inviteeIds: string[]) => Promise<void>;
   inviteToGroup: (roomId: string, inviteeId: string) => Promise<void>;
   fetchPendingGroupInvites: () => Promise<void>;
   acceptGroupInvite: (inviteId: string) => Promise<void>;
   rejectGroupInvite: (inviteId: string) => Promise<void>;
+
+  groupInvites: PendingGroupInviteWithRoster[];
+  selectedGroupInviteId: string | null;
+
+  acceptingInviteId: string | null;
+  rejectingInviteId: string | null;
+
+  fetchGroupInvites: () => Promise<void>;
+  selectGroupInvite: (inviteId: string | null) => void;
+  acceptGroupInviteAction: (inviteId: string) => Promise<void>;
+  rejectGroupInviteAction: (inviteId: string) => Promise<void>;
 };
 
 export const createGroupSlice: StateCreator<
@@ -7978,7 +9345,7 @@ export const createGroupSlice: StateCreator<
     });
 
     try {
-      const res = await fetch('/api/group-invites/pending', {
+      const res = await fetch('/api/groups/invites/pending', {
         credentials: 'include',
       });
 
@@ -8006,7 +9373,7 @@ export const createGroupSlice: StateCreator<
     });
 
     try {
-      const res = await fetch('/api/group-invites/accept', {
+      const res = await fetch('/api/groups/invites/accept', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -8045,7 +9412,7 @@ export const createGroupSlice: StateCreator<
     });
 
     try {
-      const res = await fetch('/api/group-invites/reject', {
+      const res = await fetch('/api/groups/invites/reject', {
         method: 'DELETE',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -8066,6 +9433,194 @@ export const createGroupSlice: StateCreator<
     } catch (err) {
       set((state) => {
         state.rejectingGroupInvite.delete(inviteId);
+      });
+      throw err;
+    }
+  },
+
+  groupSearchQuery: '',
+  groupSearchResults: [],
+  groupSearchStatus: 'idle',
+  groupSearchError: null,
+
+  draftGroupName: '',
+  draftMembers: new Map(),
+
+  searchUsersForGroup: async (query) => {
+    set((state) => {
+      state.groupSearchQuery = query;
+    });
+
+    if (query.length < 2) {
+      set((state) => {
+        state.groupSearchResults = [];
+        state.groupSearchStatus = 'idle';
+      });
+      return;
+    }
+
+    set((state) => {
+      state.groupSearchStatus = 'loading';
+      state.groupSearchError = null;
+    });
+
+    try {
+      const res = await fetch(
+        `/api/groups/search?q=${encodeURIComponent(query)}`,
+        { method: 'GET', credentials: 'include' }
+      );
+
+      if (!res.ok) throw new Error('Failed to search users');
+
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Search failed');
+
+      set((state) => {
+        if (state.groupSearchQuery !== query) return; // stale response guard
+        state.groupSearchResults = data.results;
+        state.groupSearchStatus = 'success';
+      });
+    } catch (err) {
+      set((state) => {
+        state.groupSearchStatus = 'error';
+        state.groupSearchError =
+          err instanceof Error ? err.message : 'Search failed';
+      });
+    }
+  },
+
+  setDraftGroupName: (name) =>
+    set((state) => {
+      state.draftGroupName = name;
+    }),
+
+  addDraftMember: (user) =>
+    set((state) => {
+      state.draftMembers.set(user.id, user);
+    }),
+
+  removeDraftMember: (userId) =>
+    set((state) => {
+      state.draftMembers.delete(userId);
+    }),
+
+  resetGroupDraft: () =>
+    set((state) => {
+      state.draftGroupName = '';
+      state.draftMembers = new Map();
+      state.groupSearchQuery = '';
+      state.groupSearchResults = [];
+      state.groupSearchStatus = 'idle';
+    }),
+  groupInvites: [],
+  selectedGroupInviteId: null,
+
+  acceptingInviteId: null,
+  rejectingInviteId: null,
+
+  fetchGroupInvites: async () => {
+    set((state) => {
+      state.groupInvitesStatus = 'loading';
+      state.groupInvitesError = null;
+    });
+
+    try {
+      const res = await fetch('/api/groups/invites/pending', {
+        credentials: 'include',
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to load group invites');
+      }
+
+      set((state) => {
+        state.groupInvites = data.pending;
+        state.groupInvitesStatus = 'success';
+      });
+    } catch (err) {
+      set((state) => {
+        state.groupInvitesStatus = 'error';
+        state.groupInvitesError =
+          err instanceof Error ? err.message : 'Failed to load invites';
+      });
+    }
+  },
+
+  selectGroupInvite: (inviteId) =>
+    set((state) => {
+      state.selectedGroupInviteId = inviteId;
+    }),
+
+  acceptGroupInviteAction: async (inviteId) => {
+    set((state) => {
+      state.acceptingInviteId = inviteId;
+    });
+
+    try {
+      const res = await fetch('/api/groups/invites/accept', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ inviteId }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to accept invite');
+      }
+
+      get().upsertRoom(data.room);
+
+      set((state) => {
+        state.groupInvites = state.groupInvites.filter(
+          (inv) => inv.id !== inviteId
+        );
+        if (state.selectedGroupInviteId === inviteId) {
+          state.selectedGroupInviteId = null;
+        }
+        state.acceptingInviteId = null;
+      });
+    } catch (err) {
+      set((state) => {
+        state.acceptingInviteId = null;
+      });
+      throw err;
+    }
+  },
+
+  rejectGroupInviteAction: async (inviteId) => {
+    set((state) => {
+      state.rejectingInviteId = inviteId;
+    });
+
+    try {
+      const res = await fetch('/api/groups/invites/reject', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ inviteId }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to reject invite');
+      }
+
+      // Per spec: rejecting clears the right pane immediately if that
+      // invite's roster was the one being shown.
+      set((state) => {
+        state.groupInvites = state.groupInvites.filter(
+          (inv) => inv.id !== inviteId
+        );
+        if (state.selectedGroupInviteId === inviteId) {
+          state.selectedGroupInviteId = null;
+        }
+        state.rejectingInviteId = null;
+      });
+    } catch (err) {
+      set((state) => {
+        state.rejectingInviteId = null;
       });
       throw err;
     }
@@ -8092,6 +9647,7 @@ export const createGroupSlice: StateCreator<
 // ============================================================
 import type { StateCreator } from 'zustand';
 import type {
+  ChatRoom,
   DirectChatRoom,
   MessageEntry,
   MessageStructure,
@@ -8117,7 +9673,7 @@ export type MessagesSlice = {
 
   loadInitialMessages: (roomId: string) => Promise<void>;
   loadMoreMessages: (roomId: string) => Promise<void>;
-  sendMessage: (content: string, room: DirectChatRoom) => void;
+  sendMessage: (content: string, room: ChatRoom) => void;
   mergeRealMessage: (
     message: MessageStructure,
     clientTempId?: string | null

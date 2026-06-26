@@ -29,9 +29,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { UsersRound, Plus, Inbox } from 'lucide-react';
+import { Plus, Inbox } from 'lucide-react';
 import { CreateGroupDialog } from '../groups/createGroupDialog';
 import { GroupInvitesDialog } from '../groups/groupInviteDialog';
+import { ThemeToggle } from './ThemeToggle';
 
 export function Sidebar() {
   const [isLoading, setIsLoading] = useState(false);
@@ -92,7 +93,7 @@ export function Sidebar() {
           <DropdownMenuTrigger asChild>
             <MdGroups2 size={24} />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className='w-fit p-2'>
+          <DropdownMenuContent align="start" className="w-fit p-2">
             <DropdownMenuItem
               onClick={() => setCreateGroupOpen(true)}
               className="flex flex-row justify-between items-center gap-2"
@@ -123,6 +124,7 @@ export function Sidebar() {
 
       {/* Bottom Controls */}
       <div className="flex flex-col items-center gap-3">
+        <ThemeToggle />
         <Dialog>
           <DialogTrigger asChild>
             <Button size="icon" variant="destructive" disabled={isLoading}>

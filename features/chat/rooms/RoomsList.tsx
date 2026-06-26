@@ -9,9 +9,9 @@ export function RoomsList() {
   const { status, error } = useRoomsStatus();
 
   return (
-    <div className="grid h-full min-h-0 w-full min-w-0 grid-rows-[auto_1fr]">
+    <div className="grid h-full min-h-0 w-full min-w-0 grid-rows-[auto_1fr] font-chat">
       <div className="border-b px-4 py-4.5 flex flex-row justify-start items-center h-17">
-        <p className="font-chat text-xl font-semibold text-foreground">Chats</p>
+        <p className="text-2xl font-semibold text-foreground">Chats</p>
       </div>
 
       <div className="min-h-0 w-full min-w-0">

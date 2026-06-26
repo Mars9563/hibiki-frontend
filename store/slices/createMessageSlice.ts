@@ -18,7 +18,6 @@
 import type { StateCreator } from 'zustand';
 import type {
   ChatRoom,
-  DirectChatRoom,
   MessageEntry,
   MessageStructure,
   RoomMessageState,
