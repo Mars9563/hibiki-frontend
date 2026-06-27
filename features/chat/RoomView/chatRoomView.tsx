@@ -41,12 +41,14 @@ export function ChatRoomView() {
           <p className="mt-2 p-2 text-2xl">{fullName}</p>
           <p className="px-2 text-xl text-muted-foreground">@{userName}</p>
         </div>
-        <div className="flex flex-col justify-center items-center w-full mt-4">
-          <div className="flex flex-col justify-center items-start w-full">
-            <p className="text-muted-foreground">Status</p>
-            <p className="py-2">{status}</p>
+        {status && (
+          <div className="flex flex-col justify-center items-center w-full mt-4">
+            <div className="flex flex-col justify-center items-start w-full">
+              <p className="text-muted-foreground">Status</p>
+              <p className="py-2">{status}</p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
