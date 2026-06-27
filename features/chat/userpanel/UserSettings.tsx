@@ -36,6 +36,10 @@ const profileSchema = z.object({
       /^[_a-zA-Z][a-zA-Z0-9._]{2,19}$/,
       'Username must start with a letter or underscore and contain only letters, numbers, dots, or underscores (3–20 chars).'
     ),
+  status: z
+    .string()
+    .trim()
+    .max(150, 'Status length should be 150 letters or less'),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -69,6 +73,7 @@ export function UserSettings() {
     defaultValues: {
       name: user?.full_name ?? '',
       username: user?.username ?? '',
+      status: user?.status ?? '',
     },
   });
 
@@ -82,9 +87,10 @@ export function UserSettings() {
     form.reset({
       name: user.full_name ?? '',
       username: user.username ?? '',
+      status: user.status ?? '',
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.full_name, user?.username]);
+  }, [user?.full_name, user?.username, user?.status]);
 
   // Save is locked until something actually changed — either a text
   // field (react-hook-form's isDirty, compared against the values
@@ -152,6 +158,7 @@ export function UserSettings() {
       const formData = new FormData();
       formData.append('fullName', values.name);
       formData.append('username', values.username);
+      formData.append('status', values.status);
       if (pendingAvatarBlob) {
         formData.append('avatar', pendingAvatarBlob, 'avatar.jpg');
       }
@@ -252,6 +259,24 @@ export function UserSettings() {
                     type="text"
                     placeholder="Username"
                     autoComplete="username"
+                    className="bg-background"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="status"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel>Status</FieldLabel>
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Status(Optional)"
                     className="bg-background"
                   />
                   {fieldState.invalid && (
