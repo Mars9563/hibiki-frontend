@@ -15,9 +15,11 @@ import type { ChatStore } from '../chatStore';
 export type UiSlice = {
   viewMode: ViewMode;
   selectedRoomId: string | null;
+  sidePanelOpen: boolean;
 
   setViewMode: (mode: ViewMode) => void;
   selectRoom: (roomId: string | null) => void;
+  setSidePanelOpen: (command: boolean) => void;
 };
 
 export const createUiSlice: StateCreator<
@@ -28,6 +30,7 @@ export const createUiSlice: StateCreator<
 > = (set, get) => ({
   viewMode: 'rooms',
   selectedRoomId: null,
+  sidePanelOpen: false,
 
   setViewMode: (mode) =>
     set((state) => {
@@ -50,4 +53,9 @@ export const createUiSlice: StateCreator<
       get().loadInitialMessages(roomId);
     }
   },
+  setSidePanelOpen: (command: boolean) => {
+    set((state) => {
+      state.sidePanelOpen = command;
+    })
+  }
 });

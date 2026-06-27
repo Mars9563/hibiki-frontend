@@ -1,13 +1,14 @@
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { useSelectedRoom } from '@/store/selectors';
+import { useSelectedRoom, useSetSidePanelOpen } from '@/store/selectors';
 import { FaUserLarge } from 'react-icons/fa6';
 import { PiDotsThreeOutlineVerticalDuotone } from 'react-icons/pi';
 import { UsersRound } from 'lucide-react';
 
 export function TopBar() {
   const selectedRoom = useSelectedRoom();
+  const setSidePanelOpen = useSetSidePanelOpen();
 
   if (!selectedRoom) {
     return (
@@ -52,7 +53,9 @@ export function TopBar() {
           )}
         </div>
       </div>
-      <Button className="text-">
+      <Button className="" type='button' onClick={() => {
+        setSidePanelOpen(true);
+      }}>
         <PiDotsThreeOutlineVerticalDuotone />
       </Button>
     </div>

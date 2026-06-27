@@ -86,13 +86,13 @@ export function MessageBubble({
 
               // responsive width
               'w-fit',
-              'min-w-[120px]',
+              'min-w-30',
 
               'max-w-[85%]',
               'sm:max-w-[80%]',
               'md:max-w-[75%]',
               'lg:max-w-[65%]',
-              'xl:max-w-[700px]',
+              'xl:max-w-175',
 
               // layout
               'flex flex-col',
@@ -140,7 +140,7 @@ export function MessageBubble({
                 'pr-5',
 
                 'whitespace-pre-wrap',
-                'break-words',
+                'wrap-break-word',
                 'overflow-hidden',
 
                 'text-[15px]',
