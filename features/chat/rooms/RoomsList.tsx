@@ -1,16 +1,32 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { RoomItem } from './RoomItem';
 import { ChatRoom } from '@/lib/types';
-import { useRoomsList, useRoomsStatus } from '@/store/selectors';
 import { MessageSquare, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Menu } from 'lucide-react';
+import {
+  useRoomsList,
+  useRoomsStatus,
+  useSetMobileSidebarOpen,
+} from '@/store/selectors';
 
 export function RoomsList() {
   const rooms = useRoomsList();
   const { status, error } = useRoomsStatus();
+  const setMobileSidebarOpen = useSetMobileSidebarOpen();
 
   return (
     <div className="grid h-full min-h-0 w-full min-w-0 grid-rows-[auto_1fr] font-chat">
-      <div className="border-b px-4 py-4.5 flex flex-row justify-start items-center h-17">
+      <div className="border-b px-4 py-4.5 flex flex-row justify-between items-center h-17">
+        <Button
+          size="icon"
+          variant="outline"
+          className="md:hidden"
+          onClick={() => setMobileSidebarOpen(true)}
+          aria-label="Open menu"
+        >
+          <Menu className="size-5" />
+        </Button>
         <p className="text-2xl font-semibold text-foreground">Chats</p>
       </div>
 

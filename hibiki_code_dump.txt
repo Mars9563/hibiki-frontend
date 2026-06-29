@@ -1012,8 +1012,8 @@ export default function LoginPage() {
       </Suspense>
 
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-32 bottom-0 h-[30rem] w-[30rem] rounded-full bg-primary/60 blur-[120px] animate-pulse" />
-        <div className="absolute -right-32 top-0 h-[30rem] w-[30rem] rounded-full bg-accent/75 blur-[120px] animate-pulse" />
+        <div className="absolute -left-32 bottom-0 h-[30rem] w-[30rem] rounded-full bg-primary/60 blur-[120px] animate-pulse animation-duration-10000" />
+        <div className="absolute -right-32 top-0 h-[30rem] w-[30rem] rounded-full bg-accent/75 blur-[120px] animate-pulse animation-duration-10000" />
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center px-6 py-12 lg:px-12">
@@ -1109,8 +1109,8 @@ export default function RegisterPage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-32 bottom-0 h-[30rem] w-[30rem] rounded-full bg-primary/60 blur-[120px] animate-pulse" />
-        <div className="absolute -right-32 top-0 h-[30rem] w-[30rem] rounded-full bg-accent/75 blur-[120px] animate-pulse" />
+        <div className="absolute -left-32 bottom-0 h-[30rem] w-[30rem] rounded-full bg-primary/60 blur-[120px] animate-pulse animation-duration-10000" />
+        <div className="absolute -right-32 top-0 h-[30rem] w-[30rem] rounded-full bg-accent/75 blur-[120px] animate-pulse animation-duration-10000" />
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center px-6 py-12 lg:px-12">
@@ -5985,6 +5985,7 @@ function EmptyState({ text, icon }: { text: string; icon?: React.ReactNode }) {
 
 
 ===== ./features/chat/layout/ChatLayout.tsx =====
+import { RoomView } from '../RoomView/roomView';
 import { Sidebar } from '../sidebar/Sidebar';
 import { ChatArea } from '../ui/ChatArea';
 import { ViewListContainer } from './ViewListContainer';
@@ -5995,6 +5996,7 @@ export function ChatLayout() {
       <Sidebar />
       <ViewListContainer />
       <ChatArea />
+      <RoomView/>
     </div>
   );
 }
@@ -6485,6 +6487,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useSelectRoom, useSelectedRoom } from '@/store/selectors';
 import { cn } from '@/lib/utils';
 import { ChatRoom } from '@/lib/types';
+import { FaUserLarge } from 'react-icons/fa6';
 
 interface RoomItemProps {
   room: ChatRoom;
@@ -6509,7 +6512,7 @@ export function RoomItem({ room, onClick }: RoomItemProps) {
   const avatarUrl =
     room.roomType === 'direct' ? room.otherUser.avatarUrl : room.avatarUrl;
 
-  const initials = displayName?.slice(0, 2) ?? '??';
+  const initials = <FaUserLarge />;
 
   return (
     <button
@@ -6544,6 +6547,7 @@ export function RoomItem({ room, onClick }: RoomItemProps) {
     </button>
   );
 }
+
 
 ===== ./features/chat/rooms/RoomsList.tsx =====
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -6610,6 +6614,93 @@ function StateMessage({
       {icon && <span className="text-muted-foreground">{icon}</span>}
       <p className="text-sm text-muted-foreground">{text}</p>
       {subtext && <p className="text-xs text-muted-foreground/70">{subtext}</p>}
+    </div>
+  );
+}
+
+
+===== ./features/chat/RoomView/chatRoomView.tsx =====
+'use client';
+import { Button } from '@/components/ui/button';
+import { useSelectedRoom, useSetSidePanelOpen } from '@/store/selectors';
+import Image from 'next/image';
+import { RiCloseFill } from 'react-icons/ri';
+export function ChatRoomView() {
+  const selectedRoom = useSelectedRoom();
+  const setSidePanelOpen = useSetSidePanelOpen();
+  if (selectedRoom === null) {
+    return <div className="w-full h-full bg-red-600" />;
+  }
+  const isDirect = selectedRoom.roomType === 'direct';
+  const fullName = isDirect ? selectedRoom.otherUser.fullName : '';
+  const userName = isDirect ? selectedRoom.otherUser.username : '';
+  const status = isDirect ? selectedRoom.otherUser.status : '';
+  const avatarUrl = isDirect ? selectedRoom.otherUser.avatarUrl : '';
+  return (
+    <div className="w-full font-chat h-full">
+      <div className="h-17 w-full flex flex-row justify-start items-center gap-4">
+        <Button
+          className=""
+          variant={'ghost'}
+          type="button"
+          onClick={() => {
+            setSidePanelOpen(false);
+          }}
+        >
+          <RiCloseFill />
+        </Button>{' '}
+        <span>User Info</span>
+      </div>
+      <div className="flex-1 w-full flex flex-col justify- items-center p-4">
+        <div className="flex flex-col justify-center items-center">
+          <Image
+            src={avatarUrl ?? ''}
+            alt="User profile picture"
+            width={128}
+            height={128}
+            className="rounded-full border"
+          />
+          <p className="mt-2 p-2 text-2xl">{fullName}</p>
+          <p className="px-2 text-xl text-muted-foreground">@{userName}</p>
+        </div>
+        {status && (
+          <div className="flex flex-col justify-center items-center w-full mt-4">
+            <div className="flex flex-col justify-center items-start w-full">
+              <p className="text-muted-foreground">Status</p>
+              <p className="py-2">{status}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
+===== ./features/chat/RoomView/groupRoomView.tsx =====
+export function GroupRoomView() {
+    return <div>
+        group chat
+    </div>
+}
+
+===== ./features/chat/RoomView/roomView.tsx =====
+'use client';
+import { useSelectedRoom, useSidePanelOpen } from '@/store/selectors';
+import { GroupRoomView } from './groupRoomView';
+import { ChatRoomView } from './chatRoomView';
+
+export function RoomView() {
+  const selectedRoom = useSelectedRoom();
+  const sidePanelOpen = useSidePanelOpen();
+  if (selectedRoom === null || !sidePanelOpen) {
+    return null;
+  }
+  const isGroup = selectedRoom.roomType === 'group';
+
+  return (
+    <div className="w-125 bg-card h-full">
+      {isGroup ? <GroupRoomView /> : <ChatRoomView />}
     </div>
   );
 }
@@ -7122,9 +7213,7 @@ export function MessageArea() {
   }
 
   const isGroup = selectedRoom?.roomType === 'group';
-  const avatarUrl = isGroup
-    ? selectedRoom.avatarUrl
-    : selectedRoom?.otherUser.avatarUrl;
+  
 
   return (
     <div className="relative flex flex-col h-full min-h-0 min-w-0 w-full">
@@ -7151,7 +7240,7 @@ export function MessageArea() {
                 content={item.entry.message.content}
                 senderId={item.entry.message.sender_id}
                 currentUserId={selectedRoom?.currentUserId ?? ''}
-                avatarUrl={avatarUrl}
+                avatarUrl={isGroup ? selectedRoom?.members.find(member => member.id == item.entry.message.sender_id)?.avatarUrl: selectedRoom?.otherUser.avatarUrl}
                 fallback={isGroup ? <FaUserLarge /> : <FaUserLarge />}
                 status={item.entry.status}
                 createdAt={item.entry.message.created_at}
@@ -7256,13 +7345,13 @@ export function MessageBubble({
 
               // responsive width
               'w-fit',
-              'min-w-[120px]',
+              'min-w-30',
 
               'max-w-[85%]',
               'sm:max-w-[80%]',
               'md:max-w-[75%]',
               'lg:max-w-[65%]',
-              'xl:max-w-[700px]',
+              'xl:max-w-175',
 
               // layout
               'flex flex-col',
@@ -7310,7 +7399,7 @@ export function MessageBubble({
                 'pr-5',
 
                 'whitespace-pre-wrap',
-                'break-words',
+                'wrap-break-word',
                 'overflow-hidden',
 
                 'text-[15px]',
@@ -7380,13 +7469,14 @@ export function MessageBubble({
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { useSelectedRoom } from '@/store/selectors';
+import { useSelectedRoom, useSetSidePanelOpen } from '@/store/selectors';
 import { FaUserLarge } from 'react-icons/fa6';
 import { PiDotsThreeOutlineVerticalDuotone } from 'react-icons/pi';
 import { UsersRound } from 'lucide-react';
 
 export function TopBar() {
   const selectedRoom = useSelectedRoom();
+  const setSidePanelOpen = useSetSidePanelOpen();
 
   if (!selectedRoom) {
     return (
@@ -7431,7 +7521,9 @@ export function TopBar() {
           )}
         </div>
       </div>
-      <Button className="text-">
+      <Button className="" type='button' onClick={() => {
+        setSidePanelOpen(true);
+      }}>
         <PiDotsThreeOutlineVerticalDuotone />
       </Button>
     </div>
@@ -7478,6 +7570,10 @@ const profileSchema = z.object({
       /^[_a-zA-Z][a-zA-Z0-9._]{2,19}$/,
       'Username must start with a letter or underscore and contain only letters, numbers, dots, or underscores (3–20 chars).'
     ),
+  status: z
+    .string()
+    .trim()
+    .max(150, 'Status length should be 150 letters or less'),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -7511,6 +7607,7 @@ export function UserSettings() {
     defaultValues: {
       name: user?.full_name ?? '',
       username: user?.username ?? '',
+      status: user?.status ?? '',
     },
   });
 
@@ -7524,9 +7621,10 @@ export function UserSettings() {
     form.reset({
       name: user.full_name ?? '',
       username: user.username ?? '',
+      status: user.status ?? '',
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.full_name, user?.username]);
+  }, [user?.full_name, user?.username, user?.status]);
 
   // Save is locked until something actually changed — either a text
   // field (react-hook-form's isDirty, compared against the values
@@ -7539,7 +7637,7 @@ export function UserSettings() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > 10 * 1024 * 1024) {
       toast.error('File must be less than 5MB.');
       return;
     }
@@ -7594,6 +7692,7 @@ export function UserSettings() {
       const formData = new FormData();
       formData.append('fullName', values.name);
       formData.append('username', values.username);
+      formData.append('status', values.status);
       if (pendingAvatarBlob) {
         formData.append('avatar', pendingAvatarBlob, 'avatar.jpg');
       }
@@ -7624,7 +7723,7 @@ export function UserSettings() {
   }
 
   const displayedAvatarUrl = avatarPreviewUrl ?? user?.avatar_url ?? '';
-
+  console.log(displayedAvatarUrl);
   return (
     <div className="h-full w-full font-chat">
       <div className="flex flex-col justify-center items-start w-full h-17 p-4 border-b">
@@ -7694,6 +7793,24 @@ export function UserSettings() {
                     type="text"
                     placeholder="Username"
                     autoComplete="username"
+                    className="bg-background"
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="status"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field>
+                  <FieldLabel>Status</FieldLabel>
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Status(Optional)"
                     className="bg-background"
                   />
                   {fieldState.invalid && (
@@ -8123,7 +8240,16 @@ export function cn(...inputs: ClassValue[]) {
 ===== ./next.config.ts =====
 import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {};
+const nextConfig: NextConfig = {
+  images: {
+        remotePatterns: [{
+            protocol: 'https',
+            hostname: 'res.cloudinary.com',
+            pathname: '/**'
+    }]
+  },
+};
+
 
 export default nextConfig;
 
@@ -8161,7 +8287,7 @@ import "./.next/dev/types/routes.d.ts";
     "immer": "^11.1.8",
     "lucide-react": "^0.563.0",
     "nanoid": "^5.1.6",
-    "next": "16.1.6",
+    "next": "^16.2.9",
     "next-themes": "^0.4.6",
     "pixelarticons": "^1.8.1",
     "radix-ui": "^1.6.0",
@@ -8994,6 +9120,8 @@ export const useCurrentUser = () => useChatStore((s) => s.currentUser);
 export const useViewMode = () => useChatStore((s) => s.viewMode);
 export const useSetViewMode = () => useChatStore((s) => s.setViewMode);
 export const useSelectRoom = () => useChatStore((s) => s.selectRoom);
+export const useSidePanelOpen = () => useChatStore((s) => s.sidePanelOpen);
+export const useSetSidePanelOpen = () => useChatStore((s) => s.setSidePanelOpen);
 
 export const useSelectedRoom = (): ChatRoom | null =>
   useChatStore((s) =>
@@ -10410,9 +10538,11 @@ import type { ChatStore } from '../chatStore';
 export type UiSlice = {
   viewMode: ViewMode;
   selectedRoomId: string | null;
+  sidePanelOpen: boolean;
 
   setViewMode: (mode: ViewMode) => void;
   selectRoom: (roomId: string | null) => void;
+  setSidePanelOpen: (command: boolean) => void;
 };
 
 export const createUiSlice: StateCreator<
@@ -10423,6 +10553,7 @@ export const createUiSlice: StateCreator<
 > = (set, get) => ({
   viewMode: 'rooms',
   selectedRoomId: null,
+  sidePanelOpen: false,
 
   setViewMode: (mode) =>
     set((state) => {
@@ -10445,6 +10576,11 @@ export const createUiSlice: StateCreator<
       get().loadInitialMessages(roomId);
     }
   },
+  setSidePanelOpen: (command: boolean) => {
+    set((state) => {
+      state.sidePanelOpen = command;
+    })
+  }
 });
 
 
@@ -10483,3 +10619,5 @@ export const createUiSlice: StateCreator<
   ],
   "exclude": ["node_modules"]
 }
+
+

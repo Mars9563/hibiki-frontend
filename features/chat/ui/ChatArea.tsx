@@ -9,7 +9,7 @@ export function ChatArea() {
 
   if (!selectedRoom) {
     return (
-      <div className="flex flex-1 items-center justify-center w-full h-full bg-background">
+      <div className="hidden md:flex md:flex-1 items-center justify-center w-full h-full bg-background">
         <p className="font-ui text-lg text-foreground">
           Select a chat to start messaging
         </p>

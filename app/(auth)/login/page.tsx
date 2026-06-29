@@ -21,8 +21,8 @@ export default function LoginPage() {
       </Suspense>
 
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-32 bottom-0 h-[30rem] w-[30rem] rounded-full bg-primary/60 blur-[120px] animate-pulse" />
-        <div className="absolute -right-32 top-0 h-[30rem] w-[30rem] rounded-full bg-accent/75 blur-[120px] animate-pulse" />
+        <div className="absolute -left-32 bottom-0 h-[30rem] w-[30rem] rounded-full bg-primary/60 blur-[120px] animate-pulse animation-duration-10000" />
+        <div className="absolute -right-32 top-0 h-[30rem] w-[30rem] rounded-full bg-accent/75 blur-[120px] animate-pulse animation-duration-10000" />
       </div>
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center px-6 py-12 lg:px-12">

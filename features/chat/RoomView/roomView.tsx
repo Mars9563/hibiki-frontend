@@ -12,7 +12,7 @@ export function RoomView() {
   const isGroup = selectedRoom.roomType === 'group';
 
   return (
-    <div className="w-125 bg-card h-full">
+    <div className="fixed inset-0 z-40 w-full h-full bg-card md:static md:inset-auto md:z-auto md:w-125">
       {isGroup ? <GroupRoomView /> : <ChatRoomView />}
     </div>
   );

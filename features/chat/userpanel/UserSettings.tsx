@@ -22,11 +22,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import z from 'zod';
 import { toast } from 'sonner';
-import { useCurrentUser } from '@/store/selectors';
 import { useChatStore } from '@/store/chatStore';
 import { getCroppedImageBlob } from '@/lib/cropImage';
 import { FaUserLarge } from 'react-icons/fa6';
-
+import { useCurrentUser, useSetViewMode } from '@/store/selectors';
+import { ArrowLeft } from 'lucide-react';
 const profileSchema = z.object({
   name: z.string().trim().nonempty('Name is required').max(255),
   username: z
@@ -50,6 +50,7 @@ export function UserSettings() {
   // infrequent write, mirrors the pattern AppBootstrap.tsx already
   // uses) — pulled directly off the store rather than via selectors.ts.
   const setCurrentUser = useChatStore((s) => s.setCurrentUser);
+  const setViewMode = useSetViewMode();
 
   // ---------- Avatar crop dialog state ----------
   // Cropping happens up front, in its own dialog, but nothing is
@@ -192,7 +193,16 @@ export function UserSettings() {
   console.log(displayedAvatarUrl);
   return (
     <div className="h-full w-full font-chat">
-      <div className="flex flex-col justify-center items-start w-full h-17 p-4 border-b">
+      <div className="flex flex-row items-center gap-2 w-full h-17 p-4 border-b">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="-ml-2 shrink-0 md:hidden"
+          onClick={() => setViewMode('rooms')}
+          aria-label="Back to chats"
+        >
+          <ArrowLeft className="size-5" />
+        </Button>
         <p className="text-2xl text-foreground font-semibold">
           Profile settings
         </p>

@@ -25,7 +25,12 @@ export const useViewMode = () => useChatStore((s) => s.viewMode);
 export const useSetViewMode = () => useChatStore((s) => s.setViewMode);
 export const useSelectRoom = () => useChatStore((s) => s.selectRoom);
 export const useSidePanelOpen = () => useChatStore((s) => s.sidePanelOpen);
-export const useSetSidePanelOpen = () => useChatStore((s) => s.setSidePanelOpen);
+export const useSetSidePanelOpen = () =>
+  useChatStore((s) => s.setSidePanelOpen);
+export const useMobileSidebarOpen = () =>
+  useChatStore((s) => s.mobileSidebarOpen);
+export const useSetMobileSidebarOpen = () =>
+  useChatStore((s) => s.setMobileSidebarOpen);
 
 export const useSelectedRoom = (): ChatRoom | null =>
   useChatStore((s) =>

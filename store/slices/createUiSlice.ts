@@ -16,10 +16,12 @@ export type UiSlice = {
   viewMode: ViewMode;
   selectedRoomId: string | null;
   sidePanelOpen: boolean;
+  mobileSidebarOpen: boolean; // new
 
   setViewMode: (mode: ViewMode) => void;
   selectRoom: (roomId: string | null) => void;
   setSidePanelOpen: (command: boolean) => void;
+  setMobileSidebarOpen: (command: boolean) => void; // new
 };
 
 export const createUiSlice: StateCreator<
@@ -31,6 +33,7 @@ export const createUiSlice: StateCreator<
   viewMode: 'rooms',
   selectedRoomId: null,
   sidePanelOpen: false,
+  mobileSidebarOpen: false,
 
   setViewMode: (mode) =>
     set((state) => {
@@ -56,6 +59,11 @@ export const createUiSlice: StateCreator<
   setSidePanelOpen: (command: boolean) => {
     set((state) => {
       state.sidePanelOpen = command;
-    })
-  }
+    });
+  },
+  setMobileSidebarOpen: (command: boolean) => {
+    set((state) => {
+      state.mobileSidebarOpen = command;
+    });
+  },
 });

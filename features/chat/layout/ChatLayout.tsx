@@ -5,7 +5,7 @@ import { ViewListContainer } from './ViewListContainer';
 
 export function ChatLayout() {
   return (
-    <div className="flex flex-row justify-center items-center h-screen overflow-hidden">
+    <div className="flex flex-row justify-center items-center h-dvh overflow-hidden">
       <Sidebar />
       <ViewListContainer />
       <ChatArea />
