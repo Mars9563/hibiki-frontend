@@ -85,7 +85,7 @@ export function MessageBubble({
               'relative',
 
               // responsive width
-              'w-fit',
+              'w-auto',
               'min-w-30',
 
               'max-w-[85%]',
@@ -135,18 +135,7 @@ export function MessageBubble({
               <ChevronDown className="size-4" />
             </button>
 
-            <p
-              className={cn(
-                'pr-5',
-
-                'whitespace-pre-wrap',
-                'wrap-break-word',
-                'overflow-hidden',
-
-                'text-[15px]',
-                'leading-6'
-              )}
-            >
+            <p className=" pr-5 whitespace-pre-wrap wrap-anywhere text-[15px] leading-6">
               {displayedContent}
 
               {isLong && !isExpanded && <span className="opacity-50">…</span>}

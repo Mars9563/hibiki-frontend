@@ -60,7 +60,7 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  --font-ui: var(--font-ui);
+  --font-ui: var(--font-chat);
   --font-chat: var(--font-chat);
   --font-sans: var(--font-sans);
   --font-heading: var(--font-sans);

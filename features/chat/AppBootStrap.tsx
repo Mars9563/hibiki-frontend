@@ -1,34 +1,20 @@
-// ============================================================
-// features/chat/AppBootstrap.tsx
-// Mount this ONCE near the root of the authenticated app
-// (e.g. inside app/(app)/page.tsx, above ChatLayout).
-//
-// Replaces, simultaneously:
-//   - providers/user-provider.tsx        (UserProvider)
-//   - providers/query-provider.tsx       (QueryProvider)
-//   - providers/socket-provider.tsx       (SocketProvider)
-//   - features/chat/socket/ChatSocketSync.tsx
-//
-// It does three things on mount:
-//   1. Pushes the server-fetched profile into the store
-//      (replaces UserProvider's context value).
-//   2. Grabs a fresh Supabase access token and calls
-//      connectSocket() (replaces SocketProvider + ChatSocketSync).
-//   3. Kicks off the initial rooms + pending-requests fetch.
-//
-// NOTE: `initialUser` should still be fetched server-side exactly
-// like app/(app)/layout.tsx already does — just pass the result
-// in as a prop instead of wrapping children in a Context provider.
-// ============================================================
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useChatStore } from '@/store/chatStore';
 import type { Profile } from '@/lib/types';
+import { LoadingScreen } from './layout/LoadingScreen';
 
-export function AppBootstrap({ initialUser }: { initialUser: Profile | null }) {
+export function AppBootstrap({
+  initialUser,
+  children,
+}: {
+  initialUser: Profile | null;
+  children: ReactNode;
+}) {
   const didInit = useRef(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     if (didInit.current) return;
@@ -42,12 +28,29 @@ export function AppBootstrap({ initialUser }: { initialUser: Profile | null }) {
       const { data } = await supabase.auth.getSession();
       const token = data.session?.access_token;
 
+      // Phase 1: rooms + pending requests/invites. Everything after
+      // this depends on knowing which rooms exist.
+      await Promise.allSettled([
+        useChatStore.getState().fetchRooms(),
+        useChatStore.getState().fetchPendingRequests(),
+        useChatStore.getState().fetchPendingGroupInvites(),
+      ]);
+
+      // Phase 2: preload recent messages for every room so opening
+      // any chat afterward doesn't trigger its own fetch.
+      const roomIds = useChatStore.getState().roomOrder;
+      await Promise.allSettled(
+        roomIds.map((id) => useChatStore.getState().loadInitialMessages(id))
+      );
+
+      // Phase 3: socket connects last, once everything needed to
+      // render the app is already in the store.
       if (token) {
         useChatStore.getState().connectSocket(token);
+        useChatStore.getState().joinManyRooms(roomIds);
       }
 
-      useChatStore.getState().fetchRooms();
-      useChatStore.getState().fetchPendingRequests();
+      setIsReady(true);
     }
 
     bootstrap();
@@ -57,5 +60,9 @@ export function AppBootstrap({ initialUser }: { initialUser: Profile | null }) {
     };
   }, [initialUser]);
 
-  return null;
+  if (!isReady) {
+    return <LoadingScreen/>;
+  }
+
+  return <>{children}</>;
 }

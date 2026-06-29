@@ -39,8 +39,9 @@ export default async function Home() {
 
   return (
     <>
-      <AppBootstrap initialUser={userData} />
-      <ChatLayout />
+      <AppBootstrap initialUser={userData}>
+        <ChatLayout />
+      </AppBootstrap>
     </>
   );
 }

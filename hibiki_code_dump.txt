@@ -68,7 +68,6 @@ export async function POST(req: Request) {
   }
 }
 
-
 ===== ./app/api/friendships/pending/route.ts =====
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
@@ -145,7 +144,6 @@ export async function GET() {
   }
 }
 
-
 ===== ./app/api/friendships/reject/route.ts =====
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
@@ -211,7 +209,6 @@ export async function DELETE(req: Request) {
     );
   }
 }
-
 
 ===== ./app/api/friendships/request/route.ts =====
 import { createClient } from '@/lib/supabase/server';
@@ -286,7 +283,6 @@ export async function POST(req: Request) {
   }
 }
 
-
 ===== ./app/api/friendships/search/route.ts =====
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
@@ -353,7 +349,6 @@ export async function GET(req: Request) {
     );
   }
 }
-
 
 ===== ./app/api/groups/invites/accept/route.ts =====
 // app/api/group-invites/accept/route.ts
@@ -422,7 +417,6 @@ export async function POST(req: Request) {
   }
 }
 
-
 ===== ./app/api/groups/invites/pending/route.ts =====
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
@@ -471,7 +465,6 @@ export async function GET() {
     );
   }
 }
-
 
 ===== ./app/api/groups/invites/reject/route.ts =====
 // app/api/group-invites/reject/route.ts
@@ -539,7 +532,6 @@ export async function DELETE(req: Request) {
     );
   }
 }
-
 
 ===== ./app/api/groups/[roomId]/invites/route.ts =====
 import { createClient } from '@/lib/supabase/server';
@@ -611,7 +603,6 @@ export async function POST(
   }
 }
 
-
 ===== ./app/api/groups/route.ts =====
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
@@ -682,7 +673,6 @@ export async function POST(req: Request) {
   }
 }
 
-
 ===== ./app/api/groups/search/route.ts =====
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
@@ -738,7 +728,6 @@ export async function GET(req: Request) {
     );
   }
 }
-
 
 ===== ./app/api/messages/route.ts =====
 import { createClient } from '@/lib/supabase/server';
@@ -800,7 +789,6 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
 
 ===== ./app/api/personal/me/route.ts =====
 import { createClient } from '@/lib/supabase/server';
@@ -870,7 +858,6 @@ export async function PATCH(req: Request) {
   }
 }
 
-
 ===== ./app/api/rooms/route.ts =====
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
@@ -926,7 +913,6 @@ export async function GET() {
   }
 }
 
-
 ===== ./app/(app)/layout.tsx =====
 import { ReactNode } from 'react';
 
@@ -937,7 +923,6 @@ interface ChatLayoutProps {
 export default async function AppLayout({ children }: ChatLayoutProps) {
   return <>{children}</>;
 }
-
 
 ===== ./app/(app)/page.tsx =====
 import { AppBootstrap } from '@/features/chat/AppBootStrap';
@@ -986,7 +971,6 @@ export default async function Home() {
     </>
   );
 }
-
 
 ===== ./app/(auth)/login/page.tsx =====
 import Link from 'next/link';
@@ -1090,7 +1074,6 @@ export default function LoginPage() {
   );
 }
 
-
 ===== ./app/(auth)/register/page.tsx =====
 import Link from 'next/link';
 
@@ -1187,7 +1170,6 @@ export default function RegisterPage() {
   );
 }
 
-
 ===== ./app/globals.css =====
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -1251,7 +1233,7 @@ export default function RegisterPage() {
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  --font-ui: var(--font-ui);
+  --font-ui: var(--font-chat);
   --font-chat: var(--font-chat);
   --font-sans: var(--font-sans);
   --font-heading: var(--font-sans);
@@ -1397,7 +1379,6 @@ export default function RegisterPage() {
     min-height: 100vh;
   }
 }
-
 ===== ./app/layout.tsx =====
 import type { Metadata } from 'next';
 import { Press_Start_2P, Fira_Code, Inter } from 'next/font/google';
@@ -1447,7 +1428,6 @@ export default function RootLayout({
     </html>
   );
 }
-
 
 ===== ./components/auth/login_form.tsx =====
 'use client';
@@ -1595,7 +1575,6 @@ export function LoginForm() {
     </form>
   );
 }
-
 
 ===== ./components/auth/register_form.tsx =====
 'use client';
@@ -1841,7 +1820,6 @@ export function RegisterForm() {
   );
 }
 
-
 ===== ./components/auth/verify_email_toast.tsx =====
 'use client';
 
@@ -1874,7 +1852,6 @@ export function VerifyEmailToast() {
   return null;
 }
 
-
 ===== ./components.json =====
 {
   "$schema": "https://ui.shadcn.com/schema.json",
@@ -1903,3474 +1880,6 @@ export function VerifyEmailToast() {
     "@pixelact-ui": "https://pixelactui.com/r/{name}.json"
   }
 }
-
-
-===== ./components/ui/accordion.tsx =====
-"use client"
-
-import * as React from "react"
-import { Accordion as AccordionPrimitive } from "radix-ui"
-
-import { cn } from "@/lib/utils"
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react"
-
-function Accordion({
-  className,
-  ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Root>) {
-  return (
-    <AccordionPrimitive.Root
-      data-slot="accordion"
-      className={cn("flex w-full flex-col", className)}
-      {...props}
-    />
-  )
-}
-
-function AccordionItem({
-  className,
-  ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Item>) {
-  return (
-    <AccordionPrimitive.Item
-      data-slot="accordion-item"
-      className={cn("not-last:border-b", className)}
-      {...props}
-    />
-  )
-}
-
-function AccordionTrigger({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Trigger>) {
-  return (
-    <AccordionPrimitive.Header className="flex">
-      <AccordionPrimitive.Trigger
-        data-slot="accordion-trigger"
-        className={cn(
-          "group/accordion-trigger relative flex flex-1 items-start justify-between rounded-md border border-transparent py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring disabled:pointer-events-none disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground",
-          className
-        )}
-        {...props}
-      >
-        {children}
-        <ChevronDownIcon data-slot="accordion-trigger-icon" className="pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" />
-        <ChevronUpIcon data-slot="accordion-trigger-icon" className="pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" />
-      </AccordionPrimitive.Trigger>
-    </AccordionPrimitive.Header>
-  )
-}
-
-function AccordionContent({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<typeof AccordionPrimitive.Content>) {
-  return (
-    <AccordionPrimitive.Content
-      data-slot="accordion-content"
-      className="overflow-hidden text-sm data-open:animate-accordion-down data-closed:animate-accordion-up"
-      {...props}
-    >
-      <div
-        className={cn(
-          "h-(--radix-accordion-content-height) pt-0 pb-4 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4",
-          className
-        )}
-      >
-        {children}
-      </div>
-    </AccordionPrimitive.Content>
-  )
-}
-
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
-
-
-===== ./components/ui/avatar.tsx =====
-"use client"
-
-import * as React from "react"
-import { Avatar as AvatarPrimitive } from "radix-ui"
-
-import { cn } from "@/lib/utils"
-
-function Avatar({
-  className,
-  size = "default",
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Root> & {
-  size?: "default" | "sm" | "lg"
-}) {
-  return (
-    <AvatarPrimitive.Root
-      data-slot="avatar"
-      data-size={size}
-      className={cn(
-        "group/avatar relative flex size-8 shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function AvatarImage({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Image>) {
-  return (
-    <AvatarPrimitive.Image
-      data-slot="avatar-image"
-      className={cn(
-        "aspect-square size-full rounded-full object-cover",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function AvatarFallback({
-  className,
-  ...props
-}: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
-  return (
-    <AvatarPrimitive.Fallback
-      data-slot="avatar-fallback"
-      className={cn(
-        "flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
-  return (
-    <span
-      data-slot="avatar-badge"
-      className={cn(
-        "absolute right-0 bottom-0 z-10 inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground bg-blend-color ring-2 ring-background select-none",
-        "group-data-[size=sm]/avatar:size-2 group-data-[size=sm]/avatar:[&>svg]:hidden",
-        "group-data-[size=default]/avatar:size-2.5 group-data-[size=default]/avatar:[&>svg]:size-2",
-        "group-data-[size=lg]/avatar:size-3 group-data-[size=lg]/avatar:[&>svg]:size-2",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="avatar-group"
-      className={cn(
-        "group/avatar-group flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function AvatarGroupCount({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="avatar-group-count"
-      className={cn(
-        "relative flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm text-muted-foreground ring-2 ring-background group-has-data-[size=lg]/avatar-group:size-10 group-has-data-[size=sm]/avatar-group:size-6 [&>svg]:size-4 group-has-data-[size=lg]/avatar-group:[&>svg]:size-5 group-has-data-[size=sm]/avatar-group:[&>svg]:size-3",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-export {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-  AvatarGroup,
-  AvatarGroupCount,
-  AvatarBadge,
-}
-
-
-===== ./components/ui/button.tsx =====
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Slot } from "radix-ui"
-
-import { cn } from "@/lib/utils"
-
-const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
-        outline:
-          "border-border bg-background shadow-xs hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
-        ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
-        destructive:
-          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default:
-          "h-9 gap-1.5 px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        xs: "h-6 gap-1 rounded-[min(var(--radius-md),8px)] px-2 text-xs in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5 in-data-[slot=button-group]:rounded-md has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5",
-        lg: "h-10 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        icon: "size-9",
-        "icon-xs":
-          "size-6 rounded-[min(var(--radius-md),8px)] in-data-[slot=button-group]:rounded-md [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm":
-          "size-8 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-md",
-        "icon-lg": "size-10",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-)
-
-function Button({
-  className,
-  variant = "default",
-  size = "default",
-  asChild = false,
-  ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean
-  }) {
-  const Comp = asChild ? Slot.Root : "button"
-
-  return (
-    <Comp
-      data-slot="button"
-      data-variant={variant}
-      data-size={size}
-      className={cn(buttonVariants({ variant, size, className }))}
-      {...props}
-    />
-  )
-}
-
-export { Button, buttonVariants }
-
-
-===== ./components/ui/card.tsx =====
-import * as React from "react"
-
-import { cn } from "@/lib/utils"
-
-function Card({
-  className,
-  size = "default",
-  ...props
-}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
-  return (
-    <div
-      data-slot="card"
-      data-size={size}
-      className={cn(
-        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl bg-card py-(--card-spacing) text-sm text-card-foreground shadow-xs ring-1 ring-foreground/10 [--card-spacing:--spacing(6)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-header"
-      className={cn(
-        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-title"
-      className={cn(
-        "font-heading text-base leading-normal font-medium group-data-[size=sm]/card:text-sm",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-description"
-      className={cn("text-sm text-muted-foreground", className)}
-      {...props}
-    />
-  )
-}
-
-function CardAction({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-action"
-      className={cn(
-        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function CardContent({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-content"
-      className={cn("px-(--card-spacing)", className)}
-      {...props}
-    />
-  )
-}
-
-function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="card-footer"
-      className={cn(
-        "flex items-center rounded-b-xl px-(--card-spacing) [.border-t]:pt-(--card-spacing)",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-export {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardAction,
-  CardDescription,
-  CardContent,
-}
-
-
-===== ./components/ui/context-menu.tsx =====
-"use client"
-
-import * as React from "react"
-import { ContextMenu as ContextMenuPrimitive } from "radix-ui"
-
-import { cn } from "@/lib/utils"
-import { ChevronRightIcon, CheckIcon } from "lucide-react"
-
-function ContextMenu({
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Root>) {
-  return <ContextMenuPrimitive.Root data-slot="context-menu" {...props} />
-}
-
-function ContextMenuTrigger({
-  className,
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Trigger>) {
-  return (
-    <ContextMenuPrimitive.Trigger
-      data-slot="context-menu-trigger"
-      className={cn("select-none", className)}
-      {...props}
-    />
-  )
-}
-
-function ContextMenuGroup({
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Group>) {
-  return (
-    <ContextMenuPrimitive.Group data-slot="context-menu-group" {...props} />
-  )
-}
-
-function ContextMenuPortal({
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Portal>) {
-  return (
-    <ContextMenuPrimitive.Portal data-slot="context-menu-portal" {...props} />
-  )
-}
-
-function ContextMenuSub({
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Sub>) {
-  return <ContextMenuPrimitive.Sub data-slot="context-menu-sub" {...props} />
-}
-
-function ContextMenuRadioGroup({
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.RadioGroup>) {
-  return (
-    <ContextMenuPrimitive.RadioGroup
-      data-slot="context-menu-radio-group"
-      {...props}
-    />
-  )
-}
-
-function ContextMenuContent({
-  className,
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Content> & {
-  side?: "top" | "right" | "bottom" | "left"
-}) {
-  return (
-    <ContextMenuPrimitive.Portal>
-      <ContextMenuPrimitive.Content
-        data-slot="context-menu-content"
-        className={cn("z-50 max-h-(--radix-context-menu-content-available-height) min-w-36 origin-(--radix-context-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95", className )}
-        {...props}
-      />
-    </ContextMenuPrimitive.Portal>
-  )
-}
-
-function ContextMenuItem({
-  className,
-  inset,
-  variant = "default",
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Item> & {
-  inset?: boolean
-  variant?: "default" | "destructive"
-}) {
-  return (
-    <ContextMenuPrimitive.Item
-      data-slot="context-menu-item"
-      data-inset={inset}
-      data-variant={variant}
-      className={cn(
-        "group/context-menu-item relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-inset:pl-8 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 focus:*:[svg]:text-accent-foreground data-[variant=destructive]:*:[svg]:text-destructive",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function ContextMenuSubTrigger({
-  className,
-  inset,
-  children,
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.SubTrigger> & {
-  inset?: boolean
-}) {
-  return (
-    <ContextMenuPrimitive.SubTrigger
-      data-slot="context-menu-sub-trigger"
-      data-inset={inset}
-      className={cn(
-        "flex cursor-default items-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-inset:pl-8 data-open:bg-accent data-open:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
-      )}
-      {...props}
-    >
-      {children}
-      <ChevronRightIcon className="ml-auto" />
-    </ContextMenuPrimitive.SubTrigger>
-  )
-}
-
-function ContextMenuSubContent({
-  className,
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.SubContent>) {
-  return (
-    <ContextMenuPrimitive.SubContent
-      data-slot="context-menu-sub-content"
-      className={cn("z-50 min-w-32 origin-(--radix-context-menu-content-transform-origin) overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95", className )}
-      {...props}
-    />
-  )
-}
-
-function ContextMenuCheckboxItem({
-  className,
-  children,
-  checked,
-  inset,
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.CheckboxItem> & {
-  inset?: boolean
-}) {
-  return (
-    <ContextMenuPrimitive.CheckboxItem
-      data-slot="context-menu-checkbox-item"
-      data-inset={inset}
-      className={cn(
-        "relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-inset:pl-8 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
-      )}
-      checked={checked}
-      {...props}
-    >
-      <span className="pointer-events-none absolute right-2">
-        <ContextMenuPrimitive.ItemIndicator>
-          <CheckIcon
-          />
-        </ContextMenuPrimitive.ItemIndicator>
-      </span>
-      {children}
-    </ContextMenuPrimitive.CheckboxItem>
-  )
-}
-
-function ContextMenuRadioItem({
-  className,
-  children,
-  inset,
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.RadioItem> & {
-  inset?: boolean
-}) {
-  return (
-    <ContextMenuPrimitive.RadioItem
-      data-slot="context-menu-radio-item"
-      data-inset={inset}
-      className={cn(
-        "relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground data-inset:pl-8 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
-      )}
-      {...props}
-    >
-      <span className="pointer-events-none absolute right-2">
-        <ContextMenuPrimitive.ItemIndicator>
-          <CheckIcon
-          />
-        </ContextMenuPrimitive.ItemIndicator>
-      </span>
-      {children}
-    </ContextMenuPrimitive.RadioItem>
-  )
-}
-
-function ContextMenuLabel({
-  className,
-  inset,
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Label> & {
-  inset?: boolean
-}) {
-  return (
-    <ContextMenuPrimitive.Label
-      data-slot="context-menu-label"
-      data-inset={inset}
-      className={cn(
-        "px-2 py-1.5 text-xs font-medium text-muted-foreground data-inset:pl-8",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function ContextMenuSeparator({
-  className,
-  ...props
-}: React.ComponentProps<typeof ContextMenuPrimitive.Separator>) {
-  return (
-    <ContextMenuPrimitive.Separator
-      data-slot="context-menu-separator"
-      className={cn("-mx-1 my-1 h-px bg-border", className)}
-      {...props}
-    />
-  )
-}
-
-function ContextMenuShortcut({
-  className,
-  ...props
-}: React.ComponentProps<"span">) {
-  return (
-    <span
-      data-slot="context-menu-shortcut"
-      className={cn(
-        "ml-auto text-xs tracking-widest text-muted-foreground group-focus/context-menu-item:text-accent-foreground",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-export {
-  ContextMenu,
-  ContextMenuTrigger,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuCheckboxItem,
-  ContextMenuRadioItem,
-  ContextMenuLabel,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuGroup,
-  ContextMenuPortal,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-  ContextMenuRadioGroup,
-}
-
-
-===== ./components/ui/dialog.tsx =====
-"use client"
-
-import * as React from "react"
-import { Dialog as DialogPrimitive } from "radix-ui"
-
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { XIcon } from "lucide-react"
-
-function Dialog({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />
-}
-
-function DialogTrigger({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
-  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />
-}
-
-function DialogPortal({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Portal>) {
-  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />
-}
-
-function DialogClose({
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Close>) {
-  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
-}
-
-function DialogOverlay({
-  className,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
-  return (
-    <DialogPrimitive.Overlay
-      data-slot="dialog-overlay"
-      className={cn(
-        "fixed inset-0 isolate z-50 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function DialogContent({
-  className,
-  children,
-  showCloseButton = true,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  showCloseButton?: boolean
-}) {
-  return (
-    <DialogPortal>
-      <DialogOverlay />
-      <DialogPrimitive.Content
-        data-slot="dialog-content"
-        className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-6 rounded-xl bg-popover p-6 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-md data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
-          className
-        )}
-        {...props}
-      >
-        {children}
-        {showCloseButton && (
-          <DialogPrimitive.Close data-slot="dialog-close" asChild>
-            <Button
-              variant="ghost"
-              className="absolute top-4 right-4"
-              size="icon-sm"
-            >
-              <XIcon
-              />
-              <span className="sr-only">Close</span>
-            </Button>
-          </DialogPrimitive.Close>
-        )}
-      </DialogPrimitive.Content>
-    </DialogPortal>
-  )
-}
-
-function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="dialog-header"
-      className={cn("flex flex-col gap-2", className)}
-      {...props}
-    />
-  )
-}
-
-function DialogFooter({
-  className,
-  showCloseButton = false,
-  children,
-  ...props
-}: React.ComponentProps<"div"> & {
-  showCloseButton?: boolean
-}) {
-  return (
-    <div
-      data-slot="dialog-footer"
-      className={cn(
-        "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
-        className
-      )}
-      {...props}
-    >
-      {children}
-      {showCloseButton && (
-        <DialogPrimitive.Close asChild>
-          <Button variant="outline">Close</Button>
-        </DialogPrimitive.Close>
-      )}
-    </div>
-  )
-}
-
-function DialogTitle({
-  className,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Title>) {
-  return (
-    <DialogPrimitive.Title
-      data-slot="dialog-title"
-      className={cn("font-heading leading-none font-medium", className)}
-      {...props}
-    />
-  )
-}
-
-function DialogDescription({
-  className,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Description>) {
-  return (
-    <DialogPrimitive.Description
-      data-slot="dialog-description"
-      className={cn(
-        "text-sm text-muted-foreground *:[a]:underline *:[a]:underline-offset-3 *:[a]:hover:text-foreground",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-export {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle,
-  DialogTrigger,
-}
-
-
-===== ./components/ui/dropdown-menu.tsx =====
-"use client"
-
-import * as React from "react"
-import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui"
-
-import { cn } from "@/lib/utils"
-import { CheckIcon, ChevronRightIcon } from "lucide-react"
-
-function DropdownMenu({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
-  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />
-}
-
-function DropdownMenuPortal({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Portal>) {
-  return (
-    <DropdownMenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />
-  )
-}
-
-function DropdownMenuTrigger({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) {
-  return (
-    <DropdownMenuPrimitive.Trigger
-      data-slot="dropdown-menu-trigger"
-      {...props}
-    />
-  )
-}
-
-function DropdownMenuContent({
-  className,
-  align = "start",
-  sideOffset = 4,
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
-  return (
-    <DropdownMenuPrimitive.Portal>
-      <DropdownMenuPrimitive.Content
-        data-slot="dropdown-menu-content"
-        sideOffset={sideOffset}
-        align={align}
-        className={cn("z-50 max-h-(--radix-dropdown-menu-content-available-height) w-(--radix-dropdown-menu-trigger-width) min-w-32 origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:overflow-hidden data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95", className )}
-        {...props}
-      />
-    </DropdownMenuPrimitive.Portal>
-  )
-}
-
-function DropdownMenuGroup({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Group>) {
-  return (
-    <DropdownMenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />
-  )
-}
-
-function DropdownMenuItem({
-  className,
-  inset,
-  variant = "default",
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Item> & {
-  inset?: boolean
-  variant?: "default" | "destructive"
-}) {
-  return (
-    <DropdownMenuPrimitive.Item
-      data-slot="dropdown-menu-item"
-      data-inset={inset}
-      data-variant={variant}
-      className={cn(
-        "group/dropdown-menu-item relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-8 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function DropdownMenuCheckboxItem({
-  className,
-  children,
-  checked,
-  inset,
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.CheckboxItem> & {
-  inset?: boolean
-}) {
-  return (
-    <DropdownMenuPrimitive.CheckboxItem
-      data-slot="dropdown-menu-checkbox-item"
-      data-inset={inset}
-      className={cn(
-        "relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-8 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
-      )}
-      checked={checked}
-      {...props}
-    >
-      <span
-        className="pointer-events-none absolute right-2 flex items-center justify-center"
-        data-slot="dropdown-menu-checkbox-item-indicator"
-      >
-        <DropdownMenuPrimitive.ItemIndicator>
-          <CheckIcon
-          />
-        </DropdownMenuPrimitive.ItemIndicator>
-      </span>
-      {children}
-    </DropdownMenuPrimitive.CheckboxItem>
-  )
-}
-
-function DropdownMenuRadioGroup({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.RadioGroup>) {
-  return (
-    <DropdownMenuPrimitive.RadioGroup
-      data-slot="dropdown-menu-radio-group"
-      {...props}
-    />
-  )
-}
-
-function DropdownMenuRadioItem({
-  className,
-  children,
-  inset,
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.RadioItem> & {
-  inset?: boolean
-}) {
-  return (
-    <DropdownMenuPrimitive.RadioItem
-      data-slot="dropdown-menu-radio-item"
-      data-inset={inset}
-      className={cn(
-        "relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-8 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
-      )}
-      {...props}
-    >
-      <span
-        className="pointer-events-none absolute right-2 flex items-center justify-center"
-        data-slot="dropdown-menu-radio-item-indicator"
-      >
-        <DropdownMenuPrimitive.ItemIndicator>
-          <CheckIcon
-          />
-        </DropdownMenuPrimitive.ItemIndicator>
-      </span>
-      {children}
-    </DropdownMenuPrimitive.RadioItem>
-  )
-}
-
-function DropdownMenuLabel({
-  className,
-  inset,
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Label> & {
-  inset?: boolean
-}) {
-  return (
-    <DropdownMenuPrimitive.Label
-      data-slot="dropdown-menu-label"
-      data-inset={inset}
-      className={cn(
-        "px-2 py-1.5 text-xs font-medium text-muted-foreground data-inset:pl-8",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function DropdownMenuSeparator({
-  className,
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Separator>) {
-  return (
-    <DropdownMenuPrimitive.Separator
-      data-slot="dropdown-menu-separator"
-      className={cn("-mx-1 my-1 h-px bg-border", className)}
-      {...props}
-    />
-  )
-}
-
-function DropdownMenuShortcut({
-  className,
-  ...props
-}: React.ComponentProps<"span">) {
-  return (
-    <span
-      data-slot="dropdown-menu-shortcut"
-      className={cn(
-        "ml-auto text-xs tracking-widest text-muted-foreground group-focus/dropdown-menu-item:text-accent-foreground",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function DropdownMenuSub({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Sub>) {
-  return <DropdownMenuPrimitive.Sub data-slot="dropdown-menu-sub" {...props} />
-}
-
-function DropdownMenuSubTrigger({
-  className,
-  inset,
-  children,
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.SubTrigger> & {
-  inset?: boolean
-}) {
-  return (
-    <DropdownMenuPrimitive.SubTrigger
-      data-slot="dropdown-menu-sub-trigger"
-      data-inset={inset}
-      className={cn(
-        "flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-8 data-open:bg-accent data-open:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
-      )}
-      {...props}
-    >
-      {children}
-      <ChevronRightIcon className="ml-auto" />
-    </DropdownMenuPrimitive.SubTrigger>
-  )
-}
-
-function DropdownMenuSubContent({
-  className,
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.SubContent>) {
-  return (
-    <DropdownMenuPrimitive.SubContent
-      data-slot="dropdown-menu-sub-content"
-      className={cn("z-50 min-w-[96px] origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden rounded-md bg-popover p-1 text-popover-foreground shadow-lg ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95", className )}
-      {...props}
-    />
-  )
-}
-
-export {
-  DropdownMenu,
-  DropdownMenuPortal,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuItem,
-  DropdownMenuCheckboxItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-}
-
-
-===== ./components/ui/field.tsx =====
-"use client"
-
-import { useMemo } from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-
-import { cn } from "@/lib/utils"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-
-function FieldSet({ className, ...props }: React.ComponentProps<"fieldset">) {
-  return (
-    <fieldset
-      data-slot="field-set"
-      className={cn(
-        "flex flex-col gap-6 has-[>[data-slot=checkbox-group]]:gap-3 has-[>[data-slot=radio-group]]:gap-3",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function FieldLegend({
-  className,
-  variant = "legend",
-  ...props
-}: React.ComponentProps<"legend"> & { variant?: "legend" | "label" }) {
-  return (
-    <legend
-      data-slot="field-legend"
-      data-variant={variant}
-      className={cn(
-        "mb-3 font-medium data-[variant=label]:text-sm data-[variant=legend]:text-base",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function FieldGroup({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="field-group"
-      className={cn(
-        "group/field-group @container/field-group flex w-full flex-col gap-7 data-[slot=checkbox-group]:gap-3 *:data-[slot=field-group]:gap-4",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-const fieldVariants = cva(
-  "group/field flex w-full gap-3 data-[invalid=true]:text-destructive",
-  {
-    variants: {
-      orientation: {
-        vertical: "flex-col *:w-full [&>.sr-only]:w-auto",
-        horizontal:
-          "flex-row items-center has-[>[data-slot=field-content]]:items-start *:data-[slot=field-label]:flex-auto has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
-        responsive:
-          "flex-col *:w-full @md/field-group:flex-row @md/field-group:items-center @md/field-group:*:w-auto @md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:*:data-[slot=field-label]:flex-auto [&>.sr-only]:w-auto @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px",
-      },
-    },
-    defaultVariants: {
-      orientation: "vertical",
-    },
-  }
-)
-
-function Field({
-  className,
-  orientation = "vertical",
-  ...props
-}: React.ComponentProps<"div"> & VariantProps<typeof fieldVariants>) {
-  return (
-    <div
-      role="group"
-      data-slot="field"
-      data-orientation={orientation}
-      className={cn(fieldVariants({ orientation }), className)}
-      {...props}
-    />
-  )
-}
-
-function FieldContent({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="field-content"
-      className={cn(
-        "group/field-content flex flex-1 flex-col gap-1 leading-snug",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function FieldLabel({
-  className,
-  ...props
-}: React.ComponentProps<typeof Label>) {
-  return (
-    <Label
-      data-slot="field-label"
-      className={cn(
-        "group/field-label peer/field-label flex w-fit gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 has-data-checked:border-primary/30 has-data-checked:bg-primary/5 has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border *:data-[slot=field]:p-3 dark:has-data-checked:border-primary/20 dark:has-data-checked:bg-primary/10",
-        "has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="field-label"
-      className={cn(
-        "flex w-fit items-center gap-2 text-sm font-medium group-data-[disabled=true]/field:opacity-50",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
-  return (
-    <p
-      data-slot="field-description"
-      className={cn(
-        "text-left text-sm leading-normal font-normal text-muted-foreground group-has-data-horizontal/field:text-balance [[data-variant=legend]+&]:-mt-1.5",
-        "last:mt-0 nth-last-2:-mt-1",
-        "[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function FieldSeparator({
-  children,
-  className,
-  ...props
-}: React.ComponentProps<"div"> & {
-  children?: React.ReactNode
-}) {
-  return (
-    <div
-      data-slot="field-separator"
-      data-content={!!children}
-      className={cn(
-        "relative -my-2 h-5 text-sm group-data-[variant=outline]/field-group:-mb-2",
-        className
-      )}
-      {...props}
-    >
-      <Separator className="absolute inset-0 top-1/2" />
-      {children && (
-        <span
-          className="relative mx-auto block w-fit bg-background px-2 text-muted-foreground"
-          data-slot="field-separator-content"
-        >
-          {children}
-        </span>
-      )}
-    </div>
-  )
-}
-
-function FieldError({
-  className,
-  children,
-  errors,
-  ...props
-}: React.ComponentProps<"div"> & {
-  errors?: Array<{ message?: string } | undefined>
-}) {
-  const content = useMemo(() => {
-    if (children) {
-      return children
-    }
-
-    if (!errors?.length) {
-      return null
-    }
-
-    const uniqueErrors = [
-      ...new Map(errors.map((error) => [error?.message, error])).values(),
-    ]
-
-    if (uniqueErrors?.length == 1) {
-      return uniqueErrors[0]?.message
-    }
-
-    return (
-      <ul className="ml-4 flex list-disc flex-col gap-1">
-        {uniqueErrors.map(
-          (error, index) =>
-            error?.message && <li key={index}>{error.message}</li>
-        )}
-      </ul>
-    )
-  }, [children, errors])
-
-  if (!content) {
-    return null
-  }
-
-  return (
-    <div
-      role="alert"
-      data-slot="field-error"
-      className={cn("text-sm font-normal text-destructive", className)}
-      {...props}
-    >
-      {content}
-    </div>
-  )
-}
-
-export {
-  Field,
-  FieldLabel,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLegend,
-  FieldSeparator,
-  FieldSet,
-  FieldContent,
-  FieldTitle,
-}
-
-
-===== ./components/ui/input.tsx =====
-import * as React from "react"
-
-import { cn } from "@/lib/utils"
-
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
-  return (
-    <input
-      type={type}
-      data-slot="input"
-      className={cn(
-        "h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-2.5 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-export { Input }
-
-
-===== ./components/ui/label.tsx =====
-"use client"
-
-import * as React from "react"
-import { Label as LabelPrimitive } from "radix-ui"
-
-import { cn } from "@/lib/utils"
-
-function Label({
-  className,
-  ...props
-}: React.ComponentProps<typeof LabelPrimitive.Root>) {
-  return (
-    <LabelPrimitive.Root
-      data-slot="label"
-      className={cn(
-        "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-export { Label }
-
-
-===== ./components/ui/menubar.tsx =====
-"use client"
-
-import * as React from "react"
-import { Menubar as MenubarPrimitive } from "radix-ui"
-
-import { cn } from "@/lib/utils"
-import { CheckIcon, ChevronRightIcon } from "lucide-react"
-
-function Menubar({
-  className,
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Root>) {
-  return (
-    <MenubarPrimitive.Root
-      data-slot="menubar"
-      className={cn(
-        "flex h-9 items-center gap-1 rounded-md border p-1 shadow-xs",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function MenubarMenu({
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Menu>) {
-  return <MenubarPrimitive.Menu data-slot="menubar-menu" {...props} />
-}
-
-function MenubarGroup({
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Group>) {
-  return <MenubarPrimitive.Group data-slot="menubar-group" {...props} />
-}
-
-function MenubarPortal({
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Portal>) {
-  return <MenubarPrimitive.Portal data-slot="menubar-portal" {...props} />
-}
-
-function MenubarRadioGroup({
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.RadioGroup>) {
-  return (
-    <MenubarPrimitive.RadioGroup data-slot="menubar-radio-group" {...props} />
-  )
-}
-
-function MenubarTrigger({
-  className,
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Trigger>) {
-  return (
-    <MenubarPrimitive.Trigger
-      data-slot="menubar-trigger"
-      className={cn(
-        "flex items-center rounded-sm px-2 py-1 text-sm font-medium outline-hidden select-none hover:bg-muted aria-expanded:bg-muted",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function MenubarContent({
-  className,
-  align = "start",
-  alignOffset = -4,
-  sideOffset = 8,
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Content>) {
-  return (
-    <MenubarPortal>
-      <MenubarPrimitive.Content
-        data-slot="menubar-content"
-        align={align}
-        alignOffset={alignOffset}
-        sideOffset={sideOffset}
-        className={cn("z-50 min-w-36 origin-(--radix-menubar-content-transform-origin) overflow-hidden rounded-md bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95", className )}
-        {...props}
-      />
-    </MenubarPortal>
-  )
-}
-
-function MenubarItem({
-  className,
-  inset,
-  variant = "default",
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Item> & {
-  inset?: boolean
-  variant?: "default" | "destructive"
-}) {
-  return (
-    <MenubarPrimitive.Item
-      data-slot="menubar-item"
-      data-inset={inset}
-      data-variant={variant}
-      className={cn(
-        "group/menubar-item relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-inset:pl-8 data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 data-[variant=destructive]:focus:text-destructive dark:data-[variant=destructive]:focus:bg-destructive/20 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[variant=destructive]:*:[svg]:text-destructive!",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function MenubarCheckboxItem({
-  className,
-  children,
-  checked,
-  inset,
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.CheckboxItem> & {
-  inset?: boolean
-}) {
-  return (
-    <MenubarPrimitive.CheckboxItem
-      data-slot="menubar-checkbox-item"
-      data-inset={inset}
-      className={cn(
-        "relative flex cursor-default items-center gap-2 rounded-md py-1.5 pr-2 pl-8 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-8 data-disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        className
-      )}
-      checked={checked}
-      {...props}
-    >
-      <span className="pointer-events-none absolute left-2 flex size-4 items-center justify-center [&_svg:not([class*='size-'])]:size-4">
-        <MenubarPrimitive.ItemIndicator>
-          <CheckIcon
-          />
-        </MenubarPrimitive.ItemIndicator>
-      </span>
-      {children}
-    </MenubarPrimitive.CheckboxItem>
-  )
-}
-
-function MenubarRadioItem({
-  className,
-  children,
-  inset,
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.RadioItem> & {
-  inset?: boolean
-}) {
-  return (
-    <MenubarPrimitive.RadioItem
-      data-slot="menubar-radio-item"
-      data-inset={inset}
-      className={cn(
-        "relative flex cursor-default items-center gap-2 rounded-md py-1.5 pr-2 pl-8 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground focus:**:text-accent-foreground data-inset:pl-8 data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
-        className
-      )}
-      {...props}
-    >
-      <span className="pointer-events-none absolute left-2 flex size-4 items-center justify-center [&_svg:not([class*='size-'])]:size-4">
-        <MenubarPrimitive.ItemIndicator>
-          <CheckIcon
-          />
-        </MenubarPrimitive.ItemIndicator>
-      </span>
-      {children}
-    </MenubarPrimitive.RadioItem>
-  )
-}
-
-function MenubarLabel({
-  className,
-  inset,
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Label> & {
-  inset?: boolean
-}) {
-  return (
-    <MenubarPrimitive.Label
-      data-slot="menubar-label"
-      data-inset={inset}
-      className={cn(
-        "px-2 py-1.5 text-sm font-medium data-inset:pl-8",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function MenubarSeparator({
-  className,
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Separator>) {
-  return (
-    <MenubarPrimitive.Separator
-      data-slot="menubar-separator"
-      className={cn("-mx-1 my-1 h-px bg-border", className)}
-      {...props}
-    />
-  )
-}
-
-function MenubarShortcut({
-  className,
-  ...props
-}: React.ComponentProps<"span">) {
-  return (
-    <span
-      data-slot="menubar-shortcut"
-      className={cn(
-        "ml-auto text-xs tracking-widest text-muted-foreground group-focus/menubar-item:text-accent-foreground",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-function MenubarSub({
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Sub>) {
-  return <MenubarPrimitive.Sub data-slot="menubar-sub" {...props} />
-}
-
-function MenubarSubTrigger({
-  className,
-  inset,
-  children,
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.SubTrigger> & {
-  inset?: boolean
-}) {
-  return (
-    <MenubarPrimitive.SubTrigger
-      data-slot="menubar-sub-trigger"
-      data-inset={inset}
-      className={cn(
-        "flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none focus:bg-accent focus:text-accent-foreground data-inset:pl-8 data-open:bg-accent data-open:text-accent-foreground [&_svg:not([class*='size-'])]:size-4",
-        className
-      )}
-      {...props}
-    >
-      {children}
-      <ChevronRightIcon className="ml-auto size-4" />
-    </MenubarPrimitive.SubTrigger>
-  )
-}
-
-function MenubarSubContent({
-  className,
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.SubContent>) {
-  return (
-    <MenubarPrimitive.SubContent
-      data-slot="menubar-sub-content"
-      className={cn("z-50 min-w-32 origin-(--radix-menubar-content-transform-origin) overflow-hidden rounded-md bg-popover p-1 text-popover-foreground shadow-lg ring-1 ring-foreground/10 duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95", className )}
-      {...props}
-    />
-  )
-}
-
-export {
-  Menubar,
-  MenubarPortal,
-  MenubarMenu,
-  MenubarTrigger,
-  MenubarContent,
-  MenubarGroup,
-  MenubarSeparator,
-  MenubarLabel,
-  MenubarItem,
-  MenubarShortcut,
-  MenubarCheckboxItem,
-  MenubarRadioGroup,
-  MenubarRadioItem,
-  MenubarSub,
-  MenubarSubTrigger,
-  MenubarSubContent,
-}
-
-
-===== ./components/ui/pixelact-ui/accordion.tsx =====
-import React from "react";
-import * as AccordionPrimitive from "@radix-ui/react-accordion";
-import { cn } from "@/lib/utils";
-import {
-  Accordion,
-  AccordionContent as ShadcnAccordionContent,
-  AccordionItem as ShadcnAccordionItem,
-} from "@/components/ui/accordion";
-
-import "@/components/ui/pixelact-ui/styles/styles.css";
-
-export interface PixelAccordionItemProps
-  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Item> {
-  asChild?: boolean;
-}
-
-function AccordionItem({
-  className,
-  children,
-  ...props
-}: PixelAccordionItemProps) {
-  return (
-    <ShadcnAccordionItem
-      className={cn(
-        "border-dashed text-foreground border-b-4 border-foreground dark:border-ring relative",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </ShadcnAccordionItem>
-  );
-}
-
-function AccordionTrigger({
-  className,
-  children,
-  ...props
-}: React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>) {
-  return (
-    <AccordionPrimitive.Header className="flex">
-      <AccordionPrimitive.Trigger
-        data-slot="accordion-trigger"
-        className={cn(
-          "pixel-font focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-start justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&[data-state=open]>svg]:rotate-180",
-          className
-        )}
-        {...props}
-      >
-        {children}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="32"
-          height="32"
-          viewBox="0 0 24 24"
-        >
-          <path
-            className="fill-foreground"
-            d="M7 8H5v2h2v2h2v2h2v2h2v-2h2v-2h2v-2h2V8h-2v2h-2v2h-2v2h-2v-2H9v-2H7z"
-          />
-        </svg>
-      </AccordionPrimitive.Trigger>
-    </AccordionPrimitive.Header>
-  );
-}
-
-interface AccordionContentProps
-  extends React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Content> {
-  font?: "normal" | "pixel";
-}
-
-function AccordionContent({
-  className,
-  children,
-  font,
-  ...props
-}: AccordionContentProps) {
-  return (
-    <div className="relative">
-      <ShadcnAccordionContent
-        className={cn(
-          "overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down",
-          font === "pixel" && "pixel-font",
-          className
-        )}
-        {...props}
-      >
-        <div className="pb-4 pt-0 relative z-10 p-1">{children}</div>
-      </ShadcnAccordionContent>
-
-      <AccordionPrimitive.Content asChild forceMount />
-    </div>
-  );
-}
-
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent };
-
-
-===== ./components/ui/pixelact-ui/avatar.tsx =====
-import type React from "react";
-import { forwardRef } from "react";
-import * as AvatarPrimitive from "@radix-ui/react-avatar";
-import { cva } from "class-variance-authority";
-import { cn } from "@/lib/utils";
-import "@/components/ui/pixelact-ui/styles/styles.css";
-
-const avatarVariants = cva('', {
-  variants: {
-    font: {
-      normal: '',
-      pixel: 'pixel-font',
-    },
-    variant: {
-      default: '',
-      square: 'shadow-(--pixel-box-shadow) box-shadow-margin',
-      round: 'rounded-full',
-    },
-    size: {
-      small: 'h-8 w-8',
-      medium: 'h-12 w-12',
-      large: 'h-16 w-16',
-      extralarge: 'h-48 w-48',
-    },
-  },
-  defaultVariants: {
-    font: 'pixel',
-    variant: 'square',
-    size: 'medium',
-  },
-});
-
-const Avatar = forwardRef<
-  React.ComponentRef<typeof AvatarPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & {
-    font?: "normal" | "pixel";
-    variant?: "default" | "round" | "square";
-    size?: "small" | "medium" | "large" | "extralarge";
-  }
->(({ className = "", font, variant, size = "medium", ...props }, ref) => {
-  const isRound = variant === "round";
-
-  return (
-    <div className={cn('relative size-max', className)}>
-      <div
-        className="absolute inset-0 w-full h-full pointer-events-none"
-        style={{ zIndex: 10 }}
-      >
-        {isRound && (
-          <>
-            {size === 'extralarge' && (
-              <>
-                <div className="absolute top-[-3px] left-[57px] right-[57px] h-[15px] bg-foreground dark:bg-ring"></div>
-
-                <div className="absolute top-[9px] left-[27px] h-[15px] bg-foreground dark:bg-ring w-[30px]"></div>
-                <div className="absolute top-[9px] right-[27px] h-[15px] bg-foreground dark:bg-ring w-[30px]"></div>
-
-                <div className="absolute top-[24px] left-[15px] h-[15px] bg-foreground dark:bg-ring w-[15px]"></div>
-                <div className="absolute top-[24px] right-[15px] h-[15px] bg-foreground dark:bg-ring w-[15px]"></div>
-
-                <div className="absolute top-[39px] left-0 h-[114px] bg-foreground dark:bg-ring w-[15px]"></div>
-                <div className="absolute top-[39px] right-0 h-[114px] bg-foreground dark:bg-ring w-[15px]"></div>
-
-                <div className="absolute bottom-[24px] left-[15px] h-[15px] bg-foreground dark:bg-ring w-[15px]"></div>
-                <div className="absolute bottom-[24px] right-[15px] h-[15px] bg-foreground dark:bg-ring w-[15px]"></div>
-
-                <div className="absolute bottom-[9px] left-[27px] h-[15px] bg-foreground dark:bg-ring w-[30px]"></div>
-                <div className="absolute bottom-[9px] right-[27px] h-[15px] bg-foreground dark:bg-ring w-[30px]"></div>
-
-                <div className="absolute bottom-[-3px] left-[57px] right-[57px] h-[15px] bg-foreground dark:bg-ring"></div>
-              </>
-            )}
-            {size === 'large' && (
-              <>
-                <div
-                  className={
-                    'absolute top-[-1px] left-[19px] right-[19px] h-[5px] bg-foreground dark:bg-ring'
-                  }
-                ></div>
-                <div className="absolute top-[3px] left-[9px] h-[5px] bg-foreground dark:bg-ring w-[10px]"></div>
-                <div className="absolute top-[3px] right-[9px] h-[5px] bg-foreground dark:bg-ring w-[10px]"></div>
-
-                <div className="absolute top-[8px] left-[5px] h-[5px] bg-foreground dark:bg-ring w-[5px]"></div>
-                <div className="absolute top-[8px] right-[5px] h-[5px] bg-foreground dark:bg-ring w-[5px]"></div>
-
-                <div className="absolute top-[13px] left-0 h-[38px] bg-foreground dark:bg-ring w-[5px]"></div>
-                <div className="absolute top-[13px] right-0 h-[38px] bg-foreground dark:bg-ring w-[5px]"></div>
-
-                <div className="absolute bottom-[8px] left-[5px] h-[5px] bg-foreground dark:bg-ring w-[5px]"></div>
-                <div className="absolute bottom-[8px] right-[5px] h-[5px] bg-foreground dark:bg-ring w-[5px]"></div>
-
-                <div className="absolute bottom-[3px] left-[9px] h-[5px] bg-foreground dark:bg-ring w-[10px]"></div>
-                <div className="absolute bottom-[3px] right-[9px] h-[5px] bg-foreground dark:bg-ring w-[10px]"></div>
-                <div
-                  className={
-                    'absolute bottom-[-1px] left-[19px] right-[19px] h-[5px] bg-foreground dark:bg-ring'
-                  }
-                ></div>
-              </>
-            )}
-            {size === 'medium' && (
-              <>
-                <div
-                  className={
-                    'absolute top-0 left-[10px] right-[10px] h-[5px] bg-foreground dark:bg-ring'
-                  }
-                ></div>
-
-                <div className="absolute top-[5px] left-[5px] h-[5px] bg-foreground dark:bg-ring w-[5px]"></div>
-                <div className="absolute top-[5px] right-[5px] h-[5px] bg-foreground dark:bg-ring w-[5px]"></div>
-
-                <div className="absolute top-[10px] left-0 h-[28px] bg-foreground dark:bg-ring w-[5px]"></div>
-                <div className="absolute top-[10px] right-0 h-[28px] bg-foreground dark:bg-ring w-[5px]"></div>
-
-                <div className="absolute bottom-[5px] left-[5px] h-[5px] bg-foreground dark:bg-ring w-[5px]"></div>
-                <div className="absolute bottom-[5px] right-[5px] h-[5px] bg-foreground dark:bg-ring w-[5px]"></div>
-
-                <div
-                  className={
-                    'absolute bottom-0 left-[10px] right-[10px] h-[5px] bg-foreground dark:bg-ring'
-                  }
-                ></div>
-              </>
-            )}
-            {size === 'small' && (
-              <>
-                <div
-                  className={
-                    'absolute top-0 left-[7px] right-[7px] h-[3px] bg-foreground dark:bg-ring'
-                  }
-                ></div>
-
-                <div className="absolute top-[3px] left-[2px] h-[3px] bg-foreground dark:bg-ring w-[5px]"></div>
-                <div className="absolute top-[3px] right-[2px] h-[3px] bg-foreground dark:bg-ring w-[5px]"></div>
-
-                <div className="absolute top-[6px] left-[0px] h-[3px] bg-foreground dark:bg-ring w-[3px]"></div>
-                <div className="absolute top-[6px] right-[0px] h-[3px] bg-foreground dark:bg-ring w-[3px]"></div>
-
-                <div className="absolute top-[9px] left-[-2px] h-[14px] bg-foreground dark:bg-ring w-[3px]"></div>
-                <div className="absolute top-[9px] right-[-2px] h-[14px] bg-foreground dark:bg-ring w-[3px]"></div>
-
-                <div className="absolute bottom-[6px] left-[0px] h-[3px] bg-foreground dark:bg-ring w-[3px]"></div>
-                <div className="absolute bottom-[6px] right-[0px] h-[3px] bg-foreground dark:bg-ring w-[3px]"></div>
-
-                <div className="absolute bottom-[3px] left-[2px] h-[3px] bg-foreground dark:bg-ring w-[5px]"></div>
-                <div className="absolute bottom-[3px] right-[2px] h-[3px] bg-foreground dark:bg-ring w-[5px]"></div>
-
-                <div
-                  className={
-                    'absolute bottom-0 left-[7px] right-[7px] h-[3px] bg-foreground dark:bg-ring'
-                  }
-                ></div>
-              </>
-            )}
-          </>
-        )}
-      </div>
-
-      <AvatarPrimitive.Root
-        ref={ref}
-        data-slot="avatar"
-        className={cn(
-          'relative  flex size-10 shrink-0 overflow-hidden text-xs',
-          avatarVariants({ font, variant, size })
-        )}
-        {...props}
-      />
-    </div>
-  );
-});
-Avatar.displayName = AvatarPrimitive.Root.displayName;
-
-interface AvatarImageProps
-  extends React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image> {
-  font?: "normal" | "retro";
-  variant?: "default" | "retro" | "pixel";
-}
-
-const AvatarImage = forwardRef<
-  React.ComponentRef<typeof AvatarPrimitive.Image>,
-  AvatarImageProps
->(({ className, font, ...props }, ref) => {
-  return (
-    <AvatarPrimitive.Image
-      ref={ref}
-      data-slot="avatar-image"
-      className={cn(
-        "aspect-square h-full w-full",
-        font === "retro" && "retro",
-        className
-      )}
-      {...props}
-    />
-  );
-});
-AvatarImage.displayName = AvatarPrimitive.Image.displayName;
-
-const AvatarFallback = forwardRef<
-  React.ComponentRef<typeof AvatarPrimitive.Fallback>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Fallback
-    ref={ref}
-    data-slot="avatar-fallback"
-    className={cn(
-      "flex h-full w-full items-center justify-center rounded-full bg-muted text-foreground",
-      className
-    )}
-    {...props}
-  />
-));
-AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
-
-export { Avatar, AvatarImage, AvatarFallback };
-
-
-===== ./components/ui/pixelact-ui/button.css =====
-.pixel__button {
-  position: relative;
-  box-shadow: var(--pixel-box-shadow);
-
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  &:active {
-    transform: translateY(3px);
-  }
-}
-
-.pixel-default__button {
-  &::after {
-    border-right: 4px solid
-      color-mix(in hsl, var(--default-inner-border-color) 70%, rgba(0, 0, 0));
-    border-bottom: 4px solid
-      color-mix(in hsl, var(--default-inner-border-color) 70%, rgba(0, 0, 0));
-  }
-  &:hover {
-    background-color: var(--default-inner-border-color);
-  }
-
-  &:active {
-    background-color: color-mix(
-      in hsl,
-      var(--default-inner-border-color) 70%,
-      rgb(0, 0, 0)
-    );
-  }
-}
-
-.pixel-secondary__button {
-  background-color: var(--color-secondary);
-  color: var(--color-secondary-foreground);
-
-  &::after {
-    border-right: 4px solid
-      color-mix(in hsl, var(--color-secondary) 70%, rgb(0, 0, 0));
-    border-bottom: 4px solid
-      color-mix(in hsl, var(--color-secondary) 70%, rgb(0, 0, 0));
-  }
-
-  &:hover {
-    background-color: color-mix(
-      in hsl,
-      var(--color-secondary) 90%,
-      rgb(0, 0, 0)
-    );
-  }
-
-  &:active {
-    background-color: color-mix(
-      in hsl,
-      var(--color-secondary) 70%,
-      rgb(0, 0, 0)
-    );
-  }
-}
-
-.pixel-success__button {
-  background-color: var(--success);
-  color: var(--success-foreground);
-
-  &::after {
-    border-right: 4px solid color-mix(in hsl, var(--success) 70%, rgb(0, 0, 0));
-    border-bottom: 4px solid color-mix(in hsl, var(--success) 70%, rgb(0, 0, 0));
-  }
-
-  &:hover {
-    background-color: color-mix(in hsl, var(--success) 90%, rgb(0, 0, 0));
-  }
-
-  &:active {
-    background-color: color-mix(in hsl, var(--success) 70%, rgb(0, 0, 0));
-  }
-}
-
-.pixel-destructive__button {
-  background-color: var(--destructive);
-  color: var(--destructive-foreground);
-
-  &::after {
-    border-right: 4px solid
-      color-mix(in hsl, var(--destructive) 70%, rgb(77, 77, 77));
-    border-bottom: 4px solid
-      color-mix(in hsl, var(--destructive) 70%, rgb(77, 77, 77));
-  }
-
-  &:hover {
-    background-color: color-mix(
-      in hsl,
-      var(--destructive) 90%,
-      rgb(77, 77, 77)
-    );
-  }
-
-  &:active {
-    background-color: color-mix(
-      in hsl,
-      var(--destructive) 70%,
-      rgb(77, 77, 77)
-    );
-  }
-}
-
-.pixel-warning__button {
-  background-color: var(--warning);
-  color: var(--warning-foreground);
-
-  &::after {
-    border-right: 4px solid
-      color-mix(in hsl, var(--warning) 70%, rgb(32, 32, 32));
-    border-bottom: 4px solid
-      color-mix(in hsl, var(--warning) 70%, rgb(32, 32, 32));
-  }
-
-  &:hover {
-    background-color: color-mix(in hsl, var(--warning) 90%, rgb(32, 32, 32));
-  }
-
-  &:active {
-    background-color: color-mix(in hsl, var(--warning) 70%, rgb(32, 32, 32));
-  }
-}
-
-.pixel-link__button {
-  box-shadow: none;
-  color: var(--link);
-  margin: 0;
-  padding: 0;
-
-  &:hover {
-    background-color: transparent;
-    color: color-mix(in hsl, var(--link) 70%, rgb(0, 0, 0));
-  }
-
-  &:active {
-    color: color-mix(in hsl, var(--link) 90%, rgb(0, 0, 0));
-  }
-
-  &:visited {
-    color: color-mix(in hsl, var(--link) 70%, rgb(0, 0, 0));
-  }
-}
-
-
-===== ./components/ui/pixelact-ui/button.tsx =====
-import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
-import { Button as ShadcnButton } from "@/components/ui/button";
-import "@/components/ui/pixelact-ui/styles/styles.css";
-import "./button.css";
-
-const pixelButtonVariants = cva(
-  "pixel__button pixel-font cursor-pointer rounded-none w-fit items-center justify-center whitespace-nowrap text-sm transition-colors transition-all duration-100",
-  {
-    variants: {
-      variant: {
-        default: "pixel-default__button box-shadow-margin bg-white text-black",
-        secondary: "pixel-secondary__button box-shadow-margin",
-        warning: "pixel-warning__button box-shadow-margin",
-        success: "pixel-success__button box-shadow-margin",
-        destructive: "pixel-destructive__button box-shadow-margin",
-        link: "pixel-link__button bg-transparent text-link underline-offset-4 underline",
-      },
-      size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 px-3 text-xs",
-        lg: "h-11 px-8 text-base",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-);
-
-export interface PixelButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof pixelButtonVariants> {
-  asChild?: boolean;
-}
-
-const Button = React.forwardRef<
-  React.ComponentRef<typeof ShadcnButton>,
-  PixelButtonProps
->(({ className, variant, size, ...props }, ref) => {
-  return (
-    <ShadcnButton
-      {...props}
-      className={cn(pixelButtonVariants({ variant, size }), className)}
-      ref={ref}
-    />
-  );
-});
-
-export { Button };
-
-
-===== ./components/ui/pixelact-ui/card.tsx =====
-import { type VariantProps, cva } from "class-variance-authority";
-
-import { cn } from "@/lib/utils";
-
-import {
-  Card as ShadcnCard,
-  CardAction as ShadcnCardAction,
-  CardContent as ShadcnCardContent,
-  CardDescription as ShadcnCardDescription,
-  CardFooter as ShadcnCardFooter,
-  CardHeader as ShadcnCardHeader,
-  CardTitle as ShadcnCardTitle,
-} from "@/components/ui/card";
-
-import "@/components/ui/pixelact-ui/styles/styles.css";
-
-export const cardVariants = cva("", {
-  variants: {
-    font: {
-      normal: "",
-      pixel: "pixel-font",
-    },
-  },
-  defaultVariants: {
-    font: "pixel",
-  },
-});
-
-export interface CardProps
-  extends React.ComponentProps<"div">,
-    VariantProps<typeof cardVariants> {
-  asChild?: boolean;
-}
-
-function Card({ ...props }: CardProps) {
-  const { className, font } = props;
-
-  return (
-    <ShadcnCard
-      {...props}
-      className={cn(
-        "rounded-none border-0 bg-card shadow-(--pixel-box-shadow) box-shadow-margin",
-        cardVariants({ font }),
-        className
-      )}
-    />
-  );
-}
-
-function CardHeader({ ...props }: CardProps) {
-  const { className } = props;
-
-  return <ShadcnCardHeader className={cn("", className)} {...props} />;
-}
-
-function CardTitle({ ...props }: CardProps) {
-  const { className } = props;
-
-  return (
-    <ShadcnCardTitle
-      className={cn("font-normal text-lg", className)}
-      {...props}
-    />
-  );
-}
-
-function CardDescription({ ...props }: CardProps) {
-  const { className } = props;
-
-  return <ShadcnCardDescription className={cn(className)} {...props} />;
-}
-
-function CardAction({ ...props }: CardProps) {
-  const { className } = props;
-
-  return <ShadcnCardAction className={cn(className)} {...props} />;
-}
-
-function CardContent({ ...props }: CardProps) {
-  const { className } = props;
-
-  return <ShadcnCardContent className={cn(className)} {...props} />;
-}
-
-function CardFooter({ ...props }: CardProps) {
-  const { className } = props;
-
-  return (
-    <ShadcnCardFooter
-      data-slot="card-footer"
-      className={cn(className)}
-      {...props}
-    />
-  );
-}
-
-export {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardAction,
-  CardDescription,
-  CardContent,
-};
-
-
-===== ./components/ui/pixelact-ui/context-menu.tsx =====
-import * as React from "react";
-
-import * as ContextMenuPrimitive from "@radix-ui/react-context-menu";
-import { Circle } from "lucide-react";
-
-import { cn } from "@/lib/utils";
-
-import "@/components/ui/pixelact-ui/styles/styles.css";
-
-const ContextMenu = ContextMenuPrimitive.Root;
-
-const ContextMenuTrigger = ContextMenuPrimitive.Trigger;
-
-const ContextMenuGroup = ContextMenuPrimitive.Group;
-
-const ContextMenuPortal = ContextMenuPrimitive.Portal;
-
-const ContextMenuSub = ContextMenuPrimitive.Sub;
-
-const ContextMenuRadioGroup = ContextMenuPrimitive.RadioGroup;
-
-const ContextMenuSubTrigger = React.forwardRef<
-  React.ComponentRef<typeof ContextMenuPrimitive.SubTrigger>,
-  React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.SubTrigger> & {
-    inset?: boolean;
-  }
->(({ className, inset, children, ...props }, ref) => (
-  <ContextMenuPrimitive.SubTrigger
-    ref={ref}
-    className={cn(
-      "flex cursor-default select-none items-center rounded-none px-2 py-1.5 text-sm outline-none focus:border-y-4 focus:border-foreground h-8 focus:dark:border-ring border-dashed focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
-      inset && "pl-8",
-      className
-    )}
-    {...props}
-  >
-    {children}
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="32"
-      height="32"
-      viewBox="0 0 24 24"
-      className="ml-auto size-6"
-    >
-      <path
-        className="fill-foreground"
-        d="M8 5v2h2V5zm4 4V7h-2v2zm2 2V9h-2v2zm0 2h2v-2h-2zm-2 2v-2h2v2zm0 0h-2v2h2zm-4 4v-2h2v2z"
-      />
-    </svg>
-  </ContextMenuPrimitive.SubTrigger>
-));
-ContextMenuSubTrigger.displayName = ContextMenuPrimitive.SubTrigger.displayName;
-
-const ContextMenuSubContent = React.forwardRef<
-  React.ComponentRef<typeof ContextMenuPrimitive.SubContent>,
-  React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.SubContent>
->(({ className, ...props }, ref) => (
-  <ContextMenuPrimitive.SubContent
-    ref={ref}
-    className={cn(
-      "z-50 min-w-[8rem] overflow-hidden rounded-none bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-context-menu-content-transform-origin]",
-      "pixel-font shadow-(--pixel-box-shadow) box-shadow-margin",
-      className
-    )}
-    {...props}
-  />
-));
-ContextMenuSubContent.displayName = ContextMenuPrimitive.SubContent.displayName;
-
-const ContextMenuContent = React.forwardRef<
-  React.ComponentRef<typeof ContextMenuPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Content>
->(({ className, ...props }, ref) => (
-  <ContextMenuPrimitive.Portal>
-    <ContextMenuPrimitive.Content
-      ref={ref}
-      className={cn(
-        "z-50 max-h-[--radix-context-menu-content-available-height] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-none bg-popover p-1 text-popover-foreground animate-in fade-in-80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-context-menu-content-transform-origin]",
-        "pixel-font shadow-(--pixel-box-shadow) box-shadow-margin",
-        className
-      )}
-      {...props}
-    />
-  </ContextMenuPrimitive.Portal>
-));
-ContextMenuContent.displayName = ContextMenuPrimitive.Content.displayName;
-
-const ContextMenuItem = React.forwardRef<
-  React.ComponentRef<typeof ContextMenuPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Item> & {
-    inset?: boolean;
-  }
->(({ className, inset, ...props }, ref) => (
-  <ContextMenuPrimitive.Item
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-none px-2 py-1.5 text-sm h-8 outline-none focus:border-y-4 focus:border-ring border-dashed data-[highlighted]:border-ring data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      inset && "pl-8",
-      className
-    )}
-    {...props}
-  />
-));
-ContextMenuItem.displayName = ContextMenuPrimitive.Item.displayName;
-
-const ContextMenuCheckboxItem = React.forwardRef<
-  React.ComponentRef<typeof ContextMenuPrimitive.CheckboxItem>,
-  React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.CheckboxItem>
->(({ className, children, checked, ...props }, ref) => (
-  <ContextMenuPrimitive.CheckboxItem
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-none py-1.5 pl-8 pr-2 text-sm outline-none focus:border-y-4 focus:border-foreground h-8 focus:dark:border-ring border-dashed focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
-    )}
-    checked={checked}
-    {...props}
-  >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-      <ContextMenuPrimitive.ItemIndicator>
-        <svg
-          width="50"
-          height="50"
-          viewBox="0 0 256 256"
-          fill="currentColor"
-          xmlns="http://www.w3.org/2000/svg"
-          stroke="currentColor"
-          strokeWidth="0.25"
-          aria-label="check"
-          className="size-9"
-        >
-          <rect
-            x="80"
-            y="128"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 80 128)"
-          ></rect>
-          <rect
-            x="96"
-            y="144"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 96 144)"
-          ></rect>
-          <rect
-            x="112"
-            y="160"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 112 160)"
-          ></rect>
-          <rect
-            x="128"
-            y="144"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 128 144)"
-          ></rect>
-          <rect
-            x="144"
-            y="128"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 144 128)"
-          ></rect>
-          <rect
-            x="160"
-            y="112"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 160 112)"
-          ></rect>
-          <rect
-            x="176"
-            y="96"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 176 96)"
-          ></rect>
-          <rect
-            x="192"
-            y="80"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 192 80)"
-          ></rect>
-        </svg>
-      </ContextMenuPrimitive.ItemIndicator>
-    </span>
-    {children}
-  </ContextMenuPrimitive.CheckboxItem>
-));
-ContextMenuCheckboxItem.displayName =
-  ContextMenuPrimitive.CheckboxItem.displayName;
-
-const ContextMenuRadioItem = React.forwardRef<
-  React.ComponentRef<typeof ContextMenuPrimitive.RadioItem>,
-  React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.RadioItem>
->(({ className, children, ...props }, ref) => (
-  <ContextMenuPrimitive.RadioItem
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-none py-1.5 pl-8 pr-2 text-sm outline-none focus:border-y-4 focus:border-foreground h-8 focus:dark:border-ring border-dashed focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
-    )}
-    {...props}
-  >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-      <ContextMenuPrimitive.ItemIndicator>
-        <Circle className="size-2 fill-current" />
-      </ContextMenuPrimitive.ItemIndicator>
-    </span>
-    {children}
-  </ContextMenuPrimitive.RadioItem>
-));
-ContextMenuRadioItem.displayName = ContextMenuPrimitive.RadioItem.displayName;
-
-const ContextMenuLabel = React.forwardRef<
-  React.ComponentRef<typeof ContextMenuPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Label> & {
-    inset?: boolean;
-  }
->(({ className, inset, ...props }, ref) => (
-  <ContextMenuPrimitive.Label
-    ref={ref}
-    className={cn(
-      "px-2 py-1.5 text-sm font-semibold text-foreground",
-      inset && "pl-8",
-      className
-    )}
-    {...props}
-  />
-));
-ContextMenuLabel.displayName = ContextMenuPrimitive.Label.displayName;
-
-const ContextMenuSeparator = React.forwardRef<
-  React.ComponentRef<typeof ContextMenuPrimitive.Separator>,
-  React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.Separator>
->(({ className, ...props }, ref) => (
-  <ContextMenuPrimitive.Separator
-    ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-border", className)}
-    {...props}
-  />
-));
-ContextMenuSeparator.displayName = ContextMenuPrimitive.Separator.displayName;
-
-const ContextMenuShortcut = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLSpanElement>) => {
-  return (
-    <span
-      className={cn(
-        "ml-auto text-xs tracking-widest text-muted-foreground",
-        className
-      )}
-      {...props}
-    />
-  );
-};
-ContextMenuShortcut.displayName = "ContextMenuShortcut";
-
-export {
-  ContextMenu,
-  ContextMenuTrigger,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuCheckboxItem,
-  ContextMenuRadioItem,
-  ContextMenuLabel,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuGroup,
-  ContextMenuPortal,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-  ContextMenuRadioGroup,
-};
-
-
-===== ./components/ui/pixelact-ui/dialog.tsx =====
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-import {
-  Dialog as ShadcnDialog,
-  DialogContent as ShadcnDialogContent,
-  DialogTrigger,
-  DialogPortal,
-  DialogOverlay,
-  DialogTitle as ShadcnDialogTitle,
-  DialogDescription,
-  DialogHeader,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import "@/components/ui/pixelact-ui/styles/styles.css";
-export interface PixelDialogContentProps
-  extends React.ComponentProps<typeof ShadcnDialogContent> {
-  trigger?: React.ReactNode;
-}
-
-const Dialog = ({ ...props }: React.ComponentProps<typeof ShadcnDialog>) => {
-  return <ShadcnDialog {...props} />;
-};
-
-const DialogTitle = React.forwardRef<
-  React.ComponentRef<typeof ShadcnDialogTitle>,
-  React.ComponentPropsWithoutRef<typeof ShadcnDialogTitle>
->(({ className, ...props }, ref) => {
-  return (
-    <ShadcnDialogTitle
-      className={cn("pixel-font text-foreground", className)}
-      ref={ref}
-      {...props}
-    />
-  );
-});
-
-const DialogContent = React.forwardRef<
-  React.ComponentRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
-  <DialogPortal>
-    <DialogOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed pixel-font rounded-none shadow-(--pixel-box-shadow) box-shadow-margin bg-background left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border p-6  duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
-        className
-      )}
-      {...props}
-    >
-      {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70-background transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="32"
-          height="32"
-          viewBox="0 0 24 24"
-          className="cursor-pointer"
-        >
-          <path
-            className="fill-foreground"
-            d="M5 5h2v2H5zm4 4H7V7h2zm2 2H9V9h2zm2 0h-2v2H9v2H7v2H5v2h2v-2h2v-2h2v-2h2v2h2v2h2v2h2v-2h-2v-2h-2v-2h-2zm2-2v2h-2V9zm2-2v2h-2V7zm0 0V5h2v2z"
-          />
-        </svg>
-        <span className="sr-only">Close</span>
-      </DialogPrimitive.Close>
-    </DialogPrimitive.Content>
-  </DialogPortal>
-));
-
-export {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogPortal,
-  DialogOverlay,
-  DialogTitle,
-  DialogDescription,
-  DialogHeader,
-  DialogFooter,
-};
-
-
-===== ./components/ui/pixelact-ui/input.tsx =====
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import "@/components/ui/pixelact-ui/styles/styles.css";
-
-export interface PixelInputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
-  disabled?: boolean;
-  className?: string;
-}
-
-const Input = React.forwardRef<HTMLInputElement, PixelInputProps>(
-  ({ className, disabled, ...props }, ref) => {
-    return (
-      <input
-        className={cn(
-          "pixel__input pixel-font max-w-full outline-none p-2 bg-background text-foreground shadow-(--pixel-box-shadow) placeholder:text-sm md:placeholder:text-base box-shadow-margin disabled:opacity-40",
-          disabled && "disabled:opacity-40 disabled:cursor-not-allowed",
-          className
-        )}
-        disabled={disabled}
-        ref={ref}
-        {...props}
-      />
-    );
-  }
-);
-Input.displayName = "PixelInput";
-
-export { Input };
-
-
-===== ./components/ui/pixelact-ui/menubar.tsx =====
-import React from "react";
-import * as MenubarPrimitive from "@radix-ui/react-menubar";
-import { cva } from "class-variance-authority";
-import { Circle } from "lucide-react";
-import { cn } from "@/lib/utils";
-import "@/components/ui/pixelact-ui/styles/styles.css";
-
-export const menubarVariants = cva(
-  "shadow-(--pixel-box-shadow) box-shadow-margin",
-  {
-    variants: {
-      font: {
-        normal: "",
-        pixel: "pixel-font",
-      },
-    },
-    defaultVariants: {
-      font: "pixel",
-    },
-  }
-);
-
-function MenubarMenu({
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Menu>) {
-  return <MenubarPrimitive.Menu {...props} />;
-}
-
-function MenubarGroup({
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Group>) {
-  return <MenubarPrimitive.Group {...props} />;
-}
-
-function MenubarPortal({
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Portal>) {
-  return <MenubarPrimitive.Portal {...props} />;
-}
-
-function MenubarRadioGroup({
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.RadioGroup>) {
-  return <MenubarPrimitive.RadioGroup {...props} />;
-}
-
-function MenubarSub({
-  ...props
-}: React.ComponentProps<typeof MenubarPrimitive.Sub>) {
-  return <MenubarPrimitive.Sub data-slot="menubar-sub" {...props} />;
-}
-
-const Menubar = React.forwardRef<
-  React.ComponentRef<typeof MenubarPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Root> & {
-    font?: "normal" | "pixel";
-  }
->(({ className, font, ...props }, ref) => (
-  <MenubarPrimitive.Root
-    ref={ref}
-    className={cn(
-      "flex h-10 items-center space-x-1 rounded-none bg-background p-1",
-      menubarVariants({ font }),
-      className
-    )}
-    {...props}
-  />
-));
-Menubar.displayName = MenubarPrimitive.Root.displayName;
-
-const MenubarTrigger = React.forwardRef<
-  React.ComponentRef<typeof MenubarPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Trigger>
->(({ className, ...props }, ref) => (
-  <MenubarPrimitive.Trigger
-    ref={ref}
-    className={cn(
-      "flex cursor-default select-none items-center rounded-none px-3 py-1.5 text-sm font-medium text-foreground outline-none focus:border-b-4 focus:border-foreground focus:dark:border-ring focus:border-dashed focus:text-accent-foreground data-[state=open]:border-b-4 data-[state=open]:border-foreground data-[state=open]:dark:border-ring data-[state=open]:text-accent-foreground data-[state=open]:border-dashed border-b-4 border-transparent pt-2",
-      className
-    )}
-    {...props}
-  />
-));
-MenubarTrigger.displayName = MenubarPrimitive.Trigger.displayName;
-
-const MenubarSubTrigger = React.forwardRef<
-  React.ComponentRef<typeof MenubarPrimitive.SubTrigger>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.SubTrigger> & {
-    inset?: boolean;
-  }
->(({ className, inset, children, ...props }, ref) => (
-  <MenubarPrimitive.SubTrigger
-    ref={ref}
-    className={cn(
-      "flex cursor-default select-none items-center rounded-none px-2 py-1.5 text-sm outline-none h-10 focus:border-y-4 focus:border-foreground focus:dark:border-ring focus:border-dashed focus:text-accent-foreground data-[state=open]:border-y-4 data-[state=open]:border-foreground data-[state=open]:dark:border-ring data-[state=open]:text-accent-foreground data-[state=open]:border-dashed",
-      inset && "pl-8",
-      className
-    )}
-    {...props}
-  >
-    {children}
-    <svg
-      width="50"
-      height="50"
-      viewBox="0 0 256 256"
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-      stroke="currentColor"
-      strokeWidth="0.25"
-      aria-label="chevron-right"
-      className="size-8 ml-auto"
-    >
-      <rect x="128" y="136" width="14" height="14" rx="1"></rect>
-      <rect x="112" y="152" width="14" height="14" rx="1"></rect>
-      <rect x="96" y="72" width="14" height="14" rx="1"></rect>
-      <rect x="96" y="168" width="14" height="14" rx="1"></rect>
-      <rect x="144" y="120" width="14" height="14" rx="1"></rect>
-      <rect x="128" y="104" width="14" height="14" rx="1"></rect>
-      <rect x="112" y="88" width="14" height="14" rx="1"></rect>
-    </svg>
-  </MenubarPrimitive.SubTrigger>
-));
-MenubarSubTrigger.displayName = MenubarPrimitive.SubTrigger.displayName;
-
-const MenubarSubContent = React.forwardRef<
-  React.ComponentRef<typeof MenubarPrimitive.SubContent>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.SubContent> & {
-    font?: "normal" | "pixel";
-  }
->(({ className, font, ...props }, ref) => (
-  <MenubarPrimitive.SubContent
-    ref={ref}
-    className={cn(
-      "z-50 min-w-[8rem] overflow-hidden rounded-none bg-popover p-1 text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-menubar-content-transform-origin]",
-      menubarVariants({ font }),
-      className
-    )}
-    {...props}
-  />
-));
-MenubarSubContent.displayName = MenubarPrimitive.SubContent.displayName;
-
-const MenubarContent = React.forwardRef<
-  React.ComponentRef<typeof MenubarPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Content> & {
-    font?: "normal" | "pixel";
-  }
->(
-  (
-    {
-      className,
-      align = "start",
-      alignOffset = -4,
-      font,
-      sideOffset = 8,
-      ...props
-    },
-    ref
-  ) => (
-    <MenubarPrimitive.Portal>
-      <MenubarPrimitive.Content
-        ref={ref}
-        align={align}
-        alignOffset={alignOffset}
-        sideOffset={sideOffset}
-        className={cn(
-          "z-50 min-w-[12rem] overflow-hidden rounded-none mt-1 bg-popover p-1 text-popover-foreground data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-menubar-content-transform-origin]",
-          menubarVariants({ font }),
-          className
-        )}
-        {...props}
-      />
-    </MenubarPrimitive.Portal>
-  )
-);
-MenubarContent.displayName = MenubarPrimitive.Content.displayName;
-
-const MenubarItem = React.forwardRef<
-  React.ComponentRef<typeof MenubarPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Item> & {
-    inset?: boolean;
-  }
->(({ className, inset, ...props }, ref) => (
-  <MenubarPrimitive.Item
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-none px-2 py-1.5 text-sm text-foreground outline-none focus:border-y-4 focus:border-foreground focus:dark:border-ring h-9 focus:border-dashed focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      inset && "pl-8",
-      className
-    )}
-    {...props}
-  />
-));
-MenubarItem.displayName = MenubarPrimitive.Item.displayName;
-
-const MenubarCheckboxItem = React.forwardRef<
-  React.ComponentRef<typeof MenubarPrimitive.CheckboxItem>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.CheckboxItem>
->(({ className, children, checked, ...props }, ref) => (
-  <MenubarPrimitive.CheckboxItem
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-none py-1.5 pl-8 pr-2 text-sm outline-none h-9 focus:border-y-4 focus:border-foreground focus:dark:border-ring focus:border-dashed focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
-    )}
-    checked={checked}
-    {...props}
-  >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-      <MenubarPrimitive.ItemIndicator>
-        <svg
-          width="50"
-          height="50"
-          viewBox="0 0 256 256"
-          fill="currentColor"
-          xmlns="http://www.w3.org/2000/svg"
-          stroke="currentColor"
-          strokeWidth="0.25"
-          aria-label="check"
-          className="size-7"
-        >
-          <rect
-            x="80"
-            y="128"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 80 128)"
-          ></rect>
-          <rect
-            x="96"
-            y="144"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 96 144)"
-          ></rect>
-          <rect
-            x="112"
-            y="160"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 112 160)"
-          ></rect>
-          <rect
-            x="128"
-            y="144"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 128 144)"
-          ></rect>
-          <rect
-            x="144"
-            y="128"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 144 128)"
-          ></rect>
-          <rect
-            x="160"
-            y="112"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 160 112)"
-          ></rect>
-          <rect
-            x="176"
-            y="96"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 176 96)"
-          ></rect>
-          <rect
-            x="192"
-            y="80"
-            width="14"
-            height="14"
-            rx="1"
-            transform="rotate(90 192 80)"
-          ></rect>
-        </svg>
-      </MenubarPrimitive.ItemIndicator>
-    </span>
-    {children}
-  </MenubarPrimitive.CheckboxItem>
-));
-MenubarCheckboxItem.displayName = MenubarPrimitive.CheckboxItem.displayName;
-
-const MenubarRadioItem = React.forwardRef<
-  React.ComponentRef<typeof MenubarPrimitive.RadioItem>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.RadioItem>
->(({ className, children, ...props }, ref) => (
-  <MenubarPrimitive.RadioItem
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-none py-1.5 h-9 pl-8 pr-2 text-sm outline-none focus:border-y-4 focus:border-foreground focus:dark:border-ring focus:border-dashed focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
-    )}
-    {...props}
-  >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-      <MenubarPrimitive.ItemIndicator>
-        <Circle className="h-2 w-2 fill-current" />
-      </MenubarPrimitive.ItemIndicator>
-    </span>
-    {children}
-  </MenubarPrimitive.RadioItem>
-));
-MenubarRadioItem.displayName = MenubarPrimitive.RadioItem.displayName;
-
-const MenubarLabel = React.forwardRef<
-  React.ComponentRef<typeof MenubarPrimitive.Label>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Label> & {
-    inset?: boolean;
-  }
->(({ className, inset, ...props }, ref) => (
-  <MenubarPrimitive.Label
-    ref={ref}
-    className={cn(
-      "px-2 py-1.5 text-sm font-semibold",
-      inset && "pl-8",
-      className
-    )}
-    {...props}
-  />
-));
-MenubarLabel.displayName = MenubarPrimitive.Label.displayName;
-
-const MenubarSeparator = React.forwardRef<
-  React.ComponentRef<typeof MenubarPrimitive.Separator>,
-  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Separator>
->(({ className, ...props }, ref) => (
-  <MenubarPrimitive.Separator
-    ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-muted", className)}
-    {...props}
-  />
-));
-MenubarSeparator.displayName = MenubarPrimitive.Separator.displayName;
-
-const MenubarShortcut = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLSpanElement>) => {
-  return (
-    <span
-      className={cn(
-        "ml-auto text-xs tracking-widest text-muted-foreground",
-        className
-      )}
-      {...props}
-    />
-  );
-};
-MenubarShortcut.displayname = "MenubarShortcut";
-
-export {
-  Menubar,
-  MenubarMenu,
-  MenubarTrigger,
-  MenubarContent,
-  MenubarItem,
-  MenubarSeparator,
-  MenubarLabel,
-  MenubarCheckboxItem,
-  MenubarRadioGroup,
-  MenubarRadioItem,
-  MenubarPortal,
-  MenubarSubContent,
-  MenubarSubTrigger,
-  MenubarGroup,
-  MenubarSub,
-  MenubarShortcut,
-};
-
-
-===== ./components/ui/pixelact-ui/popover.tsx =====
-import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { type VariantProps, cva } from "class-variance-authority";
-
-import { cn } from "@/lib/utils";
-
-import {
-  Popover as ShadcnPopover,
-  PopoverAnchor as ShadcnPopoverAnchor,
-  PopoverContent as ShadcnPopoverContent,
-  PopoverTrigger as ShadcnPopoverTrigger,
-} from "@/components/ui/popover";
-
-import "@/components/ui/pixelact-ui/styles/styles.css";
-
-const Popover = ShadcnPopover;
-
-const PopoverTrigger = ShadcnPopoverTrigger;
-
-const PopoverAnchor = ShadcnPopoverAnchor;
-
-export const popOverVariants = cva("", {
-  variants: {
-    font: {
-      normal: "",
-      pixel: "pixel-font",
-    },
-  },
-  defaultVariants: {
-    font: "pixel",
-  },
-});
-
-export interface PopoverProps
-  extends React.ComponentProps<typeof PopoverPrimitive.Content>,
-    VariantProps<typeof popOverVariants> {}
-
-function PopoverContent({ children, font, className, ...props }: PopoverProps) {
-  return (
-    <ShadcnPopoverContent
-      className={cn(
-        "relative bg-card text-foreground border-none rounded-none mt-1 shadow-(--pixel-box-shadow)",
-        popOverVariants({ font }),
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </ShadcnPopoverContent>
-  );
-}
-
-export { Popover, PopoverTrigger, PopoverContent, PopoverAnchor };
-
-
-===== ./components/ui/pixelact-ui/styles/styles.css =====
-@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
-
-:root {
-  --box-shadow-width: 4px;
-  --pixel-box-shadow: calc(-1 * (var(--box-shadow-width))) 0 0 0 black,
-    var(--box-shadow-width) 0 0 0 black, 0 var(--box-shadow-width) 0 0 black,
-    0 calc(-1 * (var(--box-shadow-width))) 0 0 black;
-  --pixel-box-shadow-destructive: calc(-1 * (var(--box-shadow-width))) 0 0 0
-      var(--destructive),
-    var(--box-shadow-width) 0 0 0 var(--destructive),
-    0 var(--box-shadow-width) 0 0 var(--destructive),
-    0 calc(-1 * (var(--box-shadow-width))) 0 0 var(--destructive);
-  --default-inner-border-color: rgb(200, 200, 200);
-}
- 
-.dark {
-  --pixel-box-shadow: calc(-1 * (var(--box-shadow-width))) 0 0 0 var(--ring),
-    var(--box-shadow-width) 0 0 0 var(--ring),
-    0 var(--box-shadow-width) 0 0 var(--ring),
-    0 calc(-1 * (var(--box-shadow-width))) 0 0 var(--ring);
-}
-
-.pixel-font {
-  font-family: "Press Start 2P", system-ui, -apple-system, sans-serif;
-  line-height: 1.5;
-  letter-spacing: 0.5px;
-}
-
-.box-shadow-margin {
-  margin: var(--box-shadow-width);
-}
-
-
-===== ./components/ui/pixelact-ui/textarea.tsx =====
-import * as React from 'react';
-import { cva } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
-import '@/components/ui/pixelact-ui/styles/styles.css';
-
-const pixelTextAreaVariants = cva(
-  'pixel__textarea pixel-font rounded-none shadow-(--pixel-box-shadow) box-shadow-margin transition-colors',
-  {
-    variants: {
-      variant: { default: 'bg-background text-foreground' },
-      size: {
-        default: 'px-3 py-2 text-sm',
-        sm: 'px-2 py-1 text-xs',
-        lg: 'px-4 py-3 text-base',
-      },
-    },
-    defaultVariants: { variant: 'default', size: 'default' },
-  }
-);
-
-export const Textarea = React.forwardRef<
-  HTMLTextAreaElement,
-  React.ComponentProps<'textarea'>
->(function Textarea({ className, ...props }, ref) {
-  return (
-    <textarea
-      ref={ref}
-      rows={1}
-      data-slot="textarea"
-      onInput={(e) => {
-        const el = e.currentTarget;
-        el.style.height = 'auto';
-        el.style.height = Math.min(el.scrollHeight, 304) + 'px';
-      }}
-      className={cn(
-        'border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 flex w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none overflow-y-auto max-h-[304px]',
-        pixelTextAreaVariants(),
-        className
-      )}
-      {...props}
-    />
-  );
-});
-
-
-===== ./components/ui/popover.tsx =====
-"use client"
-
-import * as React from "react"
-import { Popover as PopoverPrimitive } from "radix-ui"
-
-import { cn } from "@/lib/utils"
-
-function Popover({
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Root>) {
-  return <PopoverPrimitive.Root data-slot="popover" {...props} />
-}
-
-function PopoverTrigger({
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
-  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />
-}
-
-function PopoverContent({
-  className,
-  align = "center",
-  sideOffset = 4,
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Content>) {
-  return (
-    <PopoverPrimitive.Portal>
-      <PopoverPrimitive.Content
-        data-slot="popover-content"
-        align={align}
-        sideOffset={sideOffset}
-        className={cn(
-          "z-50 flex w-72 origin-(--radix-popover-content-transform-origin) flex-col gap-4 rounded-md bg-popover p-4 text-sm text-popover-foreground shadow-md ring-1 ring-foreground/10 outline-hidden duration-100 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
-          className
-        )}
-        {...props}
-      />
-    </PopoverPrimitive.Portal>
-  )
-}
-
-function PopoverAnchor({
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Anchor>) {
-  return <PopoverPrimitive.Anchor data-slot="popover-anchor" {...props} />
-}
-
-function PopoverHeader({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="popover-header"
-      className={cn("flex flex-col gap-1 text-sm", className)}
-      {...props}
-    />
-  )
-}
-
-function PopoverTitle({ className, ...props }: React.ComponentProps<"h2">) {
-  return (
-    <div
-      data-slot="popover-title"
-      className={cn("font-medium", className)}
-      {...props}
-    />
-  )
-}
-
-function PopoverDescription({
-  className,
-  ...props
-}: React.ComponentProps<"p">) {
-  return (
-    <p
-      data-slot="popover-description"
-      className={cn("text-muted-foreground", className)}
-      {...props}
-    />
-  )
-}
-
-export {
-  Popover,
-  PopoverAnchor,
-  PopoverContent,
-  PopoverDescription,
-  PopoverHeader,
-  PopoverTitle,
-  PopoverTrigger,
-}
-
-
-===== ./components/ui/scroll-area.tsx =====
-"use client"
-
-import * as React from "react"
-import { ScrollArea as ScrollAreaPrimitive } from "radix-ui"
-
-import { cn } from "@/lib/utils"
-
-function ScrollArea({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.Root>) {
-  return (
-    <ScrollAreaPrimitive.Root
-      data-slot="scroll-area"
-      className={cn("relative", className)}
-      {...props}
-    >
-      <ScrollAreaPrimitive.Viewport
-        data-slot="scroll-area-viewport"
-        className="size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1"
-      >
-        {children}
-      </ScrollAreaPrimitive.Viewport>
-      <ScrollBar />
-      <ScrollAreaPrimitive.Corner />
-    </ScrollAreaPrimitive.Root>
-  )
-}
-
-function ScrollBar({
-  className,
-  orientation = "vertical",
-  ...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>) {
-  return (
-    <ScrollAreaPrimitive.ScrollAreaScrollbar
-      data-slot="scroll-area-scrollbar"
-      data-orientation={orientation}
-      orientation={orientation}
-      className={cn(
-        "flex touch-none p-px transition-colors select-none data-horizontal:h-2.5 data-horizontal:flex-col data-horizontal:border-t data-horizontal:border-t-transparent data-vertical:h-full data-vertical:w-2.5 data-vertical:border-l data-vertical:border-l-transparent",
-        className
-      )}
-      {...props}
-    >
-      <ScrollAreaPrimitive.ScrollAreaThumb
-        data-slot="scroll-area-thumb"
-        className="relative flex-1 rounded-full bg-border"
-      />
-    </ScrollAreaPrimitive.ScrollAreaScrollbar>
-  )
-}
-
-export { ScrollArea, ScrollBar }
-
-
-===== ./components/ui/separator.tsx =====
-"use client"
-
-import * as React from "react"
-import { Separator as SeparatorPrimitive } from "radix-ui"
-
-import { cn } from "@/lib/utils"
-
-function Separator({
-  className,
-  orientation = "horizontal",
-  decorative = true,
-  ...props
-}: React.ComponentProps<typeof SeparatorPrimitive.Root>) {
-  return (
-    <SeparatorPrimitive.Root
-      data-slot="separator"
-      decorative={decorative}
-      orientation={orientation}
-      className={cn(
-        "shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-export { Separator }
-
-
-===== ./components/ui/sonner.tsx =====
-"use client"
-
-import { useTheme } from "next-themes"
-import { Toaster as Sonner, type ToasterProps } from "sonner"
-import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
-
-const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
-
-  return (
-    <Sonner
-      theme={theme as ToasterProps["theme"]}
-      className="toaster group"
-      icons={{
-        success: (
-          <CircleCheckIcon className="size-4" />
-        ),
-        info: (
-          <InfoIcon className="size-4" />
-        ),
-        warning: (
-          <TriangleAlertIcon className="size-4" />
-        ),
-        error: (
-          <OctagonXIcon className="size-4" />
-        ),
-        loading: (
-          <Loader2Icon className="size-4 animate-spin" />
-        ),
-      }}
-      style={
-        {
-          "--normal-bg": "var(--popover)",
-          "--normal-text": "var(--popover-foreground)",
-          "--normal-border": "var(--border)",
-          "--border-radius": "var(--radius)",
-        } as React.CSSProperties
-      }
-      toastOptions={{
-        classNames: {
-          toast: "cn-toast",
-        },
-      }}
-      {...props}
-    />
-  )
-}
-
-export { Toaster }
-
-
-===== ./components/ui/textarea.tsx =====
-import * as React from "react"
-
-import { cn } from "@/lib/utils"
-
-function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
-  return (
-    <textarea
-      data-slot="textarea"
-      className={cn(
-        "flex field-sizing-content min-h-0 w-full rounded-md border border-input bg-transparent px-2.5 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-export { Textarea }
-
 
 ===== ./features/chat/AppBootStrap.tsx =====
 // ============================================================
@@ -5434,7 +1943,6 @@ export function AppBootstrap({ initialUser }: { initialUser: Profile | null }) {
 
   return null;
 }
-
 
 ===== ./features/chat/groups/createGroupDialog.tsx =====
 'use client';
@@ -5706,7 +2214,6 @@ function EmptyState({ text, icon }: { text: string; icon?: React.ReactNode }) {
     </div>
   );
 }
-
 
 ===== ./features/chat/groups/groupInviteDialog.tsx =====
 'use client';
@@ -5983,7 +2490,6 @@ function EmptyState({ text, icon }: { text: string; icon?: React.ReactNode }) {
   );
 }
 
-
 ===== ./features/chat/layout/ChatLayout.tsx =====
 import { RoomView } from '../RoomView/roomView';
 import { Sidebar } from '../sidebar/Sidebar';
@@ -5992,7 +2498,7 @@ import { ViewListContainer } from './ViewListContainer';
 
 export function ChatLayout() {
   return (
-    <div className="flex flex-row justify-center items-center h-screen overflow-hidden">
+    <div className="flex flex-row justify-center items-center h-dvh overflow-hidden">
       <Sidebar />
       <ViewListContainer />
       <ChatArea />
@@ -6001,26 +2507,30 @@ export function ChatLayout() {
   );
 }
 
-
 ===== ./features/chat/layout/ViewListContainer.tsx =====
 'use client';
 
-import { useViewMode } from '@/store/selectors';
+import { useViewMode, useSelectedRoom } from '@/store/selectors';
+import { cn } from '@/lib/utils';
 import { RoomsList } from '../rooms/RoomsList';
 import { UserSettings } from '../userpanel/UserSettings';
 
-
 export function ViewListContainer() {
   const viewMode = useViewMode();
+  const selectedRoom = useSelectedRoom();
 
   return (
-    <div className="h-full min-h-0 w-25/100 min-w-0 overflow-hidden border-r bg-card">
+    <div
+      className={cn(
+        'h-full min-h-0 min-w-0 w-full overflow-hidden border-r bg-card md:w-25/100',
+        selectedRoom ? 'hidden md:block' : 'block'
+      )}
+    >
       {viewMode === 'rooms' && <RoomsList />}
       {viewMode === 'userpanel' && <UserSettings />}
     </div>
   );
 }
-
 
 ===== ./features/chat/requests/PendingRequests.tsx =====
 'use client';
@@ -6238,7 +2748,6 @@ function EmptyState({ text }: { text: string }) {
   );
 }
 
-
 ===== ./features/chat/requests/RequestsDialog.tsx =====
 'use client';
 
@@ -6279,7 +2788,6 @@ export function RequestsDialog({ open, onOpenChange }: RequestsDialogProps) {
     </Dialog>
   );
 }
-
 
 ===== ./features/chat/requests/Search.tsx =====
 'use client';
@@ -6479,7 +2987,6 @@ function EmptyState({ text, icon }: { text: string; icon?: React.ReactNode }) {
   );
 }
 
-
 ===== ./features/chat/rooms/RoomItem.tsx =====
 'use client';
 
@@ -6548,21 +3055,36 @@ export function RoomItem({ room, onClick }: RoomItemProps) {
   );
 }
 
-
 ===== ./features/chat/rooms/RoomsList.tsx =====
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { RoomItem } from './RoomItem';
 import { ChatRoom } from '@/lib/types';
-import { useRoomsList, useRoomsStatus } from '@/store/selectors';
 import { MessageSquare, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Menu } from 'lucide-react';
+import {
+  useRoomsList,
+  useRoomsStatus,
+  useSetMobileSidebarOpen,
+} from '@/store/selectors';
 
 export function RoomsList() {
   const rooms = useRoomsList();
   const { status, error } = useRoomsStatus();
+  const setMobileSidebarOpen = useSetMobileSidebarOpen();
 
   return (
     <div className="grid h-full min-h-0 w-full min-w-0 grid-rows-[auto_1fr] font-chat">
-      <div className="border-b px-4 py-4.5 flex flex-row justify-start items-center h-17">
+      <div className="border-b px-4 py-4.5 flex flex-row justify-between items-center h-17">
+        <Button
+          size="icon"
+          variant="outline"
+          className="md:hidden"
+          onClick={() => setMobileSidebarOpen(true)}
+          aria-label="Open menu"
+        >
+          <Menu className="size-5" />
+        </Button>
         <p className="text-2xl font-semibold text-foreground">Chats</p>
       </div>
 
@@ -6617,7 +3139,6 @@ function StateMessage({
     </div>
   );
 }
-
 
 ===== ./features/chat/RoomView/chatRoomView.tsx =====
 'use client';
@@ -6676,14 +3197,12 @@ export function ChatRoomView() {
   );
 }
 
-
 ===== ./features/chat/RoomView/groupRoomView.tsx =====
 export function GroupRoomView() {
     return <div>
         group chat
     </div>
 }
-
 ===== ./features/chat/RoomView/roomView.tsx =====
 'use client';
 import { useSelectedRoom, useSidePanelOpen } from '@/store/selectors';
@@ -6699,18 +3218,17 @@ export function RoomView() {
   const isGroup = selectedRoom.roomType === 'group';
 
   return (
-    <div className="w-125 bg-card h-full">
+    <div className="fixed inset-0 z-40 w-full h-full bg-card md:static md:inset-auto md:z-auto md:w-125">
       {isGroup ? <GroupRoomView /> : <ChatRoomView />}
     </div>
   );
 }
 
-
 ===== ./features/chat/sidebar/Sidebar.tsx =====
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { LogOut, MessageSquare, UserPlus2 } from 'lucide-react';
+import { LogOut, MessageSquare, UserPlus2, Plus, Inbox } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -6721,15 +3239,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogClose,
 } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { RequestsDialog } from '../requests/RequestsDialog';
 import {
   useViewMode,
   useSetViewMode,
   useCurrentUser,
   usePendingRequests,
+  useMobileSidebarOpen,
+  useSetMobileSidebarOpen,
 } from '@/store/selectors';
 import { MdGroups2 } from 'react-icons/md';
 import {
@@ -6738,7 +3258,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Plus, Inbox } from 'lucide-react';
 import { CreateGroupDialog } from '../groups/createGroupDialog';
 import { GroupInvitesDialog } from '../groups/groupInviteDialog';
 import { ThemeToggle } from './ThemeToggle';
@@ -6748,12 +3267,22 @@ export function Sidebar() {
   const [requestsOpen, setRequestsOpen] = useState(false);
   const [createGroupOpen, setCreateGroupOpen] = useState(false);
   const [groupInvitesOpen, setGroupInvitesOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const router = useRouter();
 
   const viewMode = useViewMode();
   const setViewMode = useSetViewMode();
   const user = useCurrentUser();
   const { received } = usePendingRequests();
+  const mobileSidebarOpen = useMobileSidebarOpen();
+  const setMobileSidebarOpen = useSetMobileSidebarOpen();
+
+  // No-op on desktop (visibility there isn't tied to this flag) —
+  // every navigating/dialog-opening action below calls it regardless
+  // of which copy (rail or sheet) rendered the trigger.
+  function closeMobileSidebar() {
+    setMobileSidebarOpen(false);
+  }
 
   async function logOut() {
     setIsLoading(true);
@@ -6773,14 +3302,17 @@ export function Sidebar() {
     }
   }
 
-  return (
-    <aside className="flex h-full w-20 flex-col items-center justify-between border-r bg-sidebar px-3 py-4 font-chat">
+  const railContent = (
+    <>
       {/* Top Controls */}
       <div className="flex flex-col items-center gap-3">
         <Button
           size="icon"
           variant={viewMode === 'rooms' ? 'secondary' : 'ghost'}
-          onClick={() => setViewMode('rooms')}
+          onClick={() => {
+            setViewMode('rooms');
+            closeMobileSidebar();
+          }}
         >
           <MessageSquare className="size-5" />
         </Button>
@@ -6788,7 +3320,10 @@ export function Sidebar() {
         <Button
           size="icon"
           variant={requestsOpen ? 'secondary' : 'ghost'}
-          onClick={() => setRequestsOpen(true)}
+          onClick={() => {
+            setRequestsOpen(true);
+            closeMobileSidebar();
+          }}
           className="relative"
         >
           <UserPlus2 className="size-5" />
@@ -6804,14 +3339,20 @@ export function Sidebar() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-fit p-2">
             <DropdownMenuItem
-              onClick={() => setCreateGroupOpen(true)}
+              onClick={() => {
+                setCreateGroupOpen(true);
+                closeMobileSidebar();
+              }}
               className="flex flex-row justify-between items-center gap-2"
             >
               <span>Create group</span>
               <Plus className="size-4" />
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => setGroupInvitesOpen(true)}
+              onClick={() => {
+                setGroupInvitesOpen(true);
+                closeMobileSidebar();
+              }}
               className="flex flex-row justify-center items-center gap-2"
             >
               <span>Group invites</span>
@@ -6820,6 +3361,58 @@ export function Sidebar() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      {/* Bottom Controls */}
+      <div className="flex flex-col items-center gap-3">
+        <ThemeToggle />
+
+        <Button
+          size="icon"
+          variant="destructive"
+          disabled={isLoading}
+          onClick={() => {
+            setLogoutOpen(true);
+            closeMobileSidebar();
+          }}
+        >
+          <LogOut className="size-5" />
+        </Button>
+
+        <Avatar
+          className="cursor-pointer border"
+          onClick={() => {
+            setViewMode('userpanel');
+            closeMobileSidebar();
+          }}
+          size="lg"
+        >
+          <AvatarImage src={user?.avatar_url ?? ''} alt="Profile Photo" />
+          <AvatarFallback>
+            {user?.username?.[0]?.toUpperCase() ?? 'U'}
+          </AvatarFallback>
+        </Avatar>
+      </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop: static rail, always in flow at md: and up */}
+      <aside className="hidden md:flex h-full w-20 flex-col items-center justify-between border-r bg-sidebar px-3 py-4 font-chat">
+        {railContent}
+      </aside>
+
+      {/* Mobile: same content, slides in as an overlay over the chat list */}
+      <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
+        <SheetContent
+          side="left"
+          showCloseButton={false}
+          className="flex !w-fit flex-col items-center justify-between border-r bg-sidebar px-3 py-4 font-chat md:hidden"
+        >
+          <SheetTitle className="sr-only">Menu</SheetTitle>
+          {railContent}
+        </SheetContent>
+      </Sheet>
 
       <RequestsDialog open={requestsOpen} onOpenChange={setRequestsOpen} />
       <CreateGroupDialog
@@ -6831,57 +3424,31 @@ export function Sidebar() {
         onOpenChange={setGroupInvitesOpen}
       />
 
-      {/* Bottom Controls */}
-      <div className="flex flex-col items-center gap-3">
-        <ThemeToggle />
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button size="icon" variant="destructive" disabled={isLoading}>
-              <LogOut className="size-5" />
-            </Button>
-          </DialogTrigger>
+      <Dialog open={logoutOpen} onOpenChange={setLogoutOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Log out?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to log out of your account?
+            </DialogDescription>
+          </DialogHeader>
 
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Log out?</DialogTitle>
-              <DialogDescription>
-                Are you sure you want to log out of your account?
-              </DialogDescription>
-            </DialogHeader>
-
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline" disabled={isLoading}>
-                  Cancel
-                </Button>
-              </DialogClose>
-
-              <Button
-                variant="destructive"
-                onClick={logOut}
-                disabled={isLoading}
-              >
-                Log out
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline" disabled={isLoading}>
+                Cancel
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </DialogClose>
 
-        <Avatar
-          className="cursor-pointer border"
-          onClick={() => setViewMode('userpanel')}
-          size="lg"
-        >
-          <AvatarImage src={user?.avatar_url ?? ''} alt="Profile Photo" />
-          <AvatarFallback>
-            {user?.username?.[0]?.toUpperCase() ?? 'U'}
-          </AvatarFallback>
-        </Avatar>
-      </div>
-    </aside>
+            <Button variant="destructive" onClick={logOut} disabled={isLoading}>
+              Log out
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
-
 
 ===== ./features/chat/sidebar/ThemeToggle.tsx =====
 'use client';
@@ -6918,7 +3485,6 @@ export function ThemeToggle() {
   );
 }
 
-
 ===== ./features/chat/ui/ChatArea.tsx =====
 'use client';
 import { useSelectedRoom } from '@/store/selectors';
@@ -6931,7 +3497,7 @@ export function ChatArea() {
 
   if (!selectedRoom) {
     return (
-      <div className="flex flex-1 items-center justify-center w-full h-full bg-background">
+      <div className="hidden md:flex md:flex-1 items-center justify-center w-full h-full bg-background">
         <p className="font-ui text-lg text-foreground">
           Select a chat to start messaging
         </p>
@@ -6947,7 +3513,6 @@ export function ChatArea() {
     </div>
   );
 }
-
 
 ===== ./features/chat/ui/ChatInput.tsx =====
 'use client';
@@ -7041,7 +3606,6 @@ export function ChatInput() {
   );
 }
 
-
 ===== ./features/chat/ui/dateSeperator.tsx =====
 export function DateSeparator({ date }: { date: string }) {
   return (
@@ -7054,7 +3618,6 @@ export function DateSeparator({ date }: { date: string }) {
     </div>
   );
 }
-
 
 ===== ./features/chat/ui/MessageArea.tsx =====
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -7255,7 +3818,6 @@ export function MessageArea() {
   );
 }
 
-
 ===== ./features/chat/ui/MessageBubble.tsx =====
 'use client';
 
@@ -7344,7 +3906,7 @@ export function MessageBubble({
               'relative',
 
               // responsive width
-              'w-fit',
+              'w-auto',
               'min-w-30',
 
               'max-w-[85%]',
@@ -7394,18 +3956,7 @@ export function MessageBubble({
               <ChevronDown className="size-4" />
             </button>
 
-            <p
-              className={cn(
-                'pr-5',
-
-                'whitespace-pre-wrap',
-                'wrap-break-word',
-                'overflow-hidden',
-
-                'text-[15px]',
-                'leading-6'
-              )}
-            >
+            <p className=" pr-5 whitespace-pre-wrap wrap-anywhere text-[15px] leading-6">
               {displayedContent}
 
               {isLong && !isExpanded && <span className="opacity-50">…</span>}
@@ -7464,19 +4015,22 @@ export function MessageBubble({
   );
 }
 
-
 ===== ./features/chat/ui/TopBar.tsx =====
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { useSelectedRoom, useSetSidePanelOpen } from '@/store/selectors';
 import { FaUserLarge } from 'react-icons/fa6';
 import { PiDotsThreeOutlineVerticalDuotone } from 'react-icons/pi';
-import { UsersRound } from 'lucide-react';
-
+import {
+  useSelectedRoom,
+  useSetSidePanelOpen,
+  useSelectRoom,
+} from '@/store/selectors';
+import { UsersRound, ArrowLeft } from 'lucide-react';
 export function TopBar() {
   const selectedRoom = useSelectedRoom();
   const setSidePanelOpen = useSetSidePanelOpen();
+  const selectRoom = useSelectRoom();
 
   if (!selectedRoom) {
     return (
@@ -7508,28 +4062,46 @@ export function TopBar() {
   return (
     <div className="flex flex-row justify-between items-center px-2 py-3 w-full bg-card min-h-17 border-b">
       <div className="flex flex-row items-center gap-3 min-w-0">
-        <Avatar size="lg">
-          <AvatarImage src={avatarUrl ?? undefined} alt="Profile Photo" />
-          <AvatarFallback>
-            {isGroup ? <UsersRound /> : <FaUserLarge />}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col min-w-0">
-          <p className="font-chat truncate text-xl">{displayName}</p>
-          {subtitle && (
-            <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
-          )}
+        <div>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="-ml-1 shrink-0 md:hidden"
+            onClick={() => selectRoom(null)}
+            aria-label="Back to chats"
+          >
+            <ArrowLeft className="size-5" />
+          </Button>
+        </div>
+        <div className="flex flex-row items-center gap-3 min-w-0">
+          <Avatar size="lg">
+            <AvatarImage src={avatarUrl ?? undefined} alt="Profile Photo" />
+            <AvatarFallback>
+              {isGroup ? <UsersRound /> : <FaUserLarge />}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col min-w-0">
+            <p className="font-chat truncate text-xl">{displayName}</p>
+            {subtitle && (
+              <p className="truncate text-xs text-muted-foreground">
+                {subtitle}
+              </p>
+            )}
+          </div>
         </div>
       </div>
-      <Button className="" type='button' onClick={() => {
-        setSidePanelOpen(true);
-      }}>
+      <Button
+        className=""
+        type="button"
+        onClick={() => {
+          setSidePanelOpen(true);
+        }}
+      >
         <PiDotsThreeOutlineVerticalDuotone />
       </Button>
     </div>
   );
 }
-
 
 ===== ./features/chat/userpanel/UserSettings.tsx =====
 'use client';
@@ -7556,11 +4128,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import z from 'zod';
 import { toast } from 'sonner';
-import { useCurrentUser } from '@/store/selectors';
 import { useChatStore } from '@/store/chatStore';
 import { getCroppedImageBlob } from '@/lib/cropImage';
 import { FaUserLarge } from 'react-icons/fa6';
-
+import { useCurrentUser, useSetViewMode } from '@/store/selectors';
+import { ArrowLeft } from 'lucide-react';
 const profileSchema = z.object({
   name: z.string().trim().nonempty('Name is required').max(255),
   username: z
@@ -7584,6 +4156,7 @@ export function UserSettings() {
   // infrequent write, mirrors the pattern AppBootstrap.tsx already
   // uses) — pulled directly off the store rather than via selectors.ts.
   const setCurrentUser = useChatStore((s) => s.setCurrentUser);
+  const setViewMode = useSetViewMode();
 
   // ---------- Avatar crop dialog state ----------
   // Cropping happens up front, in its own dialog, but nothing is
@@ -7726,7 +4299,16 @@ export function UserSettings() {
   console.log(displayedAvatarUrl);
   return (
     <div className="h-full w-full font-chat">
-      <div className="flex flex-col justify-center items-start w-full h-17 p-4 border-b">
+      <div className="flex flex-row items-center gap-2 w-full h-17 p-4 border-b">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="-ml-2 shrink-0 md:hidden"
+          onClick={() => setViewMode('rooms')}
+          aria-label="Back to chats"
+        >
+          <ArrowLeft className="size-5" />
+        </Button>
         <p className="text-2xl text-foreground font-semibold">
           Profile settings
         </p>
@@ -7895,10 +4477,8 @@ export function UserSettings() {
   );
 }
 
-
 ===== ./global.d.ts =====
 declare module '*.css';
-
 
 ===== ./lib/cropImage.ts =====
 // ============================================================
@@ -7965,7 +4545,6 @@ export async function getCroppedImageBlob(
   });
 }
 
-
 ===== ./lib/supabase/client.ts =====
 import { createBrowserClient } from '@supabase/ssr';
 
@@ -7975,7 +4554,6 @@ export function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
   );
 }
-
 
 ===== ./lib/supabase/proxy.ts =====
 import { createServerClient } from '@supabase/ssr';
@@ -8051,7 +4629,6 @@ export async function updateSession(request: NextRequest) {
   return supabaseResponse;
 }
 
-
 ===== ./lib/supabase/server.ts =====
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
@@ -8083,7 +4660,6 @@ export async function createClient() {
     }
   );
 }
-
 
 ===== ./lib/types.ts =====
 // ============================================================
@@ -8227,7 +4803,6 @@ export type SearchUser = {
 
 export type ViewMode = 'rooms' | 'userpanel';
 
-
 ===== ./lib/utils.ts =====
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
@@ -8235,7 +4810,6 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
-
 
 ===== ./next.config.ts =====
 import type { NextConfig } from 'next';
@@ -8253,7 +4827,6 @@ const nextConfig: NextConfig = {
 
 export default nextConfig;
 
-
 ===== ./next-env.d.ts =====
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />
@@ -8261,7 +4834,6 @@ import "./.next/dev/types/routes.d.ts";
 
 // NOTE: This file should not be edited
 // see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
-
 
 ===== ./package.json =====
 {
@@ -8320,7 +4892,6 @@ import "./.next/dev/types/routes.d.ts";
   }
 }
 
-
 ===== ./providers/theme-provider.tsx =====
 'use client';
 
@@ -8334,14 +4905,12 @@ export function ThemeProvider({
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }
 
-
 ===== ./providers/toast-provider.tsx =====
 import { Toaster } from 'sonner';
 
 export default function ToastProvider() {
   return <Toaster position="top-right" />;
 }
-
 
 ===== ./proxy.ts =====
 import { type NextRequest } from 'next/server';
@@ -8363,7 +4932,6 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
-
 
 ===== ./README.md =====
 # Hibiki — Client
@@ -8541,7 +5109,6 @@ The client is a standard Next.js app and deploys to Vercel with zero configurati
    - `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET`
 4. Deploy
 
-
 ===== ./server/actions/auth/register.ts =====
 'use server';
 
@@ -8663,9 +5230,7 @@ export async function register(
   }
 }
 
-
 ===== ./server/actions/chat/get-user-chat-list.ts =====
-
 
 ===== ./server/actions/friendships/accept-friend-request.ts =====
 'use server';
@@ -8730,7 +5295,6 @@ export async function acceptRequest(
     };
   }
 }
-
 
 ===== ./server/actions/friendships/get-all-pending-requests.ts =====
 'use server';
@@ -8869,7 +5433,6 @@ export async function pendingUserRequests(): Promise<
   }
 }
 
-
 ===== ./server/actions/friendships/get-all-search-results.ts =====
 'use server';
 
@@ -8939,7 +5502,6 @@ export async function searchResult(
     };
   }
 }
-
 
 ===== ./server/actions/friendships/send-friend-request.ts =====
 'use server';
@@ -9013,9 +5575,7 @@ export async function sendRequest(
   }
 }
 
-
 ===== ./server/actions/user/get-user.ts =====
-
 
 ===== ./store/chatStore.ts =====
 // ============================================================
@@ -9092,7 +5652,6 @@ export const useChatStore = create<ChatStore>()(
   )
 );
 
-
 ===== ./store/selectors.ts =====
 // ============================================================
 // store/selectors.ts
@@ -9121,7 +5680,12 @@ export const useViewMode = () => useChatStore((s) => s.viewMode);
 export const useSetViewMode = () => useChatStore((s) => s.setViewMode);
 export const useSelectRoom = () => useChatStore((s) => s.selectRoom);
 export const useSidePanelOpen = () => useChatStore((s) => s.sidePanelOpen);
-export const useSetSidePanelOpen = () => useChatStore((s) => s.setSidePanelOpen);
+export const useSetSidePanelOpen = () =>
+  useChatStore((s) => s.setSidePanelOpen);
+export const useMobileSidebarOpen = () =>
+  useChatStore((s) => s.mobileSidebarOpen);
+export const useSetMobileSidebarOpen = () =>
+  useChatStore((s) => s.setMobileSidebarOpen);
 
 export const useSelectedRoom = (): ChatRoom | null =>
   useChatStore((s) =>
@@ -9322,7 +5886,6 @@ export const createAuthSlice: StateCreator<
       state.currentUser = user;
     }),
 });
-
 
 ===== ./store/slices/createFriendshipSlice.ts =====
 // ============================================================
@@ -9563,7 +6126,6 @@ export const createFriendshipsSlice: StateCreator<
     }
   },
 });
-
 
 ===== ./store/slices/createGroupSlice.ts =====
 // ============================================================
@@ -9989,7 +6551,6 @@ export const createGroupSlice: StateCreator<
     }
   },
 });
-
 ===== ./store/slices/createMessageSlice.ts =====
 // ============================================================
 // store/slices/createMessagesSlice.ts
@@ -10238,7 +6799,6 @@ export const createMessagesSlice: StateCreator<
     }),
 });
 
-
 ===== ./store/slices/createRoomSlice.ts =====
 // ============================================================
 // store/slices/createRoomsSlice.ts
@@ -10331,7 +6891,6 @@ export const createRoomsSlice: StateCreator<
       state.roomOrder = state.roomOrder.filter((id) => id !== roomId);
     }),
 });
-
 
 ===== ./store/slices/createSocketSlice.ts =====
 // ============================================================
@@ -10519,7 +7078,6 @@ function findRoomForClientTempId(
   return null;
 }
 
-
 ===== ./store/slices/createUiSlice.ts =====
 // ============================================================
 // store/slices/createUiSlice.ts
@@ -10539,10 +7097,12 @@ export type UiSlice = {
   viewMode: ViewMode;
   selectedRoomId: string | null;
   sidePanelOpen: boolean;
+  mobileSidebarOpen: boolean; // new
 
   setViewMode: (mode: ViewMode) => void;
   selectRoom: (roomId: string | null) => void;
   setSidePanelOpen: (command: boolean) => void;
+  setMobileSidebarOpen: (command: boolean) => void; // new
 };
 
 export const createUiSlice: StateCreator<
@@ -10554,6 +7114,7 @@ export const createUiSlice: StateCreator<
   viewMode: 'rooms',
   selectedRoomId: null,
   sidePanelOpen: false,
+  mobileSidebarOpen: false,
 
   setViewMode: (mode) =>
     set((state) => {
@@ -10579,10 +7140,14 @@ export const createUiSlice: StateCreator<
   setSidePanelOpen: (command: boolean) => {
     set((state) => {
       state.sidePanelOpen = command;
-    })
-  }
+    });
+  },
+  setMobileSidebarOpen: (command: boolean) => {
+    set((state) => {
+      state.mobileSidebarOpen = command;
+    });
+  },
 });
-
 
 ===== ./tsconfig.json =====
 {
@@ -10619,5 +7184,4 @@ export const createUiSlice: StateCreator<
   ],
   "exclude": ["node_modules"]
 }
-
 
